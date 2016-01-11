@@ -13,11 +13,13 @@
 
 #include <NxOgre.h>
 #include <critter.h>
+#include <CritterCommon.h>
 #include <CritterBody.h>
 #include <NxOgreVec3.h>
 #include <NxOgreBox.h>
 #include <NxOgreBoxDescription.h>
 #include <NxOgreMatrix.h>
+#include <NxCharacter.h>
 
 class PhysicsManager {
 
@@ -35,23 +37,78 @@ public:
 		Critter::BodyDescription bodyDescriptionTemp;
 		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
 		Critter::Body* mBodyTemp;
-		mBodyTemp = mRenderSystem->createBody(NxOgre::BoxDescription(1, 1, 1), NxOgre::Vec3(9, 30, 0), "cube.1m.mesh", bodyDescriptionTemp);
+		mBodyTemp = mRenderSystem->createBody(NxOgre::BoxDescription(4, 4, 4), NxOgre::Vec3(9, 30, 0), "cube.1m.mesh", bodyDescriptionTemp);
+		mBodyTemp->getNode()->setScale(4.0);
 		mBodies.push_back(mBodyTemp);
+		
 	}
+	/**********************CharacterControls***********************/
+	Critter::AnimatedCharacter* getCharacter() {
+		return mSinbad;
+	}
+	Critter::CharacterInputHelper getCharacterInputHelper() {
+		return mSinbadHelper;
+	}
+	NxOgre::Actor* getActor() {
+		return mTestActor;
+	}
+
+	/*******************Character controls***********************/
+	void resetHelper() {
+		mSinbadHelper.reset();
+	}
+	void applyHelper() {
+		mSinbad->setInput(mSinbadHelper);
+	}
+
+	void left() {
+		mSinbadHelper.input.is_turning = true;
+		mSinbadHelper.left(127);		
+	}
+	void right() {
+		mSinbadHelper.input.is_turning = true;
+		mSinbadHelper.right(127);
+	}
+	void forward() {
+		mSinbadHelper.forward(127);
+	}
+	void backward() {
+		mSinbadHelper.backward(127);
+	}
+	void jump() {
+		mSinbadHelper.up(127);
+	}
+
 private:
 	NxOgre::World*          mWorld;
 	NxOgre::Scene*          mScene;
 	float                   mLastTimeStep;
 	NxOgre::Material*       mDefaultMaterial;
 	Critter::RenderSystem*  mRenderSystem;
-	Critter::Body*          mBody;
-	Critter::Body*          mBody2;
-
+	
 	std::deque<Critter::Body*> mBodies;
-
 	Ogre::SceneManager*		_mSceneMgr;
 
+	//character
+	Ogre::Real                      mCameraYaw, mCameraPitch;
+	Ogre::Vector3                   mCameraOffset;
+	Critter::AnimatedCharacter*     mSinbad;
+	Critter::CharacterInputHelper   mSinbadHelper;
+	NxOgre::Actor*                  mTestActor;
 	
+	enum ControllerShapeGroups
+	{
+		NonCollidable = 0,      // Things that the character controller can go through such as Ghosts or tiny
+								// objects like small rocks.
+		Walls = 1,              // Walls, Floors and other static geometry that can't be moved.
+		Objects = 2             // Boxes, Barrels and other dynamic parts of the scene that can be moved by pushing.
+	};
+
+	enum SinbadSections
+	{
+		SinbadLower,
+		SinbadUpper
+	};
 	/*****************Set up physics**********************/
 	void setupPhysics()
 	{
@@ -80,14 +137,41 @@ private:
 		mRenderSystem = new Critter::RenderSystem(mScene, _mSceneMgr);
 		mRenderSystem->createVisualDebugger();
 
-		// Setup a BodyDescription.
-		Critter::BodyDescription bodyDescription;
-		bodyDescription.mMass = 40.0f; // Set the mass to 40kg.
-		mBody = mRenderSystem->createBody(NxOgre::BoxDescription(1, 1, 1), NxOgre::Vec3(10, 25, 0), "cube.1m.mesh", bodyDescription);
+		//create character
+		// Fake Floor
+		NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
+		fake_floor_desc.mGroup = Walls;
+		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(0, -0.5, 0));
+		// Setup Animations. 
+		
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "IdleBase");
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Idle, "IdleTop");
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Forward, "RunBase");
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Forward, "RunTop");
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Jump, "JumpStart", 5.0, false);
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Fall, "JumpLoop");
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Land, "JumpEnd", 5.0, false);
+		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
+		
+		Critter::AnimatedCharacterDescription desc;
+		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
+		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
+		desc.mMaxGroundSpeed = -17.0f;
+		desc.setJumpVelocityFromMaxHeight(mScene->getGravity().y, 3.50f);
 
-		Critter::BodyDescription bodyDescription2;
-		bodyDescription2.mMass = 20.0f; // Set the mass to 20kg.
-		mBody2 = mRenderSystem->createBody(NxOgre::BoxDescription(1, 1, 1), NxOgre::Vec3(9, 30, 0), "cube.1m.mesh", bodyDescription2);
+		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 25, 0), Ogre::Radian(0), "sinbad.mesh", desc);
+		
+		//mSinbad->getName;
+		//mSinbad->getPosition();
+		
+		/*
+		NxOgre::RigidBodyDescription test_desc;
+		test_desc.mDynamicRigidbodyFlags += NxOgre::DynamicRigidbodyFlags::FreezeRotation;
+
+		mTestActor = mScene->createActor(desc.mShape.to_desc(), NxOgre::Vec3(5, 5, 0), test_desc);
+		*/
+		//
+		mSinbad->setInput(mSinbadHelper);
 		
 	}
 	

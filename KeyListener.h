@@ -16,6 +16,7 @@
 #include <OgreEntity.h>
 #include <OgreWindowEventUtilities.h>
 #include <Ogre.h>
+#include <OgreTimer.h>
 
 #include "ContentManager.h"
 #include "PhysicsManager.h"
@@ -33,11 +34,29 @@ public:
 		//Close program
 		if (mKeyboard->isKeyDown(OIS::KC_ESCAPE)) return false;
 		//Create some cube
-		if (mKeyboard->isKeyDown(OIS::KC_B)) {
+		if (mKeyboard->isKeyDown(OIS::KC_B) && timer->getMilliseconds()>500) {
 			_physicsManager->createCube();
+			timer->reset();
 		}
-
-
+		//Character controls
+		_physicsManager->resetHelper();
+		if (mKeyboard->isKeyDown(OIS::KC_UP)) {			
+			_physicsManager->backward();
+		}
+		if (mKeyboard->isKeyDown(OIS::KC_DOWN)) {
+			_physicsManager->forward();
+		}
+		if (mKeyboard->isKeyDown(OIS::KC_LEFT) ) {
+			_physicsManager->left();
+		}
+		if (mKeyboard->isKeyDown(OIS::KC_RIGHT)) {
+			_physicsManager->right();
+		}
+		if (mKeyboard->isKeyDown(OIS::KC_NUMPAD0)) {
+			_physicsManager->jump();
+		}
+	
+		_physicsManager->applyHelper();
 		return true;
 	}
 
@@ -57,9 +76,16 @@ private:
 	OIS::Mouse* mMouse;
 
 	Ogre::RenderWindow* _mWindow;
+	Ogre::Timer* timer;
 
 	ContentManager* _contentManager;
 	PhysicsManager* _physicsManager;
+	
+	//Character states
+	bool forward;
+	bool backward;
+	bool left;
+	bool right;
 };
 
 KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager)
@@ -68,6 +94,14 @@ KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentMan
 	_mWindow = mWindow;
 	_contentManager = contentManager;
 	_physicsManager = physicsManager;
+	//Init timer
+	timer = new Ogre::Timer();
+	timer->reset();
+	//init key states
+	forward = false;
+	backward = false;
+	left = false;
+	right = false;
 	//Init OIS
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;

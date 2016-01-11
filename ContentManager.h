@@ -37,7 +37,7 @@ private:
 	/**************Camera*********************/
 	void createCamera() {
 		mCamera = _mSceneMgr->createCamera("MainCam");
-		mCamera->setPosition(0, 10, 40);
+		mCamera->setPosition(0, 20, 10);
 		mCamera->lookAt(0, 0, 0);
 		mCamera->setNearClipDistance(5);
 
