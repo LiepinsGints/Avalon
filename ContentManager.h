@@ -10,6 +10,7 @@
 #include <OgreRenderWindow.h>
 #include <OgreConfigFile.h>
 #include <OgreException.h>
+#include <OgreMeshManager.h>
 
 class ContentManager {
 
@@ -36,8 +37,8 @@ private:
 	/**************Camera*********************/
 	void createCamera() {
 		mCamera = _mSceneMgr->createCamera("MainCam");
-		mCamera->setPosition(0, 0, 80);
-		mCamera->lookAt(0, 0, -300);
+		mCamera->setPosition(0, 10, 40);
+		mCamera->lookAt(0, 0, 0);
 		mCamera->setNearClipDistance(5);
 
 		Ogre::Viewport* vp = _mWindow->addViewport(mCamera);
@@ -54,14 +55,42 @@ private:
 		Ogre::Light* light = _mSceneMgr->createLight("MainLight");
 		light->setPosition(20, 80, 50);
 
+		Ogre::Light* light2 = _mSceneMgr->createLight();
+		light2->setType(Ogre::Light::LT_POINT);
+		light2->setPosition(-10, 40, 20);
+		light2->setSpecularColour(Ogre::ColourValue::White);
+
 	}
 	/*************Scene elements*****************************/
 	void createSceneElements() {
 		// Create Scene
-		Ogre::Entity* ogreEntity = _mSceneMgr->createEntity("ogrehead.mesh");
+		/*Ogre::Entity* ogreEntity = _mSceneMgr->createEntity("ogrehead.mesh");
 
 		Ogre::SceneNode* ogreNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		ogreNode->attachObject(ogreEntity);
+		ogreNode->attachObject(ogreEntity);*/
+		//
+		Ogre::ColourValue background = Ogre::ColourValue(16.f / 255.f, 16.f / 255.f, 16.f / 255.f);
+		_mSceneMgr->setFog(Ogre::FOG_EXP, background, 0.001, 800, 1000);
+
+		// set shadow properties
+		_mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_MODULATIVE);
+		_mSceneMgr->setShadowColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+		_mSceneMgr->setShadowTextureSize(1024);
+		_mSceneMgr->setShadowTextureCount(1);
+
+		// create a floor mesh resource
+		Ogre::MeshManager::getSingleton().createPlane("floor", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+			Ogre::Plane(Ogre::Vector3::UNIT_Y, 0), 1000, 1000, 1, 1, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
+
+		// create a floor entity, give it a material, and place it at the origin
+		Ogre::Entity* floor = _mSceneMgr->createEntity("Floor", "floor");
+		floor->setMaterialName("ground-from-nxogre.org");
+		floor->setCastShadows(false);
+		_mSceneMgr->getRootSceneNode()->attachObject(floor);
+
+		// use a small amount of ambient lighting
+		_mSceneMgr->setAmbientLight(Ogre::ColourValue(0.3, 0.3, 0.3));
+
 	}
 };
 ContentManager::ContentManager(Ogre::Root* mRoot, Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr) {

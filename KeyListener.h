@@ -17,18 +17,25 @@
 #include <OgreWindowEventUtilities.h>
 #include <Ogre.h>
 
+#include "ContentManager.h"
+#include "PhysicsManager.h"
+
 class KeyListener
 {
 public:
-	KeyListener(Ogre::RenderWindow* mWindow);
+	KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager);
 	~KeyListener();
 	//Listen for key or mouse input
 	bool listen(const Ogre::FrameEvent& fe) {
 		mKeyboard->capture();
 		mMouse->capture();
 
+		//Close program
 		if (mKeyboard->isKeyDown(OIS::KC_ESCAPE)) return false;
-
+		//Create some cube
+		if (mKeyboard->isKeyDown(OIS::KC_B)) {
+			_physicsManager->createCube();
+		}
 
 
 		return true;
@@ -50,13 +57,17 @@ private:
 	OIS::Mouse* mMouse;
 
 	Ogre::RenderWindow* _mWindow;
+
+	ContentManager* _contentManager;
+	PhysicsManager* _physicsManager;
 };
 
-KeyListener::KeyListener(Ogre::RenderWindow* mWindow)
+KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager)
 {
 	//init scene variables
 	_mWindow = mWindow;
-	
+	_contentManager = contentManager;
+	_physicsManager = physicsManager;
 	//Init OIS
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;

@@ -11,6 +11,7 @@
 
 #include "ContentManager.h"
 #include "KeyListener.h"
+#include "PhysicsManager.h"
 
 class Core
 	: public Ogre::WindowEventListener,
@@ -36,6 +37,8 @@ private:
 
 	ContentManager* contentManager;
 	KeyListener* keyListener;
+	PhysicsManager* physicsManager;
+
 
 };
 

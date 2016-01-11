@@ -71,9 +71,12 @@ bool Core::go()
 	//Load content
 	contentManager = new ContentManager(mRoot, mWindow,mSceneMgr);
 	contentManager->loadContent();
+	//Physics manager
+	physicsManager = new PhysicsManager(mSceneMgr);
 	// OIS
-	keyListener = new KeyListener(mWindow);
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager);
 	
+
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
@@ -88,7 +91,7 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	if (mWindow->isClosed()) return false;
 
-
+	physicsManager->updatePhysics(fe);
 	return keyListener->listen(fe);
 	
 
