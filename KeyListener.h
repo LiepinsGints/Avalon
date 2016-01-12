@@ -41,10 +41,10 @@ public:
 		//Character controls
 		_physicsManager->resetHelper();
 		if (mKeyboard->isKeyDown(OIS::KC_UP)) {			
-			_physicsManager->backward();
+			_physicsManager->forward();
 		}
 		if (mKeyboard->isKeyDown(OIS::KC_DOWN)) {
-			_physicsManager->forward();
+			_physicsManager->backward();
 		}
 		if (mKeyboard->isKeyDown(OIS::KC_LEFT) ) {
 			_physicsManager->left();

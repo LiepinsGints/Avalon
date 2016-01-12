@@ -24,7 +24,7 @@
 class PhysicsManager {
 
 public:
-	PhysicsManager(Ogre::SceneManager* mSceneMgr);
+	PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager);
 	~PhysicsManager();
 
 	/********************update physics********************/
@@ -89,6 +89,7 @@ private:
 	std::deque<Critter::Body*> mBodies;
 	Ogre::SceneManager*		_mSceneMgr;
 
+	ContentManager* _contentManager;
 	//character
 	Ogre::Real                      mCameraYaw, mCameraPitch;
 	Ogre::Vector3                   mCameraOffset;
@@ -156,22 +157,22 @@ private:
 		Critter::AnimatedCharacterDescription desc;
 		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
 		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
-		desc.mMaxGroundSpeed = -17.0f;
+		desc.mMaxGroundSpeed = 17.0f;
 		desc.setJumpVelocityFromMaxHeight(mScene->getGravity().y, 3.50f);
-
-		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 25, 0), Ogre::Radian(0), "sinbad.mesh", desc);
+		//Create critter node for sinbad mesh
+		Critter::Node* sinbadNode = mRenderSystem->createNode();
+		sinbadNode->createAndAttachEntity("sinbad.mesh");
+		//Create animated character
+		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 25, 0), Ogre::Radian(0), sinbadNode, desc);
+		//Create 
+		Ogre::SceneNode* camNode;
+		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+		camNode->attachObject(_contentManager->getmCamera());
+		sinbadNode->addSceneNode(camNode);
 		
-		//mSinbad->getName;
-		//mSinbad->getPosition();
-		
-		/*
-		NxOgre::RigidBodyDescription test_desc;
-		test_desc.mDynamicRigidbodyFlags += NxOgre::DynamicRigidbodyFlags::FreezeRotation;
-
-		mTestActor = mScene->createActor(desc.mShape.to_desc(), NxOgre::Vec3(5, 5, 0), test_desc);
-		*/
-		//
+		//Assign helper to sinbad
 		mSinbad->setInput(mSinbadHelper);
+		
 		
 	}
 	
@@ -182,7 +183,8 @@ private:
 	}
 	
 };
-PhysicsManager::PhysicsManager(Ogre::SceneManager* mSceneMgr) {
+PhysicsManager::PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager) {
+	_contentManager = contentManager;
 	_mSceneMgr = mSceneMgr;
 	setupPhysics();
 }

@@ -61,7 +61,11 @@ bool Core::go()
 	if (!(mRoot->restoreConfig() || mRoot->showConfigDialog()))
 		return false;
 
+	/************Init window size******************/
 	mWindow = mRoot->initialise(true, "Avalon");
+	mWindow->setFullscreen(true, 1024, 768);
+	//mWindow = mRoot->initialise(true, "Avalon");
+
 
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
@@ -72,7 +76,7 @@ bool Core::go()
 	contentManager = new ContentManager(mRoot, mWindow,mSceneMgr);
 	contentManager->loadContent();
 	//Physics manager
-	physicsManager = new PhysicsManager(mSceneMgr);
+	physicsManager = new PhysicsManager(mSceneMgr, contentManager);
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager);
 	
