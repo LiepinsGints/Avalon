@@ -63,7 +63,7 @@ bool Core::go()
 
 	/************Init window size******************/
 	mWindow = mRoot->initialise(true, "Avalon");
-	mWindow->setFullscreen(true, 1024, 768);
+	mWindow->setFullscreen(false, 1024, 768);
 	//mWindow = mRoot->initialise(true, "Avalon");
 
 

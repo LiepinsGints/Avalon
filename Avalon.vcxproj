@@ -162,6 +162,7 @@
     <ClInclude Include="KeyListener.h" />
     <ClInclude Include="ContentManager.h" />
     <ClInclude Include="PhysicsManager.h" />
+    <ClInclude Include="TerrainGen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />

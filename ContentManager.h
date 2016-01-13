@@ -12,6 +12,7 @@
 #include <OgreException.h>
 #include <OgreMeshManager.h>
 
+#include "TerrainGen.h"
 class ContentManager {
 
 public:
@@ -33,7 +34,9 @@ private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	Ogre::Camera* mCamera;
-
+	TerrainGen * terrainGen;
+	//Lights
+	Ogre::Light* light;
 	/**************Camera*********************/
 	void createCamera() {
 		mCamera = _mSceneMgr->createCamera("MainCam");
@@ -52,7 +55,7 @@ private:
 	void createLights() {
 		_mSceneMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
-		Ogre::Light* light = _mSceneMgr->createLight("MainLight");
+		light = _mSceneMgr->createLight("MainLight");
 		light->setPosition(20, 80, 50);
 
 		Ogre::Light* light2 = _mSceneMgr->createLight();
@@ -90,6 +93,11 @@ private:
 
 		// use a small amount of ambient lighting
 		_mSceneMgr->setAmbientLight(Ogre::ColourValue(0.3, 0.3, 0.3));
+
+		//Create terrain	
+		terrainGen = new TerrainGen(_mRoot, _mWindow, mCamera, _mSceneMgr, light);
+		terrainGen->loadTerrain();
+		
 
 	}
 };

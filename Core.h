@@ -13,6 +13,7 @@
 #include "KeyListener.h"
 #include "PhysicsManager.h"
 
+
 class Core
 	: public Ogre::WindowEventListener,
 	public Ogre::FrameListener
@@ -38,6 +39,7 @@ private:
 	ContentManager* contentManager;
 	KeyListener* keyListener;
 	PhysicsManager* physicsManager;
+	
 
 
 };
