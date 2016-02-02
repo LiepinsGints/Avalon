@@ -29,6 +29,10 @@ public:
 		return mCamera;
 	}
 
+	TerrainGen * getTerrainGen() {
+		return terrainGen;
+	}
+
 private:
 	Ogre::Root* _mRoot;
 	Ogre::RenderWindow* _mWindow;
@@ -64,6 +68,7 @@ private:
 		light2->setSpecularColour(Ogre::ColourValue::White);
 
 	}
+	
 	/*************Scene elements*****************************/
 	void createSceneElements() {
 		// Create Scene

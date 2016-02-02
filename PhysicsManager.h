@@ -21,10 +21,14 @@
 #include <NxOgreMatrix.h>
 #include <NxCharacter.h>
 
+using namespace Ogre;
+using namespace NxOgre;
+using namespace Critter;
+
 class PhysicsManager {
 
 public:
-	PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager);
+	PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager, Ogre::TerrainGroup* mTerrainGroup);
 	~PhysicsManager();
 
 	/********************update physics********************/
@@ -96,7 +100,10 @@ private:
 	Critter::AnimatedCharacter*     mSinbad;
 	Critter::CharacterInputHelper   mSinbadHelper;
 	NxOgre::Actor*                  mTestActor;
-	
+	//Terrain
+	Ogre::TerrainGroup* _mTerrainGroup;
+	//
+	int terrainIterator;
 	enum ControllerShapeGroups
 	{
 		NonCollidable = 0,      // Things that the character controller can go through such as Ghosts or tiny
@@ -139,10 +146,7 @@ private:
 		mRenderSystem->createVisualDebugger();
 
 		//create character
-		// Fake Floor
-		NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
-		fake_floor_desc.mGroup = Walls;
-		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(0, -0.5, 0));
+		
 		// Setup Animations. 
 		
 		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "IdleBase");
@@ -163,7 +167,7 @@ private:
 		Critter::Node* sinbadNode = mRenderSystem->createNode();
 		sinbadNode->createAndAttachEntity("sinbad.mesh");
 		//Create animated character
-		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 25, 0), Ogre::Radian(0), sinbadNode, desc);
+		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 125, 0), Ogre::Radian(0), sinbadNode, desc);
 		//Create 
 		Ogre::SceneNode* camNode;
 		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -173,9 +177,113 @@ private:
 		//Assign helper to sinbad
 		mSinbad->setInput(mSinbadHelper);
 		
-		
+		//Create terrain
+		/*NxOgre::HeightField* heightField = NxOgre::HeightFieldManager::getSingleton()->load(NxOgre::Path("ogre://hf.xhf"));
+		NxOgre::HeightFieldGeometryDescription heightFieldDescr;
+		heightFieldDescr.mHeightField = heightField;
+		mScene->createSceneGeometry(heightFieldDescr);*/
+		// Fake Floor
+		NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
+		fake_floor_desc.mGroup = Walls;
+		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(0, -0.5, 0));
+
+		/*test*/
+		/*
+		VisualDebuggerDescription vd_desc;
+		vd_desc.mCollision.shapes = true;
+
+		mRenderSystem->createVisualDebugger(vd_desc);
+
+		NxOgre::ManualHeightField mh;
+		mh.begin(100, 100);
+		for (size_t x = 0; x < 100; x++)
+		{
+			for (size_t y = 0; y < 100; y++)
+			{
+				mh.sample(x + (y * 100));
+			}
+		}
+
+		NxOgre::HeightField* hf = mh.end();
+
+		NxOgre::HeightFieldGeometryDescription hfg_desc(hf);
+		hfg_desc.mDimensions.set(1000, 1000, 1000);
+		hfg_desc.mFlags += NxOgre::ShapeFlags::Visualisation;
+		hfg_desc.mGroup = Walls;
+		mScene->createSceneGeometry(hfg_desc);
+		*/
+		//_mTerrainGroup->getTerrain(2046,2046)->getMaterial();
+		Ogre::Terrain* terrain = _mTerrainGroup->getTerrain(0, 0);
+		loadTerrainGeometry();
+		/*test end*/ 
+
 	}
 	
+	/***********load terrain from img***************/
+	void loadTerrainGeometry()
+	{
+		
+		TerrainGroup::TerrainIterator ti = _mTerrainGroup->getTerrainIterator();
+		while (ti.hasMoreElements())
+		{
+			Terrain* t = ti.getNext()->instance;
+			if (t)
+			{
+				//
+				//const Ogre::String& name = 
+				float* data = t->getHeightData();
+				Ogre::uint16 size = t->getSize();
+				Ogre::Real worldSize = t->getWorldSize();
+				Ogre::Real minHeight = t->getMinHeight();
+				Ogre::Real maxHeight = t->getMaxHeight();
+				const Ogre::Vector3& position = t->getPosition();
+				//
+				/*u32 size = t->getSize();
+				f32 worldSize = t->getWorldSize();
+				f32 minHeight = t->getMinHeight();
+				f32 maxHeight = t->getMaxHeight();
+				f32* data = t->getHeightData();
+				reVector3Df position = t->getPosition();
+				*/
+				// Create the manual heightfield
+				NxOgre::ManualHeightField mhf;
+				mhf.begin(size, size);
+				Ogre::Real normMin = -32768.0f;
+				Ogre::Real normMax = 32767.0f;
+				// Sample the data to the manual heightfield
+				for (int x = 0; x < size; ++x)
+				{
+					NxOgre::Enums::HeightFieldTesselation tess = NxOgre::Enums::HeightFieldTesselation_NW_SE;
+					for (int z = size - 1; z >= 0; --z)
+					{
+						Ogre::Real height = data[(size * z) + x];
+						short sample = (short)(((height - minHeight) / (maxHeight - minHeight)) * (normMax - normMin) + normMin);
+						mhf.sample(sample, 0, 0, tess);
+						if (tess == NxOgre::Enums::HeightFieldTesselation_NE_SW)
+							tess = NxOgre::Enums::HeightFieldTesselation_NW_SE;
+						else
+							tess = NxOgre::Enums::HeightFieldTesselation_NE_SW;
+					}
+				}
+				// Create the actual heightfield
+				NxOgre::HeightField *hf = mhf.end("terrain"+ terrainIterator);
+				Ogre::Real hf_size = worldSize + (worldSize / size);
+				Ogre::Real hf_height = (maxHeight - minHeight) / 2.0f;
+				Ogre::Real hf_pose_x = position.x - (worldSize / 2.0f);
+				Ogre::Real hf_pose_y = position.y + ((maxHeight + minHeight) / 2.0f);
+				Ogre::Real hf_pose_z = position.z - (worldSize / 2.0f);
+#if NxOgreVersionMajor <= 1 && NxOgreVersionMinor <= 5
+				NxOgre::HeightFieldGeometry* hfg = new NxOgre::HeightFieldGeometry(hf, NxOgre::Vec3(hf_size, hf_height, hf_size));
+				hfg->setLocalPose(NxOgre::Matrix44(NxOgre::Vec3(hf_pose_x, hf_pose_y, hf_pose_z)));
+				mScene->createSceneGeometry(hfg);
+#else
+				NxOgre::HeightFieldGeometryDescription desc(hf, NxOgre::Vec3(hf_size, hf_height, hf_size));
+				desc.mGroup = Walls;
+				mScene->createSceneGeometry(desc, NxOgre::Matrix44(NxOgre::Vec3(hf_pose_x, hf_pose_y, hf_pose_z)));
+#endif
+			}
+			}
+	}
 	/*********************destroy physics*********************/
 	void stopPhysics()
 	{
@@ -183,9 +291,11 @@ private:
 	}
 	
 };
-PhysicsManager::PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager) {
+PhysicsManager::PhysicsManager(Ogre::SceneManager* mSceneMgr, ContentManager* contentManager, Ogre::TerrainGroup* mTerrainGroup) {
 	_contentManager = contentManager;
 	_mSceneMgr = mSceneMgr;
+	_mTerrainGroup = mTerrainGroup;
+	terrainIterator = 0;
 	setupPhysics();
 }
 PhysicsManager::~PhysicsManager() {

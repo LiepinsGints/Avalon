@@ -76,7 +76,7 @@ bool Core::go()
 	contentManager = new ContentManager(mRoot, mWindow,mSceneMgr);
 	contentManager->loadContent();
 	//Physics manager
-	physicsManager = new PhysicsManager(mSceneMgr, contentManager);
+	physicsManager = new PhysicsManager(mSceneMgr, contentManager, contentManager->getTerrainGen()->getmTerrainGroup());
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager);
 	

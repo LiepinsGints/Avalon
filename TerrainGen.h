@@ -147,6 +147,9 @@ public:
 
 	}
 	
+	Ogre::TerrainGroup* getmTerrainGroup() {
+		return mTerrainGroup;
+	}
 
 private:
 	Ogre::Root* mRoot;
