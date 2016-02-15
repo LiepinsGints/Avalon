@@ -35,7 +35,10 @@ bool Core::go()
 	mResourcesCfg = "resources.cfg";
 	mPluginsCfg = "plugins.cfg";
 #endif
+	//load app settings
+	appSettings = new AppSettings();
 
+	//Load resources
 	mRoot = new Ogre::Root(mPluginsCfg);
 
 	Ogre::ConfigFile cf;
@@ -62,8 +65,8 @@ bool Core::go()
 		return false;
 
 	/************Init window size******************/
-	mWindow = mRoot->initialise(true, "Avalon");
-	mWindow->setFullscreen(false, 1024, 768);
+	mWindow = mRoot->initialise(true, appSettings->getAppName());
+	mWindow->setFullscreen(false, appSettings->getWidth(), appSettings->getHeight());
 	//mWindow = mRoot->initialise(true, "Avalon");
 
 
@@ -78,9 +81,18 @@ bool Core::go()
 	//Physics manager
 	physicsManager = new PhysicsManager(mSceneMgr, contentManager, contentManager->getTerrainGen()->getmTerrainGroup());
 	// OIS
-	keyListener = new KeyListener(mWindow, contentManager, physicsManager);
-	
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings);
+	//userInterface
+	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings);
+	//MyGui
+	/*mPlatform = new MyGUI::OgrePlatform();
+	mPlatform->initialise(mWindow, mSceneMgr); // mWindow is Ogre::RenderWindow*, mSceneManager is Ogre::SceneManager*
+	mGUI = new MyGUI::Gui();
+	mGUI->initialise();
 
+	MyGUI::ButtonPtr button = mGUI->createWidget<MyGUI::Button>("Button", 10, 10, 300, 26, MyGUI::Align::Default, "Main");
+	button->setCaption("exit");
+	*/
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
@@ -96,10 +108,10 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 	if (mWindow->isClosed()) return false;
 
 	physicsManager->updatePhysics(fe);
-	return keyListener->listen(fe);
-	
+	keyListener->listen(fe);
+	return appSettings->isRender();
 
-	return true;
+	//return true;
 }
 /*
 void Core::windowResized(Ogre::RenderWindow* rw)
@@ -118,7 +130,7 @@ void Core::windowClosed(Ogre::RenderWindow* rw)
 {
 	if (rw == mWindow)
 	{
-			keyListener->destroyInputs();		
+		keyListener->destroyInputs();		
 	}
 }
 

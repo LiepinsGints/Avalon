@@ -65,22 +65,22 @@ public:
 		mSinbad->setInput(mSinbadHelper);
 	}
 
-	void left() {
+	void left(int speed) {
 		mSinbadHelper.input.is_turning = true;
-		mSinbadHelper.left(127);		
+		mSinbadHelper.left(speed);
 	}
-	void right() {
+	void right(int speed) {
 		mSinbadHelper.input.is_turning = true;
-		mSinbadHelper.right(127);
+		mSinbadHelper.right(speed);
 	}
-	void forward() {
-		mSinbadHelper.forward(127);
+	void forward(int speed) {
+		mSinbadHelper.forward(speed);
 	}
-	void backward() {
-		mSinbadHelper.backward(127);
+	void backward(int speed) {
+		mSinbadHelper.backward(speed);
 	}
-	void jump() {
-		mSinbadHelper.up(127);
+	void jump(int speed) {
+		mSinbadHelper.up(speed);
 	}
 
 private:

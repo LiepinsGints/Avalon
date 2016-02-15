@@ -12,10 +12,15 @@
 #include "ContentManager.h"
 #include "KeyListener.h"
 #include "PhysicsManager.h"
+#include "AppSettings.h"
+#include "UserInterface.h"
 
+//MyGui
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
 
-class Core
-	: public Ogre::WindowEventListener,
+class Core :
+	public Ogre::WindowEventListener,
 	public Ogre::FrameListener
 {
 public:
@@ -39,8 +44,9 @@ private:
 	ContentManager* contentManager;
 	KeyListener* keyListener;
 	PhysicsManager* physicsManager;
+	AppSettings* appSettings;
+	UserInterface * userInterface;
 	
-
 
 };
 

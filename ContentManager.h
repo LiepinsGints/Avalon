@@ -50,7 +50,7 @@ private:
 
 		Ogre::Viewport* vp = _mWindow->addViewport(mCamera);
 		vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
-
+		vp->setOverlaysEnabled(true);
 		mCamera->setAspectRatio(
 			Ogre::Real(vp->getActualWidth()) /
 			Ogre::Real(vp->getActualHeight()));
