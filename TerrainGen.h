@@ -23,7 +23,7 @@ public:
 		inputScale = 300;
 		minBatchSize = 33;
 		maxBatchSize = 65;
-		img.load("map_04.png", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		img.load("map_1.png", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	}
 	void loadTerrain() {
 		// Fog

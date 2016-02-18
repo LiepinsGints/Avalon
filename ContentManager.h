@@ -13,6 +13,8 @@
 #include <OgreMeshManager.h>
 
 #include "TerrainGen.h"
+
+
 class ContentManager {
 
 public:
@@ -33,12 +35,15 @@ public:
 		return terrainGen;
 	}
 
+	
+
 private:
 	Ogre::Root* _mRoot;
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	Ogre::Camera* mCamera;
 	TerrainGen * terrainGen;
+	//Spawns * spawns;
 	//Lights
 	Ogre::Light* light;
 	/**************Camera*********************/
@@ -91,11 +96,11 @@ private:
 			Ogre::Plane(Ogre::Vector3::UNIT_Y, 0), 1000, 1000, 1, 1, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
 
 		// create a floor entity, give it a material, and place it at the origin
-		Ogre::Entity* floor = _mSceneMgr->createEntity("Floor", "floor");
+		/*Ogre::Entity* floor = _mSceneMgr->createEntity("Floor", "floor");
 		floor->setMaterialName("ground-from-nxogre.org");
 		floor->setCastShadows(false);
 		_mSceneMgr->getRootSceneNode()->attachObject(floor);
-
+		*/
 		// use a small amount of ambient lighting
 		_mSceneMgr->setAmbientLight(Ogre::ColourValue(0.3, 0.3, 0.3));
 

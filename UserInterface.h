@@ -31,16 +31,24 @@ public:
 		mGUI = new MyGUI::Gui();
 		mGUI->initialise();
 
-		MyGUI::ButtonPtr button = mGUI->createWidget<MyGUI::Button>("Button", 384, 40, 300, 26, MyGUI::Align::Default, "Main");
-		button->setCaption("exit");
+		//Button
+		closeButton();
+		//label
+		label();
+		
 
-		button->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
 	}
 
 	~UserInterface() {
 
 
 	}
+	//Change and update label text
+	void setLabelCaption(Ogre::String labelText) {
+		mLabel->setCaption(labelText);
+
+	}
+	
 
 	
 private:
@@ -50,12 +58,29 @@ private:
 	MyGUI::Gui* mGUI;
 	MyGUI::OgrePlatform* mPlatform;
 
+	MyGUI::EditBox* mLabel;
+
 	AppSettings* _appSettings;
 	
+	/**Close structure***/
+	void closeButton() {
+		MyGUI::ButtonPtr button = mGUI->createWidget<MyGUI::Button>("Button", 384, 40, 300, 26, MyGUI::Align::Default, "Main");
+		button->setCaption("exit");
+		button->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
+	}
 	void closeApp(MyGUI::Widget* _widget)
 	{
 		_appSettings->setRender(false);
 	}
+	/****Label block****/
+	void label() {
+		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 10, 200, 100), MyGUI::Align::Default, "Overlapped");
+		mLabel->setCaption("some edit");
+		mLabel->setTextAlign(MyGUI::Align::Center);
+		mLabel->setEditMultiLine(true);
+	}
+
+
 };
 
 #endif

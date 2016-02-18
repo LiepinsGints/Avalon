@@ -41,11 +41,18 @@ public:
 		Critter::BodyDescription bodyDescriptionTemp;
 		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
 		Critter::Body* mBodyTemp;
-		mBodyTemp = mRenderSystem->createBody(NxOgre::BoxDescription(4, 4, 4), NxOgre::Vec3(9, 30, 0), "cube.1m.mesh", bodyDescriptionTemp);
+		mBodyTemp = mRenderSystem->createBody(NxOgre::BoxDescription(4, 4, 4), NxOgre::Vec3(mSinbad->getPosition().x, mSinbad->getPosition().y+40, mSinbad->getPosition().z), "cube.1m.mesh", bodyDescriptionTemp);
 		mBodyTemp->getNode()->setScale(4.0);
 		mBodies.push_back(mBodyTemp);
 		
 	}
+	/*******************Create bounding box**********************/
+	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
+		NxOgre::BoxDescription fake_floor_desc(w, h, d);
+		fake_floor_desc.mGroup = Walls;
+		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(x, y, z));
+	}
+
 	/**********************CharacterControls***********************/
 	Critter::AnimatedCharacter* getCharacter() {
 		return mSinbad;
@@ -167,13 +174,12 @@ private:
 		Critter::Node* sinbadNode = mRenderSystem->createNode();
 		sinbadNode->createAndAttachEntity("sinbad.mesh");
 		//Create animated character
-		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(0, 125, 0), Ogre::Radian(0), sinbadNode, desc);
+		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(-42, 125, -234), Ogre::Radian(0), sinbadNode, desc);
 		//Create 
 		Ogre::SceneNode* camNode;
 		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
 		camNode->attachObject(_contentManager->getmCamera());
 		sinbadNode->addSceneNode(camNode);
-		
 		//Assign helper to sinbad
 		mSinbad->setInput(mSinbadHelper);
 		
@@ -183,10 +189,10 @@ private:
 		heightFieldDescr.mHeightField = heightField;
 		mScene->createSceneGeometry(heightFieldDescr);*/
 		// Fake Floor
-		NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
+		/*NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
 		fake_floor_desc.mGroup = Walls;
 		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(0, -0.5, 0));
-
+		*/
 		/*test*/
 		/*
 		VisualDebuggerDescription vd_desc;

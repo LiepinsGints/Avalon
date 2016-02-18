@@ -7,6 +7,7 @@
 #include <OgreRenderWindow.h>
 #include <OgreConfigFile.h>
 #include <OgreException.h>
+#include "Spawns.h"
 
 Core::Core()
 	: mRoot(0),
@@ -84,15 +85,11 @@ bool Core::go()
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings);
-	//MyGui
-	/*mPlatform = new MyGUI::OgrePlatform();
-	mPlatform->initialise(mWindow, mSceneMgr); // mWindow is Ogre::RenderWindow*, mSceneManager is Ogre::SceneManager*
-	mGUI = new MyGUI::Gui();
-	mGUI->initialise();
-
-	MyGUI::ButtonPtr button = mGUI->createWidget<MyGUI::Button>("Button", 10, 10, 300, 26, MyGUI::Align::Default, "Main");
-	button->setCaption("exit");
-	*/
+	
+	//Spawns
+	Spawns* spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager);
+	spawns->createCottage();
+	spawns->createPallet();
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
@@ -105,6 +102,12 @@ bool Core::go()
 
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
+	//Update character position
+	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().x)+"\n" +
+							 "Y: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().y)+ "\n" +
+							 "Z: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().z);
+	userInterface->setLabelCaption(my_string);
+	//
 	if (mWindow->isClosed()) return false;
 
 	physicsManager->updatePhysics(fe);

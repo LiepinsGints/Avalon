@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="AppSettings.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Spawns.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="KeyListener.h" />
     <ClInclude Include="ContentManager.h" />

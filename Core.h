@@ -14,6 +14,7 @@
 #include "PhysicsManager.h"
 #include "AppSettings.h"
 #include "UserInterface.h"
+#include "Spawns.h"
 
 //MyGui
 #include "MyGUI.h"
@@ -46,7 +47,7 @@ private:
 	PhysicsManager* physicsManager;
 	AppSettings* appSettings;
 	UserInterface * userInterface;
-	
+	//Spawns * spawns;
 
 };
 
