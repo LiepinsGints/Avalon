@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Db_models">
+      <UniqueIdentifier>{f0628438-e980-4317-8622-ce65b68f9dbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -38,6 +41,12 @@
     </ClInclude>
     <ClInclude Include="Spawns.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySql.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Models.h">
+      <Filter>Header Files\Db_models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

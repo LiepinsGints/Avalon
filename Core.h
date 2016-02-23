@@ -15,7 +15,8 @@
 #include "AppSettings.h"
 #include "UserInterface.h"
 #include "Spawns.h"
-
+#include "MySql.h"
+#include "Models.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -47,7 +48,9 @@ private:
 	PhysicsManager* physicsManager;
 	AppSettings* appSettings;
 	UserInterface * userInterface;
-	//Spawns * spawns;
+	MySql * mySql;
+	//Strings
+	Ogre::String swap;
 
 };
 

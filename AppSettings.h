@@ -11,7 +11,10 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
+#include <iostream>
+#include <string>
 
+#include "mysql_connection.h"
 using namespace Ogre;
 class AppSettings {
 public:
@@ -21,6 +24,10 @@ public:
 		width = 1024;
 		height = 768;
 		mouseSensitivity = 1;
+		adress = "tcp://127.0.0.1:3306";
+		userName = "root";
+		password = "ascent";
+		dbName = "Avalon";
 	}
 	~AppSettings() {
 
@@ -57,6 +64,19 @@ public:
 	void setRender(bool _render) {
 		render = _render;
 	}
+	//Mysql
+	sql::SQLString getMySqlAdress() {
+		return adress;
+	}
+	sql::SQLString getMySqlUserName() {
+		return userName;
+	}
+	sql::SQLString getMySqlPassword() {
+		return password;
+	}
+	sql::SQLString getDbName() {
+		return dbName;
+	}
 private:
 	Ogre::String appName;
 	bool render;
@@ -65,7 +85,12 @@ private:
 	int height;
 	//mouse
 	int mouseSensitivity;
-	//Ois controlls
+	//Mysql
+	sql::SQLString adress;
+	sql::SQLString userName;
+	sql::SQLString password;
+	sql::SQLString dbName;
+	
 	//OIS::KeyCode up;
 	//OIS::KeyCode down;
 

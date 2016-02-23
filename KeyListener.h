@@ -21,7 +21,7 @@
 #include "ContentManager.h"
 #include "PhysicsManager.h"
 #include "AppSettings.h"
-
+#include "Spawns.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -31,7 +31,7 @@ class KeyListener:
 	public OIS::KeyListener
 {
 public:
-	KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings);
+	KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns);
 	~KeyListener();
 	//Listen for key or mouse input
 	bool listen(const Ogre::FrameEvent& fe) {
@@ -83,7 +83,13 @@ public:
 
 		case OIS::KC_B:
 			if (timer->getMilliseconds()>1000) {
-				_physicsManager->createCube();
+				_spawns->createCube();
+				timer->reset();
+			}
+			break;
+		case OIS::KC_N:
+			if (timer->getMilliseconds()>1000) {
+				_spawns->createSinbad();
 				timer->reset();
 			}
 			break;
@@ -124,7 +130,7 @@ public:
 
 		case OIS::KC_B:
 			if (timer->getMilliseconds()>500) {
-				_physicsManager->createCube();
+				_spawns->createCube();
 				timer->reset();
 			}
 			break;
@@ -169,16 +175,18 @@ private:
 	ContentManager* _contentManager;
 	PhysicsManager* _physicsManager;
 	AppSettings* _appSettings;
+	Spawns* _spawns;
 	
 };
 
-KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings)
+KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns)
 {
 	//init scene variables
 	_mWindow = mWindow;
 	_contentManager = contentManager;
 	_physicsManager = physicsManager;
 	_appSettings = appSettings;
+	_spawns = spawns;
 	//Init timer
 	timer = new Ogre::Timer();
 	timer->reset();

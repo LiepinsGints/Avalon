@@ -44,8 +44,9 @@ public:
 
 	}
 	//Change and update label text
-	void setLabelCaption(Ogre::String labelText) {
-		mLabel->setCaption(labelText);
+	void setLabelCaption(Ogre::String labelText, Ogre::String labelText2, Ogre::String labelText3) {
+		Ogre::String merge = labelText +"\n" + labelText2 + "\n"+ labelText3 + "\n";
+		mLabel->setCaption(merge);
 
 	}
 	
@@ -79,6 +80,7 @@ private:
 		mLabel->setTextAlign(MyGUI::Align::Center);
 		mLabel->setEditMultiLine(true);
 	}
+
 
 
 };

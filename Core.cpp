@@ -9,6 +9,7 @@
 #include <OgreException.h>
 #include "Spawns.h"
 
+
 Core::Core()
 	: mRoot(0),
 	mResourcesCfg(Ogre::StringUtil::BLANK),
@@ -81,15 +82,25 @@ bool Core::go()
 	contentManager->loadContent();
 	//Physics manager
 	physicsManager = new PhysicsManager(mSceneMgr, contentManager, contentManager->getTerrainGen()->getmTerrainGroup());
-	// OIS
-	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings);
+	
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings);
-	
+	//MySql
+	mySql = new MySql(appSettings);
+	mySql->mySqlConnect();
 	//Spawns
-	Spawns* spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager);
-	spawns->createCottage();
-	spawns->createPallet();
+	Spawns* spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager,mySql);
+	spawns->createCottage(Ogre::Vector3(-87, 23, -334),0.1f);
+	spawns->createCottage(Ogre::Vector3(26, 25.2455-2, -331), 0.1f);//25.2455-1-0.2
+	spawns->createPallet(Ogre::Vector3(-42,  21, -307),1.0f);
+
+	spawns->createObject("tudorhouse", Ogre::Vector3(-12, 26, -233), 0.01f, 20.0, 2);
+
+
+	float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
+	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
+	// OIS
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings,spawns);
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
@@ -106,7 +117,7 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().x)+"\n" +
 							 "Y: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().y)+ "\n" +
 							 "Z: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().z);
-	userInterface->setLabelCaption(my_string);
+	userInterface->setLabelCaption(my_string,swap,"free");
 	//
 	if (mWindow->isClosed()) return false;
 

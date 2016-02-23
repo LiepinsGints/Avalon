@@ -36,23 +36,22 @@ public:
 		mWorld->advance(fe.timeSinceLastFrame);
 		mLastTimeStep = mScene->getTimeStep().getModified();
 	}
-	/*********************Create cube***************************/
-	void createCube() {
-		Critter::BodyDescription bodyDescriptionTemp;
-		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
-		Critter::Body* mBodyTemp;
-		mBodyTemp = mRenderSystem->createBody(NxOgre::BoxDescription(4, 4, 4), NxOgre::Vec3(mSinbad->getPosition().x, mSinbad->getPosition().y+40, mSinbad->getPosition().z), "cube.1m.mesh", bodyDescriptionTemp);
-		mBodyTemp->getNode()->setScale(4.0);
-		mBodies.push_back(mBodyTemp);
-		
+	/*********************Mbodies***************************/
+	void addMBodies(Critter::Body* mBody) {
+		mBodies.push_back(mBody);
+	}
+	/**********************render system***************************/
+	Critter::RenderSystem*  getMRenderSystem(){
+		return mRenderSystem;
 	}
 	/*******************Create bounding box**********************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
-		NxOgre::BoxDescription fake_floor_desc(w, h, d);
-		fake_floor_desc.mGroup = Walls;
-		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(x, y, z));
+		NxOgre::BoxDescription BoundingBox(w, h, d);
+		BoundingBox.mGroup = Objects;//Objects Walls
+		BoundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
+		mScene->createSceneGeometry(BoundingBox, NxOgre::Vec3(x, y, z));
 	}
-
+	
 	/**********************CharacterControls***********************/
 	Critter::AnimatedCharacter* getCharacter() {
 		return mSinbad;
