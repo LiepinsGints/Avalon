@@ -14,9 +14,11 @@
 #include <vector>
 
 #include "AppSettings.h"
-//Db models
+#include "Spawns.h"
+//Table models
 #include "Models.h"
-
+#include "SpawnWorld.h"
+#include "Bounds.h"
 
 class MySql 
 {
@@ -26,8 +28,7 @@ public:
 	
 	}
 	~MySql() {
-		delete res;
-		delete stmt;
+		
 		delete con;
 	}
 
@@ -46,8 +47,8 @@ public:
 	}
 	Ogre::String executeQuery(Ogre::String query) {
 		try {
-			stmt = con->createStatement();
-			res = stmt->executeQuery(query); // replace with your statement
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str()); // replace with your statementt
 			while (res->next()) {
 				//cout << "\t... MySQL replies: ";
 				/* Access column data by alias or column name */
@@ -67,17 +68,24 @@ public:
 
 	//Get model from db
 	Models * getModelByName(std::string modelName) {
+		std::string query = "select * from models where Name = '" + modelName + "'";
+		return getModel(query);
+	}
+	Models * getModelById(int modelID) {
+		std::string query = "select * from models where id = " + std::to_string(modelID);
+		return getModel(query);
+	}
+	Models * getModel(std::string query) {
 		Models * model = new Models();
 		try {
-			stmt = con->createStatement();
-			std::string query= "select * from models where Name = '"+ modelName +"'" ;
-			res = stmt->executeQuery(query.c_str()); // replace with your statement
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
 			while (res->next()) {
 				model->setId(std::stoi(res->getString("ID").c_str()));
-				model->setName(res->getString("Name").c_str());		
+				model->setName(res->getString("Name").c_str());
 				model->setMeshName(res->getString("MeshName").c_str());
 				model->setDimensions(Ogre::Vector3(std::stod(res->getString("Width").c_str()), std::stod(res->getString("Height").c_str()), std::stod(res->getString("Depth").c_str())));
-				break;
+				//break;
 			}
 			return model;
 		}
@@ -89,11 +97,78 @@ public:
 
 		}
 	}
+	//spawn all objects from world table
+	void getWorld(Spawns* spawns) {
+		SpawnWorld * spawnWorld = new SpawnWorld();
+		std::string query = "select * from world";
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str()); 
+			while (res->next()) {
+
+				spawns->createObject(getModelById(std::stoi(res->getString("ModelID").c_str())), 
+					Ogre::Vector3(std::stod(res->getString("x").c_str()), std::stod(res->getString("y").c_str()), std::stod(res->getString("z").c_str())),
+					std::stod(res->getString("Scale").c_str()), std::stod(res->getString("Mass").c_str()), std::stod(res->getString("Type").c_str()));
+
+			}
+
+		}
+		catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+			//model->setName("Error");
+
+		}
+	}
+	//Get bounding boxes from bounds table
+	void spanwBounds(Spawns* spawns) {
+		Bounds * bounds = new Bounds();
+		std::string query = "select * from bounds";
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str()); 
+			while (res->next()) {
+				spawns->createBoundingBox(std::stod(res->getString("x").c_str()),
+					std::stod(res->getString("y").c_str()), 
+					std::stod(res->getString("z").c_str()),
+					std::stod(res->getString("width").c_str()),
+					std::stod(res->getString("height").c_str()),
+					std::stod(res->getString("deep").c_str())
+					);
+			}
+
+		}
+		catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+		}
+	}
+	void createBound(float x, float y, float z, float width, float height, float deep,int type) {
+		std::string query = "INSERT INTO bounds(x, y, z, width, height, deep, type) VALUES ("+ std::to_string(x) +" , " + std::to_string(y) + ", " 
+			+ std::to_string(z) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", " + std::to_string(deep) + ", " + std::to_string(type) + ")";
+		sqlInsert(query);
+	}
+	//sql insert statement
+	void sqlInsert(std::string query) {
+		//INSERT INTO bounds(x, y, z, width, height, deep, type) VALUES (-4, 25, -202, 10, 10, 10, 0);
+		//std::string query = "INSERT INTO bounds(x, y, z, width, height, deep, type) VALUES (-4, 25, -202, 10, 10, 10, 0)";
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
+		}
+		catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+		}
+
+	}
 private:
 	sql::Driver *driver;
 	sql::Connection *con;
-	sql::Statement *stmt;
-	sql::ResultSet *res;
+
 
 	AppSettings* _appSettings;
 

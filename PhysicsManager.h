@@ -47,9 +47,18 @@ public:
 	/*******************Create bounding box**********************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		NxOgre::BoxDescription BoundingBox(w, h, d);
-		BoundingBox.mGroup = Objects;//Objects Walls
 		BoundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
+		BoundingBox.mGroup = Objects;//Objects Walls
+
+		/*
+		NxOgre::BoxDescription * BoundingBoxHolder;
+		BoundingBoxHolder->mSize.set(w,h,d);
+		BoundingBoxHolder->mFlags += NxOgre::ShapeFlags::Visualisation;
+		BoundingBoxHolder->mGroup = Objects;//Objects Walls
+		*/
 		mScene->createSceneGeometry(BoundingBox, NxOgre::Vec3(x, y, z));
+		
+		
 	}
 	
 	/**********************CharacterControls***********************/
@@ -148,8 +157,13 @@ private:
 		mScene->createSceneGeometry(NxOgre::PlaneGeometryDescription());
 
 		// Create the rendersystem.
+		VisualDebuggerDescription vd_desc;
+		vd_desc.mCollision.shapes = true;
+		//vd_desc.mCollision.AABB = true;
+		
 		mRenderSystem = new Critter::RenderSystem(mScene, _mSceneMgr);
-		mRenderSystem->createVisualDebugger();
+		//mRenderSystem->createVisualDebugger();
+		mRenderSystem->createVisualDebugger(vd_desc);
 
 		//create character
 		
@@ -220,6 +234,9 @@ private:
 		//_mTerrainGroup->getTerrain(2046,2046)->getMaterial();
 		Ogre::Terrain* terrain = _mTerrainGroup->getTerrain(0, 0);
 		loadTerrainGeometry();
+		
+		//for (int i = 0; i<this->getNxActor()->getNbShapes(); i++)
+		//this->getNxActor()->getShapes()[i]->setFlag(NxShapeFlag::NX_SF_VISUALIZATION, false)
 		/*test end*/ 
 
 	}
@@ -284,6 +301,8 @@ private:
 #else
 				NxOgre::HeightFieldGeometryDescription desc(hf, NxOgre::Vec3(hf_size, hf_height, hf_size));
 				desc.mGroup = Walls;
+				desc.mFlags -= NxOgre::ShapeFlags::Visualisation;
+				//setFlag(NxShapeFlag::NX_SF_VISUALIZATION, false);
 				mScene->createSceneGeometry(desc, NxOgre::Matrix44(NxOgre::Vec3(hf_pose_x, hf_pose_y, hf_pose_z)));
 #endif
 			}

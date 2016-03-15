@@ -159,6 +159,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AppSettings.h" />
+    <ClInclude Include="Bounds.h" />
+    <ClInclude Include="ConsoleReader.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Models.h" />
     <ClInclude Include="MySql.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="ContentManager.h" />
     <ClInclude Include="PhysicsManager.h" />
     <ClInclude Include="TerrainGen.h" />
+    <ClInclude Include="SpawnWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />

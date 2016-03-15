@@ -60,20 +60,14 @@ public:
 
 		importData.layerList.resize(3);
 		importData.layerList[0].worldSize = 100;
-		importData.layerList[0].textureNames.push_back(
-			"dirt_grayrocky_diffusespecular.dds");
-		importData.layerList[0].textureNames.push_back(
-			"dirt_grayrocky_normalheight.dds");
+		importData.layerList[0].textureNames.push_back("grass_texture240.dds");
+		//importData.layerList[0].textureNames.push_back("dirt_grayrocky_normalheight.dds");
 		importData.layerList[1].worldSize = 30;
-		importData.layerList[1].textureNames.push_back(
-			"grass_green-01_diffusespecular.dds");
-		importData.layerList[1].textureNames.push_back(
-			"grass_green-01_normalheight.dds");
+		importData.layerList[1].textureNames.push_back("1-fine-sand-seamless-texture.dds");
+		//importData.layerList[1].textureNames.push_back("grass_green-01_normalheight.dds");
 		importData.layerList[2].worldSize = 200;
-		importData.layerList[2].textureNames.push_back(
-			"growth_weirdfungus-03_diffusespecular.dds");
-		importData.layerList[2].textureNames.push_back(
-			"growth_weirdfungus-03_normalheight.dds");
+		importData.layerList[2].textureNames.push_back("growth_weirdfungus-03_diffusespecular.dds");
+		importData.layerList[2].textureNames.push_back("growth_weirdfungus-03_normalheight.dds");
 
 
 		//

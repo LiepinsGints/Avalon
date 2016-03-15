@@ -48,6 +48,15 @@
     <ClInclude Include="Models.h">
       <Filter>Header Files\Db_models</Filter>
     </ClInclude>
+    <ClInclude Include="SpawnWorld.h">
+      <Filter>Header Files\Db_models</Filter>
+    </ClInclude>
+    <ClInclude Include="Bounds.h">
+      <Filter>Header Files\Db_models</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp">

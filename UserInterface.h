@@ -32,7 +32,7 @@ public:
 		mGUI->initialise();
 
 		//Button
-		closeButton();
+		loadUi();
 		//label
 		label();
 		
@@ -59,15 +59,39 @@ private:
 	MyGUI::Gui* mGUI;
 	MyGUI::OgrePlatform* mPlatform;
 
-	MyGUI::EditBox* mLabel;
-
 	AppSettings* _appSettings;
-	
+	//UI elements	
+	MyGUI::EditBox* mLabel;
+	MyGUI::Button* exitButton;
+
+	MyGUI::Edit * consoleInput;
+	MyGUI::ComboBox* consoleOutput;
+	MyGUI::Button* consoleSubmit;
 	/**Close structure***/
-	void closeButton() {
-		MyGUI::ButtonPtr button = mGUI->createWidget<MyGUI::Button>("Button", 384, 40, 300, 26, MyGUI::Align::Default, "Main");
-		button->setCaption("exit");
-		button->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
+	void loadUi() {		
+		exitButton = mGUI->createWidget<MyGUI::Button>("Button", 384, 40, 300, 26, MyGUI::Align::Default, "Main");
+		exitButton->setCaption("exit");
+		exitButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
+
+		//test
+		//Console input
+		consoleInput = mGUI->createWidget<MyGUI::EditBox>("EditBoxStretch",
+			 _appSettings->getWidth()*0.01,
+			_appSettings->getHeight()-30,
+			260, 26, MyGUI::Align::Default, "Main");
+		//Console output
+		consoleOutput = mGUI->createWidget<MyGUI::ComboBox>("EditBoxStretch",
+			_appSettings->getWidth()*0.01,
+			_appSettings->getHeight() -180,
+			300, 150, MyGUI::Align::Default, "Main");
+		//Console button
+		consoleSubmit = mGUI->createWidget<MyGUI::Button>("Button", 
+			_appSettings->getWidth()*0.01+260,
+			_appSettings->getHeight() - 30,
+			40, 26, MyGUI::Align::Default, "Main");
+		consoleSubmit->setCaption("GO...");
+		
+
 	}
 	void closeApp(MyGUI::Widget* _widget)
 	{
@@ -80,6 +104,7 @@ private:
 		mLabel->setTextAlign(MyGUI::Align::Center);
 		mLabel->setEditMultiLine(true);
 	}
+	/*Test*/
 
 
 
