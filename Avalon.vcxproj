@@ -162,6 +162,7 @@
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="ConsoleReader.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="Designer.h" />
     <ClInclude Include="Models.h" />
     <ClInclude Include="MySql.h" />
     <ClInclude Include="Spawns.h" />

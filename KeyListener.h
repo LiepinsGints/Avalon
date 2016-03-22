@@ -22,6 +22,8 @@
 #include "PhysicsManager.h"
 #include "AppSettings.h"
 #include "Spawns.h"
+#include "Designer.h"
+#include "UserInterface.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -31,7 +33,13 @@ class KeyListener:
 	public OIS::KeyListener
 {
 public:
-	KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns);
+	KeyListener(Ogre::RenderWindow* mWindow,
+		ContentManager* contentManager,
+		PhysicsManager* physicsManager,
+		AppSettings* appSettings,
+		Spawns* spawns,
+		Designer* designer,
+		UserInterface* userinterface);
 	~KeyListener();
 	//Listen for key or mouse input
 	bool listen(const Ogre::FrameEvent& fe) {
@@ -58,6 +66,7 @@ public:
 	bool mouseMoved(const OIS::MouseEvent &arg)
 	{
 		MyGUI::InputManager::getInstance().injectMouseMove(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
+		_designer->mousePos(arg);
 		return true;
 	}
 
@@ -70,6 +79,9 @@ public:
 	bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id)
 	{
 		MyGUI::InputManager::getInstance().injectMouseRelease(arg.state.X.abs, arg.state.Y.abs, MyGUI::MouseButton::Enum(id));
+		//**********Nx ogre picking*************
+		
+		//<-- picking end
 		return true;
 	}
 
@@ -121,6 +133,25 @@ public:
 		case OIS::KC_NUMPAD0:
 			_physicsManager->jump(127);
 			break;
+			/*Editor controls*/
+		case OIS::KC_NUMPAD8:
+			
+			break;
+
+		case OIS::KC_NUMPAD4:
+			
+			break;
+
+		case OIS::KC_NUMPAD6:
+			
+			break;
+
+		case OIS::KC_NUMPAD2:
+			
+			break;
+		case OIS::KC_NUMPAD5:
+			
+			break;
 		default:
 			break;
 		}
@@ -134,7 +165,8 @@ public:
 		switch (arg.key)
 		{
 		case OIS::KC_ESCAPE:
-			_appSettings->setRender(false);
+			//_appSettings->setRender(false);
+			_userinterface->showHideMainMenu();
 			break;
 
 		case OIS::KC_B:
@@ -185,10 +217,12 @@ private:
 	PhysicsManager* _physicsManager;
 	AppSettings* _appSettings;
 	Spawns* _spawns;
+	Designer* _designer;
+	UserInterface * _userinterface;
 	
 };
 
-KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns)
+KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns, Designer* designer, UserInterface * userinterface)
 {
 	//init scene variables
 	_mWindow = mWindow;
@@ -196,6 +230,8 @@ KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentMan
 	_physicsManager = physicsManager;
 	_appSettings = appSettings;
 	_spawns = spawns;
+	_designer = designer;
+	_userinterface = userinterface;
 	//Init timer
 	timer = new Ogre::Timer();
 	timer->reset();

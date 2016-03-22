@@ -97,6 +97,9 @@ bool Core::go()
 	//spawns->createObject(mySql->getModelByName("tudorhouse"), Ogre::Vector3(-12, 26, -233), 0.01f, 10.0, 1);
 
 	//spawns->createObject(mySql->getModelById(3), Ogre::Vector3(-205, 25.241, 19), 0.05f, 10.0, 1);
+	//Designer
+	designer = new Designer(mSceneMgr, userInterface,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup());
+	designer->cube();
 
 	float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
@@ -104,7 +107,7 @@ bool Core::go()
 	mySql->getWorld(spawns);
 	mySql->spanwBounds(spawns);
 	// OIS
-	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings,spawns);
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
