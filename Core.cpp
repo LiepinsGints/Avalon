@@ -83,8 +83,7 @@ bool Core::go()
 	//Physics manager
 	physicsManager = new PhysicsManager(mSceneMgr, contentManager, contentManager->getTerrainGen()->getmTerrainGroup());
 	
-	//userInterface
-	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings);
+	
 	//MySql
 	mySql = new MySql(appSettings);
 	mySql->mySqlConnect();
@@ -98,8 +97,10 @@ bool Core::go()
 
 	//spawns->createObject(mySql->getModelById(3), Ogre::Vector3(-205, 25.241, 19), 0.05f, 10.0, 1);
 	//Designer
-	designer = new Designer(mSceneMgr, userInterface,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup());
+	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup());
 	designer->cube();
+	//userInterface
+	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer);
 
 	float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);

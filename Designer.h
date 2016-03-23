@@ -26,8 +26,6 @@
 #include "NxOgre.h"
 #include "critter.h"
 
-#include "UserInterface.h"
-
 using namespace Ogre;
 using namespace OgreBites;
 using namespace NxOgre;
@@ -35,9 +33,8 @@ using namespace Critter;
 
 class Designer {
 public:
-	Designer(Ogre::SceneManager* mSceneMgr, UserInterface *  userInterface, Ogre::Camera* mCamera, Ogre::TerrainGroup* mTerrainGroup) {
+	Designer(Ogre::SceneManager* mSceneMgr,  Ogre::Camera* mCamera, Ogre::TerrainGroup* mTerrainGroup) {
 		_mSceneMgr = mSceneMgr;
-		_userInterface = userInterface;
 		_mCamera = mCamera;
 		_mTerrainGroup = mTerrainGroup;
 	}
@@ -45,12 +42,38 @@ public:
 
 
 	}
-
+	//Cube representing bounding box
 	void cube() {
-		Ogre::Entity* cubeEntity = _mSceneMgr->createEntity("cube.1m.mesh");
+		objectEntity = _mSceneMgr->createEntity("cube.1m.mesh");
+		objectNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+		objectNode->attachObject(objectEntity);
+	}
+	Ogre::Vector3 getCubeDimensions() {
+		Ogre::AxisAlignedBox aab = objectEntity->getWorldBoundingBox(true);
+		float width = aab.getSize().x;
+		float height = aab.getSize().y;
+		float deep = aab.getSize().z;
+		return Ogre::Vector3(width,height,deep);
+	}
+	void scaleCube(Ogre::Real x, Ogre::Real y, Ogre::Real z) {
+		objectNode->scale(x, y, z);
 
-		cubeNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		cubeNode->attachObject(cubeEntity);
+	}
+	void setCubeSize(Ogre::Real x, Ogre::Real y, Ogre::Real z) {
+		Ogre::Vector3 cubeCurrentDimensions = getCubeDimensions();
+		Ogre::Real scaleX = 1;
+		Ogre::Real scaleY = 1;
+		Ogre::Real scaleZ = 1;
+		if (x != cubeCurrentDimensions.x && x>0) {
+			scaleX = x / cubeCurrentDimensions.x;
+		}
+		if (y != cubeCurrentDimensions.y && y>0) {
+			scaleY = y / cubeCurrentDimensions.y;
+		}
+		if (z != cubeCurrentDimensions.z && z>0) {
+			scaleZ = z / cubeCurrentDimensions.z;
+		}
+		scaleCube(scaleX, scaleY, scaleZ);
 	}
 	//Mouse picking
 	void mousePos(const OIS::MouseEvent &arg)
@@ -69,26 +92,25 @@ public:
 
 		//result.position
 		//cubeNode->setPosition
-		cubeNode->setPosition(result.position);
+		objectNode->setPosition(result.position);
 		//Show mouse coordinates
 			Ogre::String merge = Ogre::StringConverter::toString(x) + " : \n" +
 				Ogre::StringConverter::toString(y) + "\n" +
 				Ogre::StringConverter::toString(result.position.x) +" : "+ 
 			Ogre::StringConverter::toString(result.position.y) +" : "+
 			Ogre::StringConverter::toString(result.position.z) + "\n";
-		_userInterface->setLabelCaption2(merge);
 		
 	}
 
 	
 private:
 	Ogre::SceneManager* _mSceneMgr;
-	UserInterface *  _userInterface;
 	Ogre::Camera* _mCamera;
 	Ogre::TerrainGroup* _mTerrainGroup;
 
 	//Cube
-	Ogre::SceneNode* cubeNode;
+	Ogre::Entity* objectEntity;
+	Ogre::SceneNode* objectNode;
 
 
 };
