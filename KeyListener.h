@@ -27,6 +27,7 @@
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
+#include "MySql.h"
 
 class KeyListener:
 	public OIS::MouseListener,
@@ -150,7 +151,28 @@ public:
 			
 			break;
 		case OIS::KC_NUMPAD5:
-			
+			if (timer->getMilliseconds()>1000 && _designer->getShapeType()==1) {
+				Ogre::Vector3 pos = _designer->getCubePos();
+				Ogre::Vector3 dimensions = _designer->getCubeDimensions();
+				_spawns->createBoundingBox(
+					pos.x,
+					pos.y,
+					pos.z,
+					dimensions.x,
+					dimensions.y,
+					dimensions.z
+					);
+				mySql->createBound(
+					pos.x,
+					pos.y,
+					pos.z,
+					dimensions.x,
+					dimensions.y,
+					dimensions.z,
+					0
+					);
+				timer->reset();
+			}
 			break;
 		default:
 			break;
@@ -219,6 +241,7 @@ private:
 	Spawns* _spawns;
 	Designer* _designer;
 	UserInterface * _userinterface;
+	MySql * mySql;
 	
 };
 
@@ -232,6 +255,8 @@ KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentMan
 	_spawns = spawns;
 	_designer = designer;
 	_userinterface = userinterface;
+	mySql = new MySql(_appSettings);
+	mySql->mySqlConnect();
 	//Init timer
 	timer = new Ogre::Timer();
 	timer->reset();

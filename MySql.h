@@ -20,6 +20,8 @@
 #include "SpawnWorld.h"
 #include "Bounds.h"
 
+#include "MyGUI.h"
+#include "MyGUI_OgrePlatform.h"
 class MySql 
 {
 public:
@@ -94,6 +96,22 @@ public:
 			Ogre::String error = "Error";
 			model->setName("Error");
 			return model;
+
+		}
+	}
+	void getModelList(MyGUI::ListBox * meshList) {
+		std::string query = "select MeshName from models";
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
+			while (res->next()) {
+				meshList->addItem(res->getString("MeshName").c_str());
+			}
+		}
+		catch (sql::SQLException &e) {
+
+			
 
 		}
 	}

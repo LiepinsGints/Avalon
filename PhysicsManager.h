@@ -46,21 +46,36 @@ public:
 	}
 	/*******************Create bounding box**********************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
-		NxOgre::BoxDescription BoundingBox(w, h, d);
-		BoundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
-		BoundingBox.mGroup = Objects;//Objects Walls
+		
+		//NxOgre::Matrix44 rot()
+		//NxOgre::BoxDescription boundingBox(w, h, d,0, NxOgre::Matrix44(NxOgre::Vec3(0, 5, 0)));
+		NxOgre::BoxDescription boundingBox(w, h, d);
+		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
+		boundingBox.mGroup = Objects;//Objects Walls
+		
+		//boundingBox.
+		//boundingBox
 
+		//boundingBox->setLocalPose(NxOgre::Matrix44(NxOgre::Real3(0, 0.5, 0)));
+		
+		//NxOgre::Quat(NxOgre::degr)
+		//boundingBox.mLocalPose = Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z);
+		
+		
+		//boundingBox.
 		/*
 		NxOgre::BoxDescription * BoundingBoxHolder;
 		BoundingBoxHolder->mSize.set(w,h,d);
 		BoundingBoxHolder->mFlags += NxOgre::ShapeFlags::Visualisation;
 		BoundingBoxHolder->mGroup = Objects;//Objects Walls
 		*/
-		mScene->createSceneGeometry(BoundingBox, NxOgre::Vec3(x, y, z));
 		
-		
+		mScene->createSceneGeometry(boundingBox, NxOgre::Vec3(x, y, z));		
 	}
-	
+	/*******************Create cylinder box**********************/
+	void createBoundingCylinder(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
+		NxOgre::BoxDescription boundingBox(w, h, d);
+	}
 	/**********************CharacterControls***********************/
 	Critter::AnimatedCharacter* getCharacter() {
 		return mSinbad;
@@ -238,7 +253,74 @@ private:
 		//for (int i = 0; i<this->getNxActor()->getNbShapes(); i++)
 		//this->getNxActor()->getShapes()[i]->setFlag(NxShapeFlag::NX_SF_VISUALIZATION, false)
 		/*test end*/ 
+		/*************Test nxs start*************/
+		/*
+		NxOgre::ResourceSystem::getSingleton()->openProtocol(new Critter::OgreResourceProtocol());
+		//test barrel
+		NxOgre::Mesh* mBarrelMesh;
+		const Matrix44& globalPose2 = Vec3(-0.5, 10, 20);
+		const Vec3& initialVelocity = Vec3(0, 0, 0);
+		mBarrelMesh = NxOgre::MeshManager::getSingleton()->load("ogre://column.nxs", "barrel");
+		Critter::BodyDescription bodyDescription;
+		bodyDescription.mMass = 40.0f;
+		bodyDescription.mLinearVelocity = initialVelocity;
+		bodyDescription.mGroup = Walls;
 
+		Body* barrel = mRenderSystem->createBody(ConvexDescription(mBarrelMesh), globalPose2, "column.mesh", bodyDescription);
+		//barrel->getNode()->setScale(10);
+		
+		addMBodies(barrel);
+		*/
+		//bodyDescription.mLinearVelocity = initialVelocity;
+
+		//test playpen
+		/*
+		NxOgre::Mesh* mPlaypenMesh;
+		mPlaypenMesh = NxOgre::MeshManager::getSingleton()->load("ogre://General/column_triangle.nxs", "column");
+		
+		const Matrix44& globalPose = Vec3 (0, 0.5, 0);
+		SceneGeometry* scene_geom = mScene->createSceneGeometry(TriangleGeometryDescription(mPlaypenMesh), globalPose);
+
+		mRenderSystem->createSceneNodeEntityPair("column.mesh", Vec3(globalPose), Quat(globalPose));
+		*/
+		//test island
+		/*
+		NxOgre::Mesh* island = NxOgre::MeshManager::getSingleton()->load("ogre://island.nxs", "island");
+
+		mScene->createSceneGeometry(NxOgre::TriangleGeometryDescription(island), NxOgre::Vec3::ZERO);
+
+		// The visualisation.
+		SceneNode* islandNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode(Vector3(0, 0, 0));
+		islandNode->attachObject(_mSceneMgr->createEntity("island", "island.mesh"));
+		islandNode->setScale(1, 1, 1);
+		*/
+		//manual
+		/*
+		ShapeDescriptions shapes;
+
+		TriangleGeometryDescription platform_shape;
+		platform_shape.mMesh = NxOgre::MeshManager::getSingleton()->load("ogre://platform.nxs");
+
+		platform_shape.mGroupsMask.bits0 = 0xffffffff;
+		platform_shape.mGroupsMask.bits1 = 0xffffffff;   // Want everything to collide with the platform ring.
+		platform_shape.mGroupsMask.bits2 = 0xffffffff;
+		platform_shape.mGroupsMask.bits3 = 0xffffffff;
+
+		TriangleGeometryDescription forcefield_shape;
+		forcefield_shape.mMesh = NxOgre::MeshManager::getSingleton()->load("ogre://forcefield.nxs");
+
+
+		forcefield_shape.mGroupsMask.bits0 = 1;
+
+		shapes.push_back(&platform_shape);
+		shapes.push_back(&forcefield_shape);
+
+		SceneGeometry* geom = mScene->createSceneGeometry(shapes, globalPose);
+		Ogre::SceneNode* node = mRenderSystem->createSceneNodeEntityPair("nxogre.platform.mesh", Vec3(globalPose), Quat(globalPose));
+		*/
+		//
+		
+		/*************Test nxs end*************/
 	}
 	
 	/***********load terrain from img***************/

@@ -19,15 +19,15 @@
 
 #include "AppSettings.h"
 #include "Designer.h"
-
+#include "MySql.h"
 class UserInterface {
 public:
-	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer) {
+	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql) {
 		_mWindow = mWindow;
 		_mSceneMgr = mSceneMgr;
 		_appSettings = appSettings;
 		_designer = designer;
-
+		_mySql = mySql;
 		mPlatform = new MyGUI::OgrePlatform();
 		mPlatform->initialise(_mWindow, _mSceneMgr);
 		mGUI = new MyGUI::Gui();
@@ -35,6 +35,7 @@ public:
 
 		//Button
 		loadUi();
+		getMeshList();
 		//label
 		label();
 		
@@ -94,10 +95,15 @@ public:
 
 		
 	}
+	//Mesh list create
+	void getMeshList() {
+		_mySql->getModelList(meshList);
+	}
 private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	Designer* _designer;
+	MySql * _mySql;
 
 	MyGUI::Gui* mGUI;
 	MyGUI::OgrePlatform* mPlatform;
@@ -129,6 +135,7 @@ private:
 	MyGUI::TextBox * textBoxDeep;
 	MyGUI::Edit * objectDeep;
 	MyGUI::Button* setBoundingBoxDimension;
+	MyGUI::ListBox * meshList;
 	/**Close structure***/
 	void loadUi() {		
 		createMainMenu();
@@ -167,23 +174,43 @@ private:
 	void closeDesignerMenu(MyGUI::Widget* _widget) {
 		showHideDesignerMenu();
 	}
+	void createCube(MyGUI::Widget* _widget) {
+		_designer->cube();
+		if (createBoundingBox->getCaption() == "Show bounding box") {
+			objectWidth->setCaption("");
+			objectWidth->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().x));
+
+			objectHeight->setCaption("");
+			objectHeight->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().y));
+
+			objectDeep->setCaption("");
+			objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
+			createBoundingBox->setCaption("Hide bounding box");
+		}
+		else {
+			createBoundingBox->setCaption("Show bounding box");
+		}
+		
+	}
 	void scaleDesignerCube(MyGUI::Widget* _widget) {
 		//_designer->scaleCube(10, 10, 10);
-		_designer->setCubeSize(
-			Ogre::StringConverter::parseReal(objectWidth->getCaption()),
-			Ogre::StringConverter::parseReal(objectHeight->getCaption()),
-			Ogre::StringConverter::parseReal(objectDeep->getCaption())
-			);
-		;
+		if(_designer->getShapeType()==1){
+			_designer->setCubeSize(
+				Ogre::StringConverter::parseReal(objectWidth->getCaption()),
+				Ogre::StringConverter::parseReal(objectHeight->getCaption()),
+				Ogre::StringConverter::parseReal(objectDeep->getCaption())
+				);
+			;
 		
-		objectWidth->setCaption("");
-		objectWidth->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().x));
+			objectWidth->setCaption("");
+			objectWidth->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().x));
 		
-		objectHeight->setCaption("");
-		objectHeight->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().y));
+			objectHeight->setCaption("");
+			objectHeight->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().y));
 		
-		objectDeep->setCaption("");
-		objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
+			objectDeep->setCaption("");
+			objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
+		}
 	}
 	/****Label block****/
 	void label() {
@@ -264,8 +291,9 @@ private:
 
 		//Create bounding box group
 		createBoundingBox = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
-		createBoundingBox->setCaption("Create bounding box");
-
+		createBoundingBox->setCaption("Show bounding box");
+		createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::createCube);
+		
 		//Input width group
 		textBoxWidth = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 2, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		textBoxWidth->setCaption("X");
@@ -290,7 +318,10 @@ private:
 		setBoundingBoxDimension = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 8, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		setBoundingBoxDimension->setCaption("Apply");
 		setBoundingBoxDimension->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::scaleDesignerCube);
-
+		//Mesh list
+		meshList = designerWindow->createWidget<MyGUI::ListBox>("ListBox", initPositionX, initPositionY + buttonDistance * 9, buttonWidth, buttonHeight*6, MyGUI::Align::Default, "Main");
+		meshList->addItem("cube.1m.mesh");
+		meshList->_setItemSelected(0);
 		//objectDeep->getText;
 	}
 

@@ -26,6 +26,7 @@
 #include "NxOgre.h"
 #include "critter.h"
 
+
 using namespace Ogre;
 using namespace OgreBites;
 using namespace NxOgre;
@@ -37,23 +38,25 @@ public:
 		_mSceneMgr = mSceneMgr;
 		_mCamera = mCamera;
 		_mTerrainGroup = mTerrainGroup;
+		shapeType = 0;
 	}
 	~Designer() {
 
 
 	}
 	//Cube representing bounding box
-	void cube() {
-		objectEntity = _mSceneMgr->createEntity("cube.1m.mesh");
-		objectNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		objectNode->attachObject(objectEntity);
-	}
+	
 	Ogre::Vector3 getCubeDimensions() {
-		Ogre::AxisAlignedBox aab = objectEntity->getWorldBoundingBox(true);
-		float width = aab.getSize().x;
-		float height = aab.getSize().y;
-		float deep = aab.getSize().z;
-		return Ogre::Vector3(width,height,deep);
+		if(shapeType==1){
+			Ogre::AxisAlignedBox aab = objectEntity->getWorldBoundingBox(true);
+			float width = aab.getSize().x;
+			float height = aab.getSize().y;
+			float deep = aab.getSize().z;
+			return Ogre::Vector3(width,height,deep);
+		}
+		else {
+			return Ogre::Vector3(0,0,0);
+		}
 	}
 	void scaleCube(Ogre::Real x, Ogre::Real y, Ogre::Real z) {
 		objectNode->scale(x, y, z);
@@ -89,10 +92,10 @@ public:
 
 		Ogre::Ray mouseRay =_mCamera->getCameraToViewportRay(normalX, normalY);
 		Ogre::TerrainGroup::RayResult result = _mTerrainGroup->rayIntersects(mouseRay);
-
+		mouseShapeMove(result);
 		//result.position
 		//cubeNode->setPosition
-		objectNode->setPosition(result.position);
+		
 		//Show mouse coordinates
 			Ogre::String merge = Ogre::StringConverter::toString(x) + " : \n" +
 				Ogre::StringConverter::toString(y) + "\n" +
@@ -101,8 +104,36 @@ public:
 			Ogre::StringConverter::toString(result.position.z) + "\n";
 		
 	}
+	//Designer shape controll
+	void mouseShapeMove(Ogre::TerrainGroup::RayResult result) {
+		if (shapeType == 1) {
+			Ogre::Vector3 corectCubePosition(result.position.x, result.position.y + getCubeDimensions().y / 2, result.position.z);
+			objectNode->setPosition(corectCubePosition);
+		}
 
-	
+	}
+
+	//Get current designer shape
+	int getShapeType() {
+		return shapeType;
+	}
+
+	//creater cube
+	void cube() {
+		if (shapeType == 0) {
+			objectEntity = _mSceneMgr->createEntity("cube.1m.mesh");
+			objectNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+			objectNode->attachObject(objectEntity);
+			shapeType = 1;
+		}
+		else {
+			objectNode->detachAllObjects();
+			shapeType = 0;
+		}
+	}
+	Ogre::Vector3 getCubePos() {
+		return objectNode->getPosition();
+	}
 private:
 	Ogre::SceneManager* _mSceneMgr;
 	Ogre::Camera* _mCamera;
@@ -112,6 +143,12 @@ private:
 	Ogre::Entity* objectEntity;
 	Ogre::SceneNode* objectNode;
 
+	//Designer shapes 
+	//0-none 1-cube 2-sphere
+	int shapeType;
+	Ogre::String meshName;
+
+	
 
 };
 #endif
