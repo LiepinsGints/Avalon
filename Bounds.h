@@ -41,7 +41,7 @@ public:
 	}
 
 	void setPosition(Ogre::Vector3 _position) {
-		dimensions = _position;
+		position = _position;
 	}
 	Ogre::Vector3 getPosition() {
 		return position;

@@ -96,7 +96,7 @@ public:
 
 		case OIS::KC_B:
 			if (timer->getMilliseconds()>1000) {
-				_spawns->createCube();
+				_spawns->createCube(30,20,10);
 				timer->reset();
 			}
 			break;
@@ -152,25 +152,7 @@ public:
 			break;
 		case OIS::KC_NUMPAD5:
 			if (timer->getMilliseconds()>1000 && _designer->getShapeType()==1) {
-				Ogre::Vector3 pos = _designer->getCubePos();
-				Ogre::Vector3 dimensions = _designer->getCubeDimensions();
-				_spawns->createBoundingBox(
-					pos.x,
-					pos.y,
-					pos.z,
-					dimensions.x,
-					dimensions.y,
-					dimensions.z
-					);
-				mySql->createBound(
-					pos.x,
-					pos.y,
-					pos.z,
-					dimensions.x,
-					dimensions.y,
-					dimensions.z,
-					0
-					);
+				_userinterface->createWorldObject();
 				timer->reset();
 			}
 			break;
@@ -193,7 +175,7 @@ public:
 
 		case OIS::KC_B:
 			if (timer->getMilliseconds()>500) {
-				_spawns->createCube();
+				_spawns->createCube(30,20,10);
 				timer->reset();
 			}
 			break;

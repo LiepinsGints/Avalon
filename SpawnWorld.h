@@ -68,11 +68,21 @@ public:
 	float getType() {
 		return type;
 	}
+	void setDimensions(Ogre::Vector3 _dimensions) {
+		dimensions = _dimensions;
+	}
+	Ogre::Vector3 getDimensions() {
+		return dimensions;
+	}
 private:
 	int id;
 	int modelID;
 	Ogre::Vector3 position;
+	Ogre::Vector3 dimensions;
 	float rotation;
+	float width;
+	float height;
+	float deep;
 	float scale;
 	float mass;
 	float type;

@@ -39,6 +39,7 @@ public:
 		_mCamera = mCamera;
 		_mTerrainGroup = mTerrainGroup;
 		shapeType = 0;
+		counter = 0;
 	}
 	~Designer() {
 
@@ -117,7 +118,9 @@ public:
 	int getShapeType() {
 		return shapeType;
 	}
-
+	void setShapeType(int type) {
+		shapeType = type;
+	}
 	//creater cube
 	void cube() {
 		if (shapeType == 0) {
@@ -134,6 +137,32 @@ public:
 	Ogre::Vector3 getCubePos() {
 		return objectNode->getPosition();
 	}
+	//Create shape
+	void createShape(Ogre::String shapeName) {
+		if (shapeType == 0) {
+			objectEntity = _mSceneMgr->createEntity(shapeName);
+			objectNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+			objectNode->attachObject(objectEntity);
+			shapeType = 1;
+			currentShapeName = shapeName;
+		}
+		else {
+			objectNode->detachAllObjects();
+			shapeType = 0;
+		}
+	}
+	//Add shape type to scene after creation
+	void addShapeToScene() {
+		Ogre::Vector3 pos = getCubePos();
+		Ogre::Vector3 dimensions = getCubeDimensions();
+
+		Ogre::Entity* tempEntity= _mSceneMgr->createEntity(currentShapeName+std::to_string(counter)+"designer", currentShapeName);
+		 Ogre::SceneNode* tempNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+		 tempNode->attachObject(tempEntity);
+		 tempNode->setPosition(Ogre::Vector3(pos.x, pos.y, pos.z));
+
+		 counter++;
+	}
 private:
 	Ogre::SceneManager* _mSceneMgr;
 	Ogre::Camera* _mCamera;
@@ -142,10 +171,11 @@ private:
 	//Cube
 	Ogre::Entity* objectEntity;
 	Ogre::SceneNode* objectNode;
-
+	Ogre::String  currentShapeName;
 	//Designer shapes 
 	//0-none 1-cube 2-sphere
 	int shapeType;
+	int counter;//for entities spawn
 	Ogre::String meshName;
 
 	

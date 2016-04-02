@@ -41,26 +41,7 @@ public:
 	//Create object with simple bounding box
 	//Type NonCollidable = 0,    Walls = 1,  Objects = 2   
 	void createObject(Models * model,Ogre::Vector3 position, float scale, Ogre::Real mass, int type ) {
-		
-		/*
-		//Box descr 0.02 remowe margins
-		NxOgre::BoxDescription boxDesc(scale*model->getDimensions().x- scale*model->getDimensions().x*0.02
-			, scale*model->getDimensions().y - scale*model->getDimensions().y*0.02
-			, scale*model->getDimensions().z - scale*model->getDimensions().z*0.02);
-		//boxDesc.mGroup = type;
-		
-		//Body descr
-		Critter::BodyDescription bodyDescriptionTemp;
-		bodyDescriptionTemp.mMass = mass; // S
-		
-
-		Critter::Body* mBodyTemp;
-		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(boxDesc,
-			NxOgre::Vec3(position.x, position.y, position.z), model->getMeshName(), bodyDescriptionTemp);
-		mBodyTemp->getNode()->setScale(scale);
-		_physicsManager->addMBodies(mBodyTemp);
-		*/
-		
+			
 		Ogre::Entity* ogreCottage = _mSceneMgr->createEntity(model->getName() + std::to_string(counter), model->getMeshName());
 
 		Ogre::SceneNode* cottageNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -73,31 +54,61 @@ public:
 		float width = aab.getSize().x * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
 		float height = aab.getSize().y * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
 		float deep = aab.getSize().z * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		cottageNode->setPosition(Ogre::Vector3(position.x, height / 2 + position.y, position.z));
-		/*
-		//
-		_physicsManager->createBoundingBox(cottageNode->getPosition().x, cottageNode->getPosition().y, cottageNode->getPosition().z,
-			width, height, deep);
-
-		*/
+		//cottageNode->setPosition(Ogre::Vector3(position.x, height / 2 + position.y, position.z));
+		cottageNode->setPosition(Ogre::Vector3(position.x, position.y, position.z));
 		counter++;
 	}
 
 	void spawnWorld() {
+		ShapeDescriptions shapes;
+		
+		BoxDescription side1(Vec3(15.136,7*4, 0.4*4), 0, Vec3(0, 0, -3.9 * 4));
+		BoxDescription side2(Vec3(15.136 * 4, 7 * 4, 0.4 * 4), 0, Vec3(0, 0, 3.9 * 4));
+		BoxDescription side3(Vec3(15.136 * 4, 0.4 * 4, 8 * 4), 0, Vec3(0, -3.4 * 4, 0));
+		BoxDescription side4(Vec3(15.136 * 4, 0.4 * 4, 8 * 4), 0, Vec3(0, 3.4 * 4, 0));
 
+		shapes.push_back(&side1);
+		shapes.push_back(&side1);
+		shapes.push_back(&side2);
+		shapes.push_back(&side3);
+
+		BodyDescription description;
+		description.mMass = 1000;
+
+		Body* container = _physicsManager->getMRenderSystem()->createBody(shapes, Vec3(-123, 25, -207), "container.mesh", description);
+		container->getNode()->setScale(4.0);
 	}
 	/*********temp****************************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		_physicsManager->createBoundingBox(x, y, z, w, h, d);
 	}
 	//create cube
-	void createCube() {
+	void createCube(Ogre::Real rotX, Ogre::Real rotY, Ogre::Real rotZ) {
 		Critter::BodyDescription bodyDescriptionTemp;
 		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
 		Critter::Body* mBodyTemp;
+		
 		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(NxOgre::BoxDescription(4, 4, 4), 
 			NxOgre::Vec3(_physicsManager->getCharacter()->getPosition().x, _physicsManager->getCharacter()->getPosition().y + 40, _physicsManager->getCharacter()->getPosition().z), "cube.1m.mesh", bodyDescriptionTemp);
 		mBodyTemp->getNode()->setScale(4.0);
+		//rotate
+		if (rotX!=0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotX), Ogre::Vector3(1, 0, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotY != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotY), Ogre::Vector3(0, 1, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotZ != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotZ), Ogre::Vector3(0, 0, 1));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		//Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3(0, 1, 0));
+		//mBodyTemp->setGlobalOrientationQuat(rot.w, rot.x, rot.y, rot.z);
+		//mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+
+		//
 		_physicsManager->addMBodies(mBodyTemp);
 
 	}

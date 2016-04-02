@@ -22,12 +22,13 @@
 #include "MySql.h"
 class UserInterface {
 public:
-	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql) {
+	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns) {
 		_mWindow = mWindow;
 		_mSceneMgr = mSceneMgr;
 		_appSettings = appSettings;
 		_designer = designer;
 		_mySql = mySql;
+		_spawns = spawns;
 		mPlatform = new MyGUI::OgrePlatform();
 		mPlatform->initialise(_mWindow, _mSceneMgr);
 		mGUI = new MyGUI::Gui();
@@ -99,10 +100,47 @@ public:
 	void getMeshList() {
 		_mySql->getModelList(meshList);
 	}
+	//Create world item
+	void createWorldObject() {
+		Ogre::Vector3 pos = _designer->getCubePos();
+		Ogre::Vector3 dimensions = _designer->getCubeDimensions();
+		
+		//Add Local object in scene
+		_spawns->createBoundingBox(
+			pos.x,
+			pos.y,
+			pos.z,
+			dimensions.x,
+			dimensions.y,
+			dimensions.z
+			);
+		//Save object data in DB
+		_mySql->createBound(
+			pos.x,
+			pos.y,
+			pos.z,
+			dimensions.x,
+			dimensions.y,
+			dimensions.z,
+			0
+			);
+		
+		_mySql->createSpawn(
+			getSelectedShapeName(),
+			pos.x,
+			pos.y,
+			pos.z,
+			1,//scale
+			100,//weight
+			0//type
+			);
+		_designer->addShapeToScene();
+	}
 private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	Designer* _designer;
+	Spawns* _spawns;
 	MySql * _mySql;
 
 	MyGUI::Gui* mGUI;
@@ -164,6 +202,20 @@ private:
 		mLabel2->setEditMultiLine(true);
 
 	}
+	//MY Gui 
+	std::string getSelectedShapeName() {
+		if (meshList->getIndexSelected() == MyGUI::ITEM_NONE) {
+			return("cube.1m.mesh");
+		}
+		else {
+			mLabel2->setCaption(meshList->getItemNameAt(meshList->getIndexSelected()));
+			return(meshList->getItemNameAt(meshList->getIndexSelected()));
+		}
+	}
+	void showShape(MyGUI::Widget* _widget) {
+			createShape(getSelectedShapeName());		
+	}
+	//<--test end
 	void closeApp(MyGUI::Widget* _widget)
 	{
 		_appSettings->setRender(false);
@@ -174,9 +226,10 @@ private:
 	void closeDesignerMenu(MyGUI::Widget* _widget) {
 		showHideDesignerMenu();
 	}
-	void createCube(MyGUI::Widget* _widget) {
-		_designer->cube();
-		if (createBoundingBox->getCaption() == "Show bounding box") {
+	void createShape(Ogre::String shapeName) {
+		//_designer->cube();
+		_designer->createShape(shapeName);
+		if (createBoundingBox->getCaption() == "Show shape") {
 			objectWidth->setCaption("");
 			objectWidth->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().x));
 
@@ -185,10 +238,10 @@ private:
 
 			objectDeep->setCaption("");
 			objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
-			createBoundingBox->setCaption("Hide bounding box");
+			createBoundingBox->setCaption("Hide shape");
 		}
 		else {
-			createBoundingBox->setCaption("Show bounding box");
+			createBoundingBox->setCaption("Show shape");
 		}
 		
 	}
@@ -291,8 +344,9 @@ private:
 
 		//Create bounding box group
 		createBoundingBox = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
-		createBoundingBox->setCaption("Show bounding box");
-		createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::createCube);
+		createBoundingBox->setCaption("Show shape");
+		//createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::createCube);
+		createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::showShape);
 		
 		//Input width group
 		textBoxWidth = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 2, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
@@ -317,11 +371,13 @@ private:
 		//Change box dimensions
 		setBoundingBoxDimension = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 8, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		setBoundingBoxDimension->setCaption("Apply");
+		//setBoundingBoxDimension->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::showShape);
 		setBoundingBoxDimension->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::scaleDesignerCube);
 		//Mesh list
 		meshList = designerWindow->createWidget<MyGUI::ListBox>("ListBox", initPositionX, initPositionY + buttonDistance * 9, buttonWidth, buttonHeight*6, MyGUI::Align::Default, "Main");
 		meshList->addItem("cube.1m.mesh");
 		meshList->_setItemSelected(0);
+		
 		//objectDeep->getText;
 	}
 

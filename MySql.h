@@ -139,6 +139,14 @@ public:
 
 		}
 	}
+	/************************Spawn world with bounding boxes******************************/
+	void getWorldExtended() {
+
+
+
+
+	}
+	/**********************************************End*********************************/
 	//Get bounding boxes from bounds table
 	void spanwBounds(Spawns* spawns) {
 		Bounds * bounds = new Bounds();
@@ -168,11 +176,32 @@ public:
 			+ std::to_string(z) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", " + std::to_string(deep) + ", " + std::to_string(type) + ")";
 		sqlInsert(query);
 	}
+	void createSpawn(std::string meshName, float x, float y, float z, float scale, float mass,float type) {
+		std::string query = "select ID from models where MeshName = '" + meshName + "'";
+		int modelID = -1;
+		//Get model id
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
+			while (res->next()) {
+				modelID = std::stoi(res->getString("ID").c_str());
+			}
+
+		}
+		catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+		}
+		//Check if model id received
+		if (modelID != -1) {
+			std::string queryInsertWorld = "INSERT INTO world(ModelID,x, y, z, Scale, Mass, Type) VALUES ("+ std::to_string(modelID)+" , " + std::to_string(x) + " , " + std::to_string(y) + ", "
+				+ std::to_string(z) + ", " + std::to_string(scale) + ", " + std::to_string(mass) + ", " + std::to_string(type) + ")";
+			sqlInsert(queryInsertWorld);
+		}
+	}
 	//sql insert statement
 	void sqlInsert(std::string query) {
-		//INSERT INTO bounds(x, y, z, width, height, deep, type) VALUES (-4, 25, -202, 10, 10, 10, 0);
-		//std::string query = "INSERT INTO bounds(x, y, z, width, height, deep, type) VALUES (-4, 25, -202, 10, 10, 10, 0)";
-
+		
 		try {
 			sql::Statement * stmt = con->createStatement();
 			sql::ResultSet * res = stmt->executeQuery(query.c_str());
