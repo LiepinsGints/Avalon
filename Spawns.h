@@ -40,13 +40,13 @@ public:
 	};
 	//Create object with simple bounding box
 	//Type NonCollidable = 0,    Walls = 1,  Objects = 2   
-	void createObject(Models * model,Ogre::Vector3 position, float scale, Ogre::Real mass, int type ) {
+	void createObject(Models * model,Ogre::Vector3 position, float scaleX, float scaleY, float scaleZ,float scale, Ogre::Real mass, int type ) {
 			
 		Ogre::Entity* ogreCottage = _mSceneMgr->createEntity(model->getName() + std::to_string(counter), model->getMeshName());
 
 		Ogre::SceneNode* cottageNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
 		cottageNode->attachObject(ogreCottage);
-		cottageNode->scale(scale, scale, scale);
+		cottageNode->scale(scaleX, scaleY, scaleZ);
 
 		
 		//
@@ -58,7 +58,49 @@ public:
 		cottageNode->setPosition(Ogre::Vector3(position.x, position.y, position.z));
 		counter++;
 	}
+	void createObjectCapsuleDescription() {
+		
+	}
 
+
+	void createObjectBoxDescription(Models * model, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass, int type) {
+		Critter::BodyDescription bodyDescriptionTemp;
+		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
+		//NxOgre::CapsuleDescription boundingCapsule(boxDimensions.x, boxDimensions.y);
+		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
+		
+		if (type == 0) {
+			bodyDescriptionTemp.mGroup = Walls;	
+			boundingBox.mGroup = Walls;//Objects Walls
+		}
+		else {
+			bodyDescriptionTemp.mGroup = Objects;
+			boundingBox.mGroup = Objects;//Objects Walls
+			bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
+		}
+		Critter::Body* mBodyTemp;
+		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(
+			boundingBox,
+			NxOgre::Vec3(position.x,position.y,position.z),
+			model->getMeshName(), 
+			bodyDescriptionTemp
+			);
+		mBodyTemp->getNode()->setScale(scaleDimensions);
+		//rotate
+		if (rotation.x != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotation.y != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotation.z != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		_physicsManager->addMBodies(mBodyTemp);
+	}
 	void spawnWorld() {
 		ShapeDescriptions shapes;
 		
@@ -215,6 +257,14 @@ private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	int counter;
+
+	enum ControllerShapeGroups
+	{
+		NonCollidable = 0,      // Things that the character controller can go through such as Ghosts or tiny
+								// objects like small rocks.
+		Walls = 1,              // Walls, Floors and other static geometry that can't be moved.
+		Objects = 2             // Boxes, Barrels and other dynamic parts of the scene that can be moved by pushing.
+	};
 };
 
 

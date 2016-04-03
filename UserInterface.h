@@ -104,7 +104,7 @@ public:
 	void createWorldObject() {
 		Ogre::Vector3 pos = _designer->getCubePos();
 		Ogre::Vector3 dimensions = _designer->getCubeDimensions();
-		
+		Ogre::Vector3 scale = _designer->getShapeScale();
 		//Add Local object in scene
 		_spawns->createBoundingBox(
 			pos.x,
@@ -114,6 +114,20 @@ public:
 			dimensions.y,
 			dimensions.z
 			);
+
+		//Spawn before bound so we can use id
+		_mySql->createSpawn(
+			getSelectedShapeName(),
+			pos.x,
+			pos.y,
+			pos.z,
+			scale.x,
+			scale.y,
+			scale.z,
+			1,//scale
+			100,//weight
+			0//type
+			);
 		//Save object data in DB
 		_mySql->createBound(
 			pos.x,
@@ -122,17 +136,8 @@ public:
 			dimensions.x,
 			dimensions.y,
 			dimensions.z,
-			0
-			);
-		
-		_mySql->createSpawn(
-			getSelectedShapeName(),
-			pos.x,
-			pos.y,
-			pos.z,
-			1,//scale
-			100,//weight
-			0//type
+			0,
+			_mySql->getLastInsertID()
 			);
 		_designer->addShapeToScene();
 	}

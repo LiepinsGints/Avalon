@@ -107,7 +107,7 @@ bool Core::go()
 	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world
 	mySql->getWorld(spawns);
-	mySql->spanwBounds(spawns);
+	//mySql->spanwBounds(spawns);
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
 	//windowResized(mWindow);

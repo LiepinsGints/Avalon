@@ -145,6 +145,7 @@ public:
 			objectNode->attachObject(objectEntity);
 			shapeType = 1;
 			currentShapeName = shapeName;
+			cubeInitialDimensions = getCubeDimensions();
 		}
 		else {
 			objectNode->detachAllObjects();
@@ -160,8 +161,21 @@ public:
 		 Ogre::SceneNode* tempNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
 		 tempNode->attachObject(tempEntity);
 		 tempNode->setPosition(Ogre::Vector3(pos.x, pos.y, pos.z));
-
+		 //
+		 /*Ogre::Real scaleX = 1;
+		 Ogre::Real scaleY = 1;
+		 Ogre::Real scaleZ = 1;
+		 Ogre::Vector3 cubeCurrentDimensions = getCubeDimensions();
+		 scaleX = cubeInitialDimensions.x / cubeCurrentDimensions.x;
+		 scaleY = cubeInitialDimensions.y / cubeCurrentDimensions.y;
+		 scaleY = cubeInitialDimensions.z / cubeCurrentDimensions.z;
+		 */
+		 tempNode->scale(objectNode->getScale());
+		 //
 		 counter++;
+	}
+	Ogre::Vector3 getShapeScale() {
+		return objectNode->getScale();
 	}
 private:
 	Ogre::SceneManager* _mSceneMgr;
@@ -172,6 +186,7 @@ private:
 	Ogre::Entity* objectEntity;
 	Ogre::SceneNode* objectNode;
 	Ogre::String  currentShapeName;
+	Ogre::Vector3 cubeInitialDimensions;
 	//Designer shapes 
 	//0-none 1-cube 2-sphere
 	int shapeType;

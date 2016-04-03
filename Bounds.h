@@ -33,6 +33,13 @@ public:
 		return id;
 	}
 
+	void setWorldId(int _Worldid) {
+		WorldId = _Worldid;
+	}
+	int getWorldId() {
+		return WorldId;
+	}
+
 	void setType(int _type) {
 		type = _type;
 	}
@@ -55,6 +62,7 @@ public:
 
 private:
 	int id;
+	int WorldId;
 	Ogre::Vector3 position;
 	Ogre::Vector3 dimensions;
 	int type;
