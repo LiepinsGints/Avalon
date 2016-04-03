@@ -88,7 +88,7 @@ bool Core::go()
 	mySql = new MySql(appSettings);
 	mySql->mySqlConnect();
 	//Spawns
-	Spawns* spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager);
+	spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager);
 	//spawns->spawnWorld();
 	//spawns->createCottage(Ogre::Vector3(-87, 23, -334),0.1f);
 	//spawns->createCottage(Ogre::Vector3(26, 25.2455-2, -331), 0.1f);//25.2455-1-0.2
@@ -98,7 +98,7 @@ bool Core::go()
 
 	//spawns->createObject(mySql->getModelById(3), Ogre::Vector3(-205, 25.241, 19), 0.05f, 10.0, 1);
 	//Designer
-	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup());
+	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup(),physicsManager);
 	//designer->cube();
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns);
@@ -123,10 +123,10 @@ bool Core::go()
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//Update character position
-	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().x)+"\n" +
-							 "Y: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().y)+ "\n" +
-							 "Z: " + Ogre::StringConverter::toString(physicsManager->getCharacter()->getPosition().z);
-	userInterface->setLabelCaption(my_string,swap,"free");
+	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
+							 "Y: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().y)+ "\n" +
+							 "Z: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().z);
+	userInterface->setLabelCaption(my_string,swap, "Hit mesh id: " + designer->getHitMeshName());
 	//
 	if (mWindow->isClosed()) return false;
 

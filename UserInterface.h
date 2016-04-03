@@ -113,6 +113,7 @@ public:
 		float scaleGlobal = 1;
 		float mass = 10;
 		int typePhys=0;
+		int id = -1;
 		if (meshTypes->getIndexSelected() == MyGUI::ITEM_NONE) {
 			typePhys = 0;
 		}
@@ -139,19 +140,21 @@ public:
 		}
 		if(typePhys==0 || typePhys == 1 || typePhys == 2){
 		//Spawn before bound so we can use id
-		_mySql->createSpawn(
-			getSelectedShapeName(),
-			pos.x,
-			pos.y,
-			pos.z,
-			scale.x,
-			scale.y,
-			scale.z,
-			1,//scale
-			shapeRot,
-			100,//weight
-			0//type
-			);
+			_mySql->createSpawn(
+				getSelectedShapeName(),
+				pos.x,
+				pos.y,
+				pos.z,
+				scale.x,
+				scale.y,
+				scale.z,
+				1,//scale
+				shapeRot,
+				100,//weight
+				0//type
+				);
+			id = _mySql->getLastInsertID();
+
 		}
 		if(typePhys==0 || typePhys == 1 || typePhys == 3){
 		//Save object data in DB
@@ -176,6 +179,7 @@ public:
 		//Show created object in scene
 		if (typePhys == 0 || typePhys == 1){
 			_spawns->createObjectBoxDescription(
+				id,
 				getSelectedShapeName(),
 				pos,
 				scale,
@@ -187,6 +191,7 @@ public:
 		}
 		else if (typePhys == 2) {
 			_spawns->createMeshOnly(
+				id,
 				getSelectedShapeName(),
 				pos,
 				scale,

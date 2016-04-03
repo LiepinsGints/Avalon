@@ -119,22 +119,22 @@ public:
 			break;
 			//Character controls
 		case OIS::KC_UP:
-			_physicsManager->forward(127);
+			_spawns->forward(127);
 			break;
 
 		case OIS::KC_DOWN:
-			_physicsManager->backward(127);
+			_spawns->backward(127);
 			break;
 
 		case OIS::KC_LEFT:
-			_physicsManager->left(127);
+			_spawns->left(127);
 			break;
 
 		case OIS::KC_RIGHT:
-			_physicsManager->right(127);
+			_spawns->right(127);
 			break;
 		case OIS::KC_NUMPAD0:
-			_physicsManager->jump(127);
+			_spawns->jump(127);
 			break;
 			/*Editor controls*/
 		case OIS::KC_NUMPAD8:
@@ -164,7 +164,7 @@ public:
 		default:
 			break;
 		}
-		_physicsManager->applyHelper();
+		_spawns->applyHelper();
 		MyGUI::InputManager::getInstance().injectKeyPress(MyGUI::KeyCode::Enum(arg.key), arg.text);
 		return true;
 	}
@@ -186,27 +186,27 @@ public:
 			break;
 			//Character controls
 		case OIS::KC_UP:
-			_physicsManager->forward(0);
+			_spawns->forward(0);
 			break;
 
 		case OIS::KC_DOWN:
-			_physicsManager->backward(0);
+			_spawns->backward(0);
 			break;
 
 		case OIS::KC_LEFT:
-			_physicsManager->left(0);
+			_spawns->left(0);
 			break;
 
 		case OIS::KC_RIGHT:
-			_physicsManager->right(0);
+			_spawns->right(0);
 			break;
 		case OIS::KC_NUMPAD0:
-			_physicsManager->jump(0);
+			_spawns->jump(0);
 			break;
 		default:
 			break;
 		}
-		_physicsManager->applyHelper();
+		_spawns->applyHelper();
 
 		MyGUI::InputManager::getInstance().injectKeyRelease(MyGUI::KeyCode::Enum(arg.key));
 		return true;

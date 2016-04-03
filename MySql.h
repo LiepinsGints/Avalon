@@ -138,7 +138,7 @@ public:
 				Ogre::Vector3 rotation(std::stod(res->getString("RotX").c_str()), std::stod(res->getString("RotY").c_str()), std::stod(res->getString("RotZ").c_str()));
 				float scale = 1;
 				float mass = std::stod(res->getString("Mass").c_str());
-
+				int id = std::stoi(res->getString("ID").c_str());
 				//
 				std::string sqlTableName = "bounds";
 				
@@ -150,6 +150,7 @@ public:
 				
 				if (boundsContainer.size() ==1) {
 					spawns->createObjectBoxDescription(
+						id,
 						getModelById(std::stoi(res->getString("ModelID").c_str()))->getMeshName(),
 						position,
 						scaleDimensions,
@@ -161,6 +162,7 @@ public:
 				}
 				else if (boundsContainer.size() == 0) {
 					spawns->createMeshOnly(
+						id,
 						getModelById(std::stoi(res->getString("ModelID").c_str()))->getMeshName(),
 						position,
 						scaleDimensions,

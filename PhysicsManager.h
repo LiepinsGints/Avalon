@@ -48,6 +48,10 @@ public:
 	NxOgre::Scene* getMScene() {
 		return mScene;
 	}
+	/********************get Content manager*******************/
+	ContentManager* getContentManager() {
+		return _contentManager;
+	}
 	/*******************Create bounding box**********************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		NxOgre::BoxDescription boundingBox(w, h, d);
@@ -60,43 +64,7 @@ public:
 	void createBoundingCylinder(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		NxOgre::BoxDescription boundingBox(w, h, d);
 	}
-	/**********************CharacterControls***********************/
-	Critter::AnimatedCharacter* getCharacter() {
-		return mSinbad;
-	}
-	Critter::CharacterInputHelper getCharacterInputHelper() {
-		return mSinbadHelper;
-	}
-	NxOgre::Actor* getActor() {
-		return mTestActor;
-	}
-
-	/*******************Character controls***********************/
-	void resetHelper() {
-		mSinbadHelper.reset();
-	}
-	void applyHelper() {
-		mSinbad->setInput(mSinbadHelper);
-	}
-
-	void left(int speed) {
-		mSinbadHelper.input.is_turning = true;
-		mSinbadHelper.left(speed);
-	}
-	void right(int speed) {
-		mSinbadHelper.input.is_turning = true;
-		mSinbadHelper.right(speed);
-	}
-	void forward(int speed) {
-		mSinbadHelper.forward(speed);
-	}
-	void backward(int speed) {
-		mSinbadHelper.backward(speed);
-	}
-	void jump(int speed) {
-		mSinbadHelper.up(speed);
-	}
-
+	
 private:
 	NxOgre::World*          mWorld;
 	NxOgre::Scene*          mScene;
@@ -111,9 +79,7 @@ private:
 	//character
 	Ogre::Real                      mCameraYaw, mCameraPitch;
 	Ogre::Vector3                   mCameraOffset;
-	Critter::AnimatedCharacter*     mSinbad;
-	Critter::CharacterInputHelper   mSinbadHelper;
-	NxOgre::Actor*                  mTestActor;
+	
 	//Terrain
 	Ogre::TerrainGroup* _mTerrainGroup;
 	//
@@ -126,11 +92,7 @@ private:
 		Objects = 2             // Boxes, Barrels and other dynamic parts of the scene that can be moved by pushing.
 	};
 
-	enum SinbadSections
-	{
-		SinbadLower,
-		SinbadUpper
-	};
+	
 	/*****************Set up physics**********************/
 	void setupPhysics()
 	{
@@ -167,7 +129,7 @@ private:
 		//create character
 		
 		// Setup Animations. 
-		
+		/*
 		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "IdleBase");
 		mRenderSystem->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Idle, "IdleTop");
 		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Forward, "RunBase");
@@ -194,7 +156,7 @@ private:
 		sinbadNode->addSceneNode(camNode);
 		//Assign helper to sinbad
 		mSinbad->setInput(mSinbadHelper);
-		
+		*/
 		//Create terrain
 		/*NxOgre::HeightField* heightField = NxOgre::HeightFieldManager::getSingleton()->load(NxOgre::Path("ogre://hf.xhf"));
 		NxOgre::HeightFieldGeometryDescription heightFieldDescr;

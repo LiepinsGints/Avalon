@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Db_models">
       <UniqueIdentifier>{f0628438-e980-4317-8622-ce65b68f9dbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Spawns_models">
+      <UniqueIdentifier>{c9ff5515-2509-4cac-bfa2-9638156639c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">

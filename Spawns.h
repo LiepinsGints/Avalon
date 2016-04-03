@@ -35,6 +35,7 @@ public:
 		_mSceneMgr = mSceneMgr;
 		_physicsManager = physicsManager;
 		counter = 0;
+		loadPredefinedWorld();
 	};
 	~Spawns() {
 	};
@@ -63,7 +64,7 @@ public:
 	}
 
 
-	void createObjectBoxDescription(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass, int type) {
+	void createObjectBoxDescription(int id, Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass, int type) {
 		Critter::BodyDescription bodyDescriptionTemp;
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 		//NxOgre::CapsuleDescription boundingCapsule(boxDimensions.x, boxDimensions.y);
@@ -71,20 +72,21 @@ public:
 		
 		switch (type) {
 		case 0:
-			createObjectBodyStatic(meshName, position, scaleDimensions, boxDimensions,scale ,rotation, mass);
+			createObjectBodyStatic(id,meshName, position, scaleDimensions, boxDimensions,scale ,rotation, mass);
 			break;
 		case 1:
-			createObjectBody(meshName, position, scaleDimensions, boxDimensions, scale, rotation, mass);
+			createObjectBody(id,meshName, position, scaleDimensions, boxDimensions, scale, rotation, mass);
 			break;
 		}
 		
 	}
-	void createObjectBody(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
+	void createObjectBody(int id,Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
 		Critter::BodyDescription bodyDescriptionTemp;
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
 		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
+		bodyDescriptionTemp.mName = Ogre::StringConverter::toString(id);
 		Critter::Body* mBodyTemp;
 		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(
 			boundingBox,
@@ -109,8 +111,9 @@ public:
 		}
 		_physicsManager->addMBodies(mBodyTemp);
 	}
-	void createObjectBodyStatic(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
+	void createObjectBodyStatic(int id, Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
 		Critter::BodyDescription bodyDescriptionTemp;
+		bodyDescriptionTemp.mName = Ogre::StringConverter::toString(id);
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
 		boundingBox.mGroup = Walls ;
@@ -138,7 +141,7 @@ public:
 		SceneGeometry* scene_geom = _physicsManager->getMScene()->createSceneGeometry(boundingBox, globalPose, bodyDescriptionTemp);
 		
 		//_physicsManager->getMRenderSystem()->createSceneNodeEntityPair(meshName, Vec3(globalPose), NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
-		createMeshOnly(meshName, position, scaleDimensions, rotation);
+		createMeshOnly(id,meshName, position, scaleDimensions, rotation);
 	}
 	void createObjectKinematicBody(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
 		Critter::BodyDescription bodyDescriptionTemp;
@@ -168,9 +171,9 @@ public:
 	}
 
 	//Create mesh
-	void createMeshOnly(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 rotation) {
+	void createMeshOnly(int id, Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 rotation) {
 		SceneNode* modelNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode(position);
-		modelNode->attachObject(_mSceneMgr->createEntity(meshName + "-" + Ogre::StringConverter::toString(counter), meshName));
+		modelNode->attachObject(_mSceneMgr->createEntity(Ogre::StringConverter::toString(id), meshName));
 		modelNode->setScale(scaleDimensions.x, scaleDimensions.y, scaleDimensions.z);
 		//Rotate node
 		if (rotation.x != 0) {
@@ -187,7 +190,6 @@ public:
 		}
 
 		//modelNode->rotate()
-		counter++;
 	}
 	void spawnWorld() {
 	
@@ -224,7 +226,7 @@ public:
 		Critter::Body* mBodyTemp;
 		
 		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(NxOgre::BoxDescription(4, 4, 4), 
-			NxOgre::Vec3(_physicsManager->getCharacter()->getPosition().x, _physicsManager->getCharacter()->getPosition().y + 40, _physicsManager->getCharacter()->getPosition().z), "cube.1m.mesh", bodyDescriptionTemp);
+			NxOgre::Vec3(getCharacter()->getPosition().x, getCharacter()->getPosition().y + 40, getCharacter()->getPosition().z), "cube.1m.mesh", bodyDescriptionTemp);
 		mBodyTemp->getNode()->setScale(4.0);
 		//rotate
 		if (rotX!=0) {
@@ -253,7 +255,7 @@ public:
 		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
 		Critter::Body* mBodyTemp;
 		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(NxOgre::BoxDescription(4, 4, 4),
-			NxOgre::Vec3(_physicsManager->getCharacter()->getPosition().x, _physicsManager->getCharacter()->getPosition().y + 40, _physicsManager->getCharacter()->getPosition().z), "sinbad.mesh", bodyDescriptionTemp);
+			NxOgre::Vec3(getCharacter()->getPosition().x, getCharacter()->getPosition().y + 40, getCharacter()->getPosition().z), "sinbad.mesh", bodyDescriptionTemp);
 		mBodyTemp->getNode()->setScale(1.0);
 		_physicsManager->addMBodies(mBodyTemp);
 
@@ -302,7 +304,79 @@ public:
 		counter++;
 		return height;
 	}
+	/******************************Animated character****************************************/
+	void setupCharacterAnimations() {
+		//sinbad
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "IdleBase");
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Idle, "IdleTop");
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Forward, "RunBase");
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Forward, "RunTop");
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Jump, "JumpStart", 5.0, false);
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Fall, "JumpLoop");
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Land, "JumpEnd", 5.0, false);
+		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
 
+	}
+	void createAnimatedCharacter(Ogre::String meshName) {
+		Critter::AnimatedCharacterDescription desc;
+		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
+		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
+		desc.mMaxGroundSpeed = 17.0f;
+		desc.setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
+		//Create critter node for sinbad mesh
+		Critter::Node* sinbadNode = _physicsManager->getMRenderSystem()->createNode();
+		sinbadNode->createAndAttachEntity(meshName);
+		//Create animated character
+		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(Ogre::Vector3(-42, 125, -234), Ogre::Radian(0), sinbadNode, desc);
+		//Create 
+		Ogre::SceneNode* camNode;
+		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
+		camNode->attachObject(_physicsManager->getContentManager()->getmCamera());
+		sinbadNode->addSceneNode(camNode);
+		//Assign helper to sinbad
+		mSinbad->setInput(mSinbadHelper);
+	}
+	//Character controlls
+	/*******************Character controls***********************/
+	Critter::AnimatedCharacter* getCharacter() {
+		return mSinbad;
+	}
+	Critter::CharacterInputHelper getCharacterInputHelper() {
+		return mSinbadHelper;
+	}
+	NxOgre::Actor* getActor() {
+		return mTestActor;
+	}
+	//
+	void resetHelper() {
+		mSinbadHelper.reset();
+	}
+	void applyHelper() {
+		mSinbad->setInput(mSinbadHelper);
+	}
+
+	void left(int speed) {
+		mSinbadHelper.input.is_turning = true;
+		mSinbadHelper.left(speed);
+	}
+	void right(int speed) {
+		mSinbadHelper.input.is_turning = true;
+		mSinbadHelper.right(speed);
+	}
+	void forward(int speed) {
+		mSinbadHelper.forward(speed);
+	}
+	void backward(int speed) {
+		mSinbadHelper.backward(speed);
+	}
+	void jump(int speed) {
+		mSinbadHelper.up(speed);
+	}
+	/******************************Load predefined****************************************/
+	void loadPredefinedWorld() {
+		setupCharacterAnimations();
+		createAnimatedCharacter("sinbad.mesh");
+	}
 private:
 	PhysicsManager* _physicsManager;
 	Ogre::Root* _mRoot;
@@ -317,6 +391,15 @@ private:
 		Walls = 1,              // Walls, Floors and other static geometry that can't be moved.
 		Objects = 2             // Boxes, Barrels and other dynamic parts of the scene that can be moved by pushing.
 	};
+	enum SinbadSections
+	{
+		SinbadLower,
+		SinbadUpper
+	};
+	//Temp
+	Critter::AnimatedCharacter*     mSinbad;
+	Critter::CharacterInputHelper   mSinbadHelper;
+	NxOgre::Actor*                  mTestActor;
 };
 
 

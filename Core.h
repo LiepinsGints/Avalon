@@ -47,6 +47,7 @@ private:
 	ContentManager* contentManager;
 	KeyListener* keyListener;
 	PhysicsManager* physicsManager;
+	Spawns* spawns;
 	AppSettings* appSettings;
 	UserInterface * userInterface;
 	Designer * designer;

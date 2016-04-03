@@ -13,6 +13,8 @@
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainGroup.h>
 
+#include <OgreSceneQuery.h>
+
 #include <OISEvents.h>
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
@@ -26,6 +28,7 @@
 #include "NxOgre.h"
 #include "critter.h"
 
+#include "PhysicsManager.h"
 
 using namespace Ogre;
 using namespace OgreBites;
@@ -34,10 +37,11 @@ using namespace Critter;
 
 class Designer {
 public:
-	Designer(Ogre::SceneManager* mSceneMgr,  Ogre::Camera* mCamera, Ogre::TerrainGroup* mTerrainGroup) {
+	Designer(Ogre::SceneManager* mSceneMgr,  Ogre::Camera* mCamera, Ogre::TerrainGroup* mTerrainGroup, PhysicsManager* physicsManager) {
 		_mSceneMgr = mSceneMgr;
 		_mCamera = mCamera;
 		_mTerrainGroup = mTerrainGroup;
+		_physicsManager = physicsManager;
 		shapeType = 0;
 		counter = 0;
 		shapeOffsetY = 0;
@@ -99,6 +103,61 @@ public:
 		mouseShapeMove(result);
 		//result.position
 		//cubeNode->setPosition
+		/**************************NxOgreRay****************************/
+		// Use Ogre and OgreBites to work out where from the cursor the ray should start and end.
+		NxOgre::Ray ray;
+		ray.mDirection.from(mouseRay.getDirection());
+		ray.mOrigin.from(mouseRay.getOrigin());
+		
+		RaycastHit hit =_physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
+
+		if (hit.mRigidBody)
+		{
+			hitMeshName = hit.mRigidBody->getName();
+			/*
+			if (name.length())
+				mHitResultText->setCaption("Hit '" + hit.mRigidBody->getName() + "' at " + hit.mWorldImpact.to_s());
+			else
+				mHitResultText->setCaption("Hit something at " + hit.mWorldImpact.to_s());
+				*/
+		}
+		else
+		{
+			/*
+			mHitResultText->setCaption("Didn't find anything.");
+			*/
+		}
+		//
+		/**********************OgreRay******************************/
+		bool mMovableFound = false;
+		Ogre::SceneNode* mCurObject;
+		Ogre::RaySceneQuery* mRayScnQuery;
+		mRayScnQuery = _mSceneMgr->createRayQuery(Ogre::Ray());
+		mRayScnQuery->setRay(mouseRay);
+		mRayScnQuery->setSortByDistance(true);
+		//mRayScnQuery->setQueryMask(mRobotMode ? ROBOT_MASK : NINJA_MASK);
+
+		Ogre::RaySceneQueryResult& rayResult = mRayScnQuery->execute();
+		Ogre::RaySceneQueryResult::iterator it = rayResult.begin();
+
+		for (; it != rayResult.end(); it++)
+		{
+			mMovableFound =
+				it->movable &&
+				it->movable->getName() != "" &&
+				it->movable->getName() != "PlayerCam"&&
+				it->movable->getName() != "Critter.VisualDebuggerNode"&&
+				it->movable->getName() != " Critter.VisualDebuggerNode";
+			if (mMovableFound)
+			{
+				mCurObject = it->movable->getParentSceneNode();
+				hitMeshName = mCurObject->getName();
+				break;
+			}
+		}
+		/*if (mMovableFound) {
+			hitMeshName = mCurObject->getName();
+		}*/
 		
 		//Show mouse coordinates
 			Ogre::String merge = Ogre::StringConverter::toString(x) + " : \n" +
@@ -229,6 +288,10 @@ public:
 			lockPosition = 0;
 		}
 	}
+
+	Ogre::String getHitMeshName() {
+		return hitMeshName;
+	}
 private:
 	Ogre::SceneManager* _mSceneMgr;
 	Ogre::Camera* _mCamera;
@@ -247,7 +310,8 @@ private:
 	Ogre::Real shapeOffsetY;
 	int lockPosition;
 	Ogre::Vector3 shapeRotation;
-	
+	PhysicsManager* _physicsManager;
+	Ogre::String hitMeshName;
 
 };
 #endif
