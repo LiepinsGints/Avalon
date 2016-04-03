@@ -108,10 +108,12 @@ public:
 			break;
 		case OIS::KC_M:
 			if (timer->getMilliseconds()>2000) {
+				/*
 				_spawns->createBoundingBox(_physicsManager->getCharacter()->getPosition().x,
 					_physicsManager->getCharacter()->getPosition().y,
 					_physicsManager->getCharacter()->getPosition().z,
 					56.7,50,67.7);
+					*/
 				timer->reset();
 			}
 			break;
@@ -148,7 +150,10 @@ public:
 			break;
 
 		case OIS::KC_NUMPAD2:
-			
+			if (timer->getMilliseconds()>1000 && _designer->getShapeType() == 1) {
+				_designer->setLockPosition();
+				timer->reset();
+			}
 			break;
 		case OIS::KC_NUMPAD5:
 			if (timer->getMilliseconds()>1000 && _designer->getShapeType()==1) {

@@ -26,7 +26,11 @@ CREATE TABLE IF NOT EXISTS `bounds` (
   `width` float NOT NULL DEFAULT '0',
   `height` float NOT NULL DEFAULT '0',
   `deep` float NOT NULL DEFAULT '0',
+  `RotX` float NOT NULL DEFAULT '0',
+  `RotY` float NOT NULL DEFAULT '0',
+  `RotZ` float NOT NULL DEFAULT '0',
   `type` int(11) NOT NULL DEFAULT '0',
+  `worldID` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -42,7 +46,9 @@ CREATE TABLE IF NOT EXISTS `models` (
   `Width` float NOT NULL DEFAULT '0',
   `Height` float NOT NULL DEFAULT '0',
   `Depth` float NOT NULL DEFAULT '0',
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `MeshName` (`MeshName`),
+  UNIQUE KEY `Name` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Data exporting was unselected.
@@ -56,7 +62,13 @@ CREATE TABLE IF NOT EXISTS `world` (
   `x` float NOT NULL DEFAULT '0',
   `y` float NOT NULL DEFAULT '0',
   `z` float NOT NULL DEFAULT '0',
+  `Width` float NOT NULL DEFAULT '0',
+  `Height` float NOT NULL DEFAULT '0',
+  `Deep` float NOT NULL DEFAULT '0',
   `Scale` float NOT NULL DEFAULT '0',
+  `RotX` float NOT NULL DEFAULT '0',
+  `RotY` float NOT NULL DEFAULT '0',
+  `RotZ` float NOT NULL DEFAULT '0',
   `Mass` float NOT NULL DEFAULT '0',
   `Type` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID`)

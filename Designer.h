@@ -40,6 +40,9 @@ public:
 		_mTerrainGroup = mTerrainGroup;
 		shapeType = 0;
 		counter = 0;
+		shapeOffsetY = 0;
+		lockPosition = 0;
+		shapeRotation = Ogre::Vector3(0,0,0);
 	}
 	~Designer() {
 
@@ -107,8 +110,8 @@ public:
 	}
 	//Designer shape controll
 	void mouseShapeMove(Ogre::TerrainGroup::RayResult result) {
-		if (shapeType == 1) {
-			Ogre::Vector3 corectCubePosition(result.position.x, result.position.y + getCubeDimensions().y / 2, result.position.z);
+		if (shapeType == 1 && lockPosition == 0) {
+			Ogre::Vector3 corectCubePosition(result.position.x, result.position.y + getCubeDimensions().y / 2+ shapeOffsetY, result.position.z);
 			objectNode->setPosition(corectCubePosition);
 		}
 
@@ -150,7 +153,36 @@ public:
 		else {
 			objectNode->detachAllObjects();
 			shapeType = 0;
+			shapeOffsetY = 0;
 		}
+	}
+	//Rotate shape
+	void rotateShape(Ogre::Vector3 rotation) {
+		if (shapeType == 1) {
+			if (rotation.x != 0) {
+				objectNode->rotate(Ogre::Vector3(1, 0, 0), Degree(rotation.x));
+				shapeRotation.x += rotation.x;
+			}
+			if (rotation.y != 0) {
+				objectNode->rotate(Ogre::Vector3(0, 1, 0), Degree(rotation.y));
+				shapeRotation.y += rotation.y;
+			}
+			if (rotation.z != 0) {
+				objectNode->rotate(Ogre::Vector3(0, 0, 1), Degree(rotation.z));
+				shapeRotation.z += rotation.z;
+			}
+		}
+	}
+	//reset rotation
+	void resetRotation() {
+			objectNode->setOrientation(1, 0, 0, 0);
+			shapeRotation.x = 0;
+			shapeRotation.y = 0;
+			shapeRotation.z = 0;
+	}
+	//get shape rotation
+	Ogre::Vector3 getShapeRotation() {
+		return shapeRotation;
 	}
 	//Add shape type to scene after creation
 	void addShapeToScene() {
@@ -173,9 +205,29 @@ public:
 		 tempNode->scale(objectNode->getScale());
 		 //
 		 counter++;
+
+		 //new Method
+
+		 //End
+
 	}
 	Ogre::Vector3 getShapeScale() {
 		return objectNode->getScale();
+	}
+	void setShapeOffsetY(Ogre::Real offset) {
+		shapeOffsetY = offset;
+	}
+	Ogre::Real getOffset() {
+		return shapeOffsetY;
+	}
+	void setLockPosition() {
+		if (lockPosition == 0) {
+			lockPosition = 1;
+		}
+		else
+		{
+			lockPosition = 0;
+		}
 	}
 private:
 	Ogre::SceneManager* _mSceneMgr;
@@ -192,7 +244,9 @@ private:
 	int shapeType;
 	int counter;//for entities spawn
 	Ogre::String meshName;
-
+	Ogre::Real shapeOffsetY;
+	int lockPosition;
+	Ogre::Vector3 shapeRotation;
 	
 
 };

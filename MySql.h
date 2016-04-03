@@ -149,21 +149,29 @@ public:
 				std::vector<Bounds*> boundsContainer = getBoundsByWorldID(worldID);
 				
 				if (boundsContainer.size() ==1) {
-					
 					spawns->createObjectBoxDescription(
-						getModelById(std::stoi(res->getString("ModelID").c_str())),
+						getModelById(std::stoi(res->getString("ModelID").c_str()))->getMeshName(),
 						position,
 						scaleDimensions,
 						boundsContainer.front()->getDimensions(),
 						scale,
 						rotation,
 						mass,
-						std::stoi(res->getString("Type").c_str()));
+						boundsContainer.front()->getType());
 				}
-				int a;
+				else if (boundsContainer.size() == 0) {
+					spawns->createMeshOnly(
+						getModelById(std::stoi(res->getString("ModelID").c_str()))->getMeshName(),
+						position,
+						scaleDimensions,
+						rotation
+						);
+				}
 				//createObjectBoxDescription(Models * model, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass, int type)
 
 			}
+			//Spawn bounds without models
+			spawnBounds(spawns);
 
 		}
 		catch (sql::SQLException &e) {
@@ -226,18 +234,19 @@ public:
 	//Get bounding boxes from bounds table
 	void spawnBounds(Spawns* spawns) {
 		Bounds * bounds = new Bounds();
-		std::string query = "select * from bounds";
+		std::string query = "select * from bounds where worldID=-1";
 
 		try {
 			sql::Statement * stmt = con->createStatement();
 			sql::ResultSet * res = stmt->executeQuery(query.c_str()); 
 			while (res->next()) {
-				spawns->createBoundingBox(std::stod(res->getString("x").c_str()),
-					std::stod(res->getString("y").c_str()), 
-					std::stod(res->getString("z").c_str()),
-					std::stod(res->getString("width").c_str()),
-					std::stod(res->getString("height").c_str()),
-					std::stod(res->getString("deep").c_str())
+				Ogre::Vector3 position(std::stod(res->getString("x").c_str()), std::stod(res->getString("y").c_str()), std::stod(res->getString("z").c_str()));
+				Ogre::Vector3 boxDimensions(std::stod(res->getString("Width").c_str()), std::stod(res->getString("Height").c_str()), std::stod(res->getString("Deep").c_str()));
+				Ogre::Vector3 rotation(std::stod(res->getString("RotX").c_str()), std::stod(res->getString("RotY").c_str()), std::stod(res->getString("RotZ").c_str()));
+				spawns->createBoundingBox(
+					position,
+					boxDimensions,
+					rotation
 					);
 			}
 
@@ -272,12 +281,23 @@ public:
 	}
 
 
-	void createBound(float x, float y, float z, float width, float height, float deep,int type,int worldID) {
-		std::string query = "INSERT INTO bounds(x, y, z, width, height, deep, type,worldID) VALUES ("+ std::to_string(x) +" , " + std::to_string(y) + ", " 
-			+ std::to_string(z) + ", " + std::to_string(width) + ", " + std::to_string(height) + ", " + std::to_string(deep) + ", " + std::to_string(type)+ ", " + std::to_string(worldID) + ")";
+	void createBound(float x, float y, float z, float width, float height,  float deep, Ogre::Vector3 rotation, int type,int worldID) {
+		std::string query = "INSERT INTO bounds(x, y, z, width, height,deep,RotX,RotY,RotZ, type,worldID) VALUES ("+ 
+			std::to_string(x) +" , " + 
+			std::to_string(y) + ", " +
+			std::to_string(z) + ", " + 
+			std::to_string(width) + ", " + 
+			std::to_string(height) + ", " + 
+			std::to_string(deep) + ", " + 
+			std::to_string(rotation.x) + ", " +
+			std::to_string(rotation.y) + ", " +
+			std::to_string(rotation.z) + ", "+
+			std::to_string(type)+ ", " + 
+			std::to_string(worldID) 
+			+ ")";
 		sqlInsert(query);
 	}
-	void createSpawn(std::string meshName, float x, float y, float z, float scaleX, float scaleY, float scaleZ, float scale , float mass,float type) {
+	void createSpawn(std::string meshName, float x, float y, float z, float scaleX, float scaleY, float scaleZ, float scale , Ogre::Vector3 rotation, float mass,float type) {
 		std::string query = "select ID from models where MeshName = '" + meshName + "'";
 		int modelID = -1;
 		//Get model id
@@ -295,8 +315,21 @@ public:
 		}
 		//Check if model id received
 		if (modelID != -1) {
-			std::string queryInsertWorld = "INSERT INTO world(ModelID,x, y, z, width, height, deep, Scale, Mass, Type) VALUES ("+ std::to_string(modelID)+" , " + std::to_string(x) + " , " + std::to_string(y) + ", "
-				+ std::to_string(z) + ", " + std::to_string(scaleX) + ", " + std::to_string(scaleY) + ", " + std::to_string(scaleZ) + ", " + std::to_string(scale) + ", " + std::to_string(mass) + ", " + std::to_string(type) + ")";
+			std::string queryInsertWorld = "INSERT INTO world(ModelID,x, y, z, width, height, deep, Scale,RotX,RotY,RotZ, Mass, Type) VALUES ("+ 
+				std::to_string(modelID)+" , " + 
+				std::to_string(x) + " , " +
+				std::to_string(y) + ", " +
+				std::to_string(z) + ", " +
+				std::to_string(scaleX) + ", " + 
+				std::to_string(scaleY) + ", " + 
+				std::to_string(scaleZ) + ", " + 
+				std::to_string(scale) + ", " +
+				std::to_string(rotation.x) + ", " + 
+				std::to_string(rotation.y) + ", " +
+				std::to_string(rotation.z) + ", "
+				+ std::to_string(mass) + ", " 
+				+ std::to_string(type) + 
+				")";
 			sqlInsert(queryInsertWorld);
 		}
 	}

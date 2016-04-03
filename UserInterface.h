@@ -33,7 +33,10 @@ public:
 		mPlatform->initialise(_mWindow, _mSceneMgr);
 		mGUI = new MyGUI::Gui();
 		mGUI->initialise();
-
+		//Rot
+		rotX = 0;
+		rotY = 0;
+		rotZ = 0;
 		//Button
 		loadUi();
 		getMeshList();
@@ -103,18 +106,38 @@ public:
 	//Create world item
 	void createWorldObject() {
 		Ogre::Vector3 pos = _designer->getCubePos();
-		Ogre::Vector3 dimensions = _designer->getCubeDimensions();
 		Ogre::Vector3 scale = _designer->getShapeScale();
-		//Add Local object in scene
-		_spawns->createBoundingBox(
-			pos.x,
-			pos.y,
-			pos.z,
-			dimensions.x,
-			dimensions.y,
-			dimensions.z
-			);
-
+		Ogre::Vector3 shapeRot = _designer->getShapeRotation();
+		_designer->resetRotation();
+		Ogre::Vector3 dimensions = _designer->getCubeDimensions();
+		float scaleGlobal = 1;
+		float mass = 10;
+		int typePhys=0;
+		if (meshTypes->getIndexSelected() == MyGUI::ITEM_NONE) {
+			typePhys = 0;
+		}
+		else {
+			Ogre::String selectResult= meshTypes->getItemNameAt(meshTypes->getIndexSelected());
+			
+			if (selectResult=="Walls")
+			{
+				typePhys = 0;
+			}
+			else if(selectResult=="Objects")
+			{
+				typePhys = 1;
+			}
+			else if (selectResult == "Mesh only")
+			{
+				typePhys = 2;
+			}
+			else if (selectResult == "Bound only")
+			{
+				typePhys = 3;
+			}
+			
+		}
+		if(typePhys==0 || typePhys == 1 || typePhys == 2){
 		//Spawn before bound so we can use id
 		_mySql->createSpawn(
 			getSelectedShapeName(),
@@ -125,21 +148,59 @@ public:
 			scale.y,
 			scale.z,
 			1,//scale
+			shapeRot,
 			100,//weight
 			0//type
 			);
+		}
+		if(typePhys==0 || typePhys == 1 || typePhys == 3){
 		//Save object data in DB
-		_mySql->createBound(
-			pos.x,
-			pos.y,
-			pos.z,
-			dimensions.x,
-			dimensions.y,
-			dimensions.z,
-			0,
-			_mySql->getLastInsertID()
-			);
-		_designer->addShapeToScene();
+			int lastInsert = -1;
+			if (typePhys == 0 || typePhys == 1) {
+				lastInsert = _mySql->getLastInsertID();
+			}
+			_mySql->createBound(
+				pos.x,
+				pos.y,
+				pos.z,
+				dimensions.x,
+				dimensions.y,
+				dimensions.z,
+				shapeRot,
+				typePhys,
+				lastInsert
+				);
+		}
+		//_designer->addShapeToScene();
+		//
+		//Show created object in scene
+		if (typePhys == 0 || typePhys == 1){
+			_spawns->createObjectBoxDescription(
+				getSelectedShapeName(),
+				pos,
+				scale,
+				dimensions,
+				scaleGlobal,
+				shapeRot,
+				mass,
+				typePhys);
+		}
+		else if (typePhys == 2) {
+			_spawns->createMeshOnly(
+				getSelectedShapeName(),
+				pos,
+				scale,
+				shapeRot
+				);
+		}
+		else if(typePhys == 3){
+			_spawns->createBoundingBox(
+				pos,
+				dimensions,
+				shapeRot
+				);
+		}
+	
 	}
 private:
 	Ogre::RenderWindow* _mWindow;
@@ -150,6 +211,10 @@ private:
 
 	MyGUI::Gui* mGUI;
 	MyGUI::OgrePlatform* mPlatform;
+
+	Ogre::Real rotX;
+	Ogre::Real rotY;
+	Ogre::Real rotZ;
 
 	AppSettings* _appSettings;
 	//UI elements	
@@ -179,6 +244,19 @@ private:
 	MyGUI::Edit * objectDeep;
 	MyGUI::Button* setBoundingBoxDimension;
 	MyGUI::ListBox * meshList;
+	MyGUI::TextBox * textBoxRotX;
+	MyGUI::Edit * objectRotX;
+	MyGUI::TextBox * textBoxRotY;
+	MyGUI::Edit * objectRotY;
+	MyGUI::TextBox * textBoxRotZ;
+	MyGUI::Edit * objectRotZ;
+	MyGUI::Button* setRotation;
+
+	MyGUI::TextBox * textBoxShapeOffsetY;
+	MyGUI::Edit * objectShapeOffsetY;
+	MyGUI::Button* setShapeOffsetY;
+
+	MyGUI::ListBox * meshTypes;
 	/**Close structure***/
 	void loadUi() {		
 		createMainMenu();
@@ -270,6 +348,13 @@ private:
 			objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
 		}
 	}
+	void rotateShape(MyGUI::Widget* _widget) {
+		rotX = Ogre::StringConverter::parseReal(objectRotX->getCaption());
+		rotY = Ogre::StringConverter::parseReal(objectRotY->getCaption());
+		rotZ = Ogre::StringConverter::parseReal(objectRotZ->getCaption());
+
+		_designer->rotateShape(Ogre::Vector3(rotX, rotY,rotX));
+	}
 	/****Label block****/
 	void label() {
 		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 10, 250, 100), MyGUI::Align::Default, "Overlapped");
@@ -278,7 +363,11 @@ private:
 		mLabel->setEditMultiLine(true);
 	}
 	/*Test*/
-
+	void setShapeOffset(MyGUI::Widget* _widget) {
+		if (_designer->getShapeType() == 1) {
+			_designer->setShapeOffsetY(Ogre::StringConverter::parseReal(objectShapeOffsetY->getCaption()));
+		}
+	}
 	/**********MAIN MENU***********/
 	void createMainMenu() {
 		//settingsButton;
@@ -347,43 +436,85 @@ private:
 		closeDesigner->setCaption("Close designer");
 		closeDesigner->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeDesignerMenu);
 
+		//Mesh list
+		meshList = designerWindow->createWidget<MyGUI::ListBox>("ListBox", initPositionX, initPositionY + buttonDistance, buttonWidth, buttonHeight * 5, MyGUI::Align::Default, "Main");
+		//meshList->addItem("cube.1m.mesh");
+		meshList->_setItemSelected(0);
+
+		meshTypes = designerWindow->createWidget<MyGUI::ListBox>("ListBox", initPositionX, initPositionY + buttonDistance*5, buttonWidth, buttonHeight * 3, MyGUI::Align::Default, "Main");
+		meshTypes->addItem("Walls");
+		meshTypes->addItem("Objects");
+		meshTypes->addItem("Mesh only");
+		meshTypes->addItem("Bound only");
 		//Create bounding box group
-		createBoundingBox = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		createBoundingBox = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance*8, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		createBoundingBox->setCaption("Show shape");
-		//createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::createCube);
 		createBoundingBox->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::showShape);
-		
+
+		//SHAPE DIMENSION CHANGE GROUP
 		//Input width group
-		textBoxWidth = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 2, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxWidth = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 9, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		textBoxWidth->setCaption("X");
 		
-		objectWidth = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance*3, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectWidth = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance*10, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		objectWidth->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().x));
 		//
 		//Input height group
-		textBoxHeight = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 4, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxHeight = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 11, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		textBoxHeight->setCaption("Y");
 		
 
-		objectHeight = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 5, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectHeight = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 12, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		objectHeight->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().y));
 		//Input deep group		
-		textBoxDeep = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 6, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxDeep = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 13, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		textBoxDeep->setCaption("Z");
 
-		objectDeep = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 7, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectDeep = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 14, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		objectDeep->insertText(Ogre::StringConverter::toString(_designer->getCubeDimensions().z));
 		//Change box dimensions
-		setBoundingBoxDimension = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 8, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		setBoundingBoxDimension = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 15, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		setBoundingBoxDimension->setCaption("Apply");
-		//setBoundingBoxDimension->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::showShape);
 		setBoundingBoxDimension->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::scaleDesignerCube);
-		//Mesh list
-		meshList = designerWindow->createWidget<MyGUI::ListBox>("ListBox", initPositionX, initPositionY + buttonDistance * 9, buttonWidth, buttonHeight*6, MyGUI::Align::Default, "Main");
-		meshList->addItem("cube.1m.mesh");
-		meshList->_setItemSelected(0);
 		
-		//objectDeep->getText;
+		//SHAPE rotation CHANGE GROUP
+		//Input width group
+		textBoxRotX = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 16, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxRotX->setCaption("rotation X");
+
+		objectRotX = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 17, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectRotX->insertText(Ogre::StringConverter::toString(rotX));
+		//
+		//Input height group
+		textBoxRotY = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 18, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxRotY->setCaption("rotation Y");
+
+
+		objectRotY = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 19, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectRotY->insertText(Ogre::StringConverter::toString(rotY));
+		//Input deep group		
+		textBoxRotZ = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 20, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxRotZ->setCaption("rotation Z");
+
+		objectRotZ = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 21, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectRotZ->insertText(Ogre::StringConverter::toString(rotZ));
+		//Change box dimensions
+		setRotation = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 22, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		setRotation->setCaption("Apply");
+		setRotation->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::rotateShape);
+
+		//Shape corection y if shape is not centered
+		textBoxShapeOffsetY = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 23, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		textBoxShapeOffsetY->setCaption("Shape offset y");
+
+		objectShapeOffsetY = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 24, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		objectShapeOffsetY->insertText(Ogre::StringConverter::toString(_designer->getOffset()));
+		//Change box dimensions
+		setShapeOffsetY = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 25, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		setShapeOffsetY->setCaption("Apply");
+		setShapeOffsetY->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::setShapeOffset);
+
+
 	}
 
 };

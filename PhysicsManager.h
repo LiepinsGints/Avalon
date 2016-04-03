@@ -44,31 +44,15 @@ public:
 	Critter::RenderSystem*  getMRenderSystem(){
 		return mRenderSystem;
 	}
+	/**********************get mscene*******************/
+	NxOgre::Scene* getMScene() {
+		return mScene;
+	}
 	/*******************Create bounding box**********************/
 	void createBoundingBox(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
-		
-		//NxOgre::Matrix44 rot()
-		//NxOgre::BoxDescription boundingBox(w, h, d,0, NxOgre::Matrix44(NxOgre::Vec3(0, 5, 0)));
 		NxOgre::BoxDescription boundingBox(w, h, d);
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
 		boundingBox.mGroup = Objects;//Objects Walls
-		
-		//boundingBox.
-		//boundingBox
-
-		//boundingBox->setLocalPose(NxOgre::Matrix44(NxOgre::Real3(0, 0.5, 0)));
-		
-		//NxOgre::Quat(NxOgre::degr)
-		//boundingBox.mLocalPose = Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Z);
-		
-		
-		//boundingBox.
-		/*
-		NxOgre::BoxDescription * BoundingBoxHolder;
-		BoundingBoxHolder->mSize.set(w,h,d);
-		BoundingBoxHolder->mFlags += NxOgre::ShapeFlags::Visualisation;
-		BoundingBoxHolder->mGroup = Objects;//Objects Walls
-		*/
 		
 		mScene->createSceneGeometry(boundingBox, NxOgre::Vec3(x, y, z));		
 	}
