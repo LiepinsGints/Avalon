@@ -25,6 +25,7 @@ public:
 		createLights();
 		createCamera();
 		createSceneElements();
+		createSky();
 	}
 
 	Ogre::Camera* getmCamera() {
@@ -65,23 +66,21 @@ private:
 		_mSceneMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
 		light = _mSceneMgr->createLight("MainLight");
-		light->setPosition(20, 80, 50);
+		light->setPosition(0, 180, 0);
 
-		Ogre::Light* light2 = _mSceneMgr->createLight();
+		/*Ogre::Light* light2 = _mSceneMgr->createLight();
 		light2->setType(Ogre::Light::LT_POINT);
 		light2->setPosition(-10, 40, 20);
 		light2->setSpecularColour(Ogre::ColourValue::White);
-
+		*/
+	}
+	void createSky() {
+		_mSceneMgr->setSkyDome(true, "Examples/CloudySky", 5, 8);
 	}
 	
 	/*************Scene elements*****************************/
 	void createSceneElements() {
-		// Create Scene
-		/*Ogre::Entity* ogreEntity = _mSceneMgr->createEntity("ogrehead.mesh");
-
-		Ogre::SceneNode* ogreNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		ogreNode->attachObject(ogreEntity);*/
-		//
+	
 		Ogre::ColourValue background = Ogre::ColourValue(16.f / 255.f, 16.f / 255.f, 16.f / 255.f);
 		_mSceneMgr->setFog(Ogre::FOG_EXP, background, 0.001, 800, 1000);
 
@@ -91,18 +90,6 @@ private:
 		_mSceneMgr->setShadowTextureSize(1024);
 		_mSceneMgr->setShadowTextureCount(1);
 
-		// create a floor mesh resource
-		Ogre::MeshManager::getSingleton().createPlane("floor", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-			Ogre::Plane(Ogre::Vector3::UNIT_Y, 0), 1000, 1000, 1, 1, true, 1, 1, 1, Ogre::Vector3::UNIT_Z);
-
-		// create a floor entity, give it a material, and place it at the origin
-		/*Ogre::Entity* floor = _mSceneMgr->createEntity("Floor", "floor");
-		floor->setMaterialName("ground-from-nxogre.org");
-		floor->setCastShadows(false);
-		_mSceneMgr->getRootSceneNode()->attachObject(floor);
-		*/
-		// use a small amount of ambient lighting
-		_mSceneMgr->setAmbientLight(Ogre::ColourValue(0.3, 0.3, 0.3));
 
 		//Create terrain	
 		terrainGen = new TerrainGen(_mRoot, _mWindow, mCamera, _mSceneMgr, light);
