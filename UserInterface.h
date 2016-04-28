@@ -40,6 +40,9 @@ public:
 		//Button
 		loadUi();
 		getMeshList();
+		//
+		lineNumber = 0;
+		consoleEnable = false;
 		//label
 		label();
 		
@@ -49,6 +52,26 @@ public:
 	~UserInterface() {
 
 
+	}
+	//Console
+	void addLineToConsole(Ogre::String line) {
+		if(consoleEnable==true){
+			consoleOutput->addText(Ogre::StringConverter::toString(lineNumber) +line+"\n");
+			lineNumber++;
+		}
+	}
+	void clearConsole() {
+		consoleOutput->removeAllItems();
+		consoleOutput->deleteAllItems();
+		consoleOutput->clearUserStrings();
+	}
+	void consoleState() {
+		if (consoleEnable == false) {
+			consoleEnable = true;
+		}
+		else {
+			consoleEnable = false;
+		}
 	}
 	//Change and update label text
 	void setLabelCaption(Ogre::String labelText, Ogre::String labelText2, Ogre::String labelText3) {
@@ -230,7 +253,8 @@ private:
 	MyGUI::Edit * consoleInput;
 	MyGUI::ComboBox* consoleOutput;
 	MyGUI::Button* consoleSubmit;
-	
+	int lineNumber;
+	bool consoleEnable;
 	//Main menu elements
 	MyGUI::Button* designerButton;
 	MyGUI::Button* settingsButton;
@@ -262,6 +286,8 @@ private:
 	MyGUI::Button* setShapeOffsetY;
 
 	MyGUI::ListBox * meshTypes;
+
+
 	/**Close structure***/
 	void loadUi() {		
 		createMainMenu();
@@ -362,7 +388,7 @@ private:
 	}
 	/****Label block****/
 	void label() {
-		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 10, 250, 100), MyGUI::Align::Default, "Overlapped");
+		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 10, 250, 180), MyGUI::Align::Default, "Overlapped");
 		mLabel->setCaption("some edit");
 		mLabel->setTextAlign(MyGUI::Align::Center);
 		mLabel->setEditMultiLine(true);

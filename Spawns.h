@@ -22,7 +22,7 @@
 #include <NxCharacter.h>
 
 #include "PhysicsManager.h"
-
+#include "BotModel.h"
 //
 #include "Models.h"
 
@@ -304,6 +304,9 @@ public:
 		counter++;
 		return height;
 	}
+	Critter::Node* getSinbadNode() {
+		return sinbadNode;
+	}
 	/******************************Animated character****************************************/
 	void setupCharacterAnimations() {
 		//sinbad
@@ -324,7 +327,7 @@ public:
 		desc.mMaxGroundSpeed = 17.0f;
 		desc.setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
 		//Create critter node for sinbad mesh
-		Critter::Node* sinbadNode = _physicsManager->getMRenderSystem()->createNode();
+		sinbadNode = _physicsManager->getMRenderSystem()->createNode();
 		sinbadNode->createAndAttachEntity(meshName);
 		//Create animated character
 		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(Ogre::Vector3(-42, 125, -234), Ogre::Radian(0), sinbadNode, desc);
@@ -347,6 +350,7 @@ public:
 	NxOgre::Actor* getActor() {
 		return mTestActor;
 	}
+
 	//
 	void resetHelper() {
 		mSinbadHelper.reset();
@@ -357,7 +361,9 @@ public:
 
 	void left(int speed) {
 		mSinbadHelper.input.is_turning = true;
+		//mSinbadHelper.leftFractional(122);
 		mSinbadHelper.left(speed);
+		
 	}
 	void right(int speed) {
 		mSinbadHelper.input.is_turning = true;
@@ -372,10 +378,47 @@ public:
 	void jump(int speed) {
 		mSinbadHelper.up(speed);
 	}
+	/****************************************************************************************/
+	/**********************Animated Character bots**************************/
+	/****************************************************************************************/	
+	BotModel * createBot(Ogre::String meshName, Ogre::Vector3 position) {
+		BotModel * botModel = new BotModel();
+
+		/**/
+		//Critter::AnimatedCharacter*     mBot;
+		//Critter::CharacterInputHelper   mBotHelper;
+		/**/
+		//Critter::AnimatedCharacterDescription desc;
+		botModel->getBotDesc().mShape = NxOgre::SimpleCapsule(5.6, 2);
+		botModel->getBotDesc().mCollisionMask = (Walls << 1) | (Objects << 1);
+		botModel->getBotDesc().mMaxGroundSpeed = 17.0f;
+		botModel->getBotDesc().setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
+
+		//Create critter node for sinbad mesh
+		Critter::Node* node = _physicsManager->getMRenderSystem()->createNode();
+		node->createAndAttachEntity(meshName);
+		botModel->setBotNode(node);
+		//Create animated character
+		
+		botModel->setBot(_physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(0), botModel->getBotNode(), botModel->getBotDesc()));
+		//Assign helper to sinbad
+		botModel->getBot()->setInput(botModel->getBotHelper());
+
+		return botModel;
+	}
+
+	/****************************************************************************************/
+	/************************END Aniamted character spawn*************************/
+	/****************************************************************************************/
+
 	/******************************Load predefined****************************************/
 	void loadPredefinedWorld() {
 		setupCharacterAnimations();
 		createAnimatedCharacter("sinbad.mesh");
+		//Test sector
+		
+
+		//Test sector end
 	}
 private:
 	PhysicsManager* _physicsManager;
@@ -400,6 +443,7 @@ private:
 	Critter::AnimatedCharacter*     mSinbad;
 	Critter::CharacterInputHelper   mSinbadHelper;
 	NxOgre::Actor*                  mTestActor;
+	Critter::Node* sinbadNode;
 };
 
 

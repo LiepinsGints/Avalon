@@ -10,6 +10,7 @@
 #include "Spawns.h"
 
 
+
 Core::Core()
 	: mRoot(0),
 	mResourcesCfg(Ogre::StringUtil::BLANK),
@@ -89,15 +90,18 @@ bool Core::go()
 	mySql->mySqlConnect();
 	//Spawns
 	spawns = new Spawns( mRoot, mWindow, mSceneMgr, physicsManager);
+	
 	//Designer
 	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup(),physicsManager);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns);
-
 	float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world
 	mySql->getWorld(spawns);
+	//bots
+	bots = new Bots(spawns,userInterface);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 100, -41));
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
 	//windowResized(mWindow);
@@ -112,10 +116,17 @@ bool Core::go()
 
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
+	//test section
+	Ogre::Real tempAngle = bots->botTurnToPlayer();
+	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
 							 "Y: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().y)+ "\n" +
-							 "Z: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().z);
+							 "Z: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().z)+"\n"+
+							 "yaw: " + Ogre::StringConverter::toString(bots->corectAngle(Ogre::Degree(spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees()))+"\n"+
+							 "Angle" + Ogre::StringConverter::toString(tempAngle)
+								 ;
+	
 	userInterface->setLabelCaption(my_string,swap, "Hit mesh id: " + designer->getHitMeshName());
 	//
 	if (mWindow->isClosed()) return false;

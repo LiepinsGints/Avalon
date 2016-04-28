@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\Hex\NxOgre\critter\build\source;$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,10 +171,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AppSettings.h" />
+    <ClInclude Include="Bots.h" />
     <ClInclude Include="Bounds.h" />
     <ClInclude Include="ConsoleReader.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Designer.h" />
+    <ClInclude Include="BotModel.h" />
     <ClInclude Include="Models.h" />
     <ClInclude Include="MySql.h" />
     <ClInclude Include="Sound.h" />

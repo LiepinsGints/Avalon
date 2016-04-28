@@ -151,7 +151,7 @@ public:
 			if (mMovableFound)
 			{
 				mCurObject = it->movable->getParentSceneNode();
-				hitMeshName = mCurObject->getName();
+				//hitMeshName = mCurObject->getName();
 				break;
 			}
 		}

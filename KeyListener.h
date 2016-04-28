@@ -142,7 +142,10 @@ public:
 			break;
 
 		case OIS::KC_NUMPAD4:
-			
+			if (timer->getMilliseconds()>1000 && _designer->getShapeType() == 1) {
+				_userinterface->consoleState();
+				timer->reset();
+			}
 			break;
 
 		case OIS::KC_NUMPAD6:

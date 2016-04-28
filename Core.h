@@ -18,6 +18,7 @@
 #include "MySql.h"
 #include "Models.h"
 #include "Designer.h"
+#include "Bots.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -51,6 +52,7 @@ private:
 	AppSettings* appSettings;
 	UserInterface * userInterface;
 	Designer * designer;
+	Bots * bots;
 	MySql * mySql;
 	//Strings
 	Ogre::String swap;
