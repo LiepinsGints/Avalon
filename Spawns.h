@@ -249,61 +249,9 @@ public:
 		_physicsManager->addMBodies(mBodyTemp);
 
 	}
-	//Create Sinbad
-	void createSinbad() {
-		Critter::BodyDescription bodyDescriptionTemp;
-		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
-		Critter::Body* mBodyTemp;
-		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(NxOgre::BoxDescription(4, 4, 4),
-			NxOgre::Vec3(getCharacter()->getPosition().x, getCharacter()->getPosition().y + 40, getCharacter()->getPosition().z), "sinbad.mesh", bodyDescriptionTemp);
-		mBodyTemp->getNode()->setScale(1.0);
-		_physicsManager->addMBodies(mBodyTemp);
-
-	}
 	
-	//Create Cottage
-	void createCottage(Ogre::Vector3 position, float scale) {
-		Ogre::Entity* ogreCottage = _mSceneMgr->createEntity("Cottage"+ counter, "tudorhouse.mesh");
-
-		Ogre::SceneNode* cottageNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		cottageNode->attachObject(ogreCottage);
-		cottageNode->scale(scale, scale, scale);
-		
-		//
-		Ogre::AxisAlignedBox aab = ogreCottage->getBoundingBox();
-		float width = aab.getSize().x * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		float height = aab.getSize().y * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		float deep = aab.getSize().z * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		cottageNode->setPosition(Ogre::Vector3(position.x, height/2+ position.y, position.z));
-		
-		//
-		_physicsManager->createBoundingBox(cottageNode->getPosition().x, cottageNode->getPosition().y-20, cottageNode->getPosition().z,
-			width, height,deep);
-
-		counter++;
-	}
 	
-	//get sinbadHeight
-	float getSinbadHeight(Ogre::Vector3 position, float scale) {
-		Ogre::Entity* ogreCottage = _mSceneMgr->createEntity("Sinbad" + counter, "sinbad.mesh");
 
-		Ogre::SceneNode* cottageNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		cottageNode->attachObject(ogreCottage);
-		cottageNode->scale(scale, scale, scale);
-
-		//
-		Ogre::AxisAlignedBox aab = ogreCottage->getBoundingBox();
-		float width = aab.getSize().x * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		float height = aab.getSize().y * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		float deep = aab.getSize().z * (scale - Ogre::MeshManager::getSingleton().getBoundsPaddingFactor());
-		cottageNode->setPosition(Ogre::Vector3(position.x, height / 2 + position.y, position.z));
-		//
-		_physicsManager->createBoundingBox(cottageNode->getPosition().x, cottageNode->getPosition().y, cottageNode->getPosition().z,
-			width, height, deep);
-
-		counter++;
-		return height;
-	}
 	Critter::Node* getSinbadNode() {
 		return sinbadNode;
 	}

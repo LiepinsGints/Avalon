@@ -102,7 +102,7 @@ public:
 			break;
 		case OIS::KC_N:
 			if (timer->getMilliseconds()>1000) {
-				_spawns->createSinbad();
+				
 				timer->reset();
 			}
 			break;

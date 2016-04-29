@@ -95,8 +95,8 @@ bool Core::go()
 	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup(),physicsManager);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns);
-	float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
-	swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
+	//float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
+	//swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world
 	mySql->getWorld(spawns);
 	//bots
