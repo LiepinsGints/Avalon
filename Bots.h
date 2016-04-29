@@ -30,18 +30,23 @@
 #include "BotModel.h"
 #include <math.h>  
 #include "UserInterface.h"
+#include "MySql.h"
 
 using namespace Ogre;
 class Bots {
 public:
-	Bots(Spawns * spawns, UserInterface * userInterface) {
+	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql) {
 		_spawns = spawns;
 		_userInterface= userInterface;
+		_mySql = mySql;
+		getBots();
+
 	}
 	~Bots() {
 
 
 	}
+
 	void spawnBot(Ogre::String meshName, Ogre::Vector3 position) {
 		mBots.push_back(_spawns->createBot(meshName, position));
 	}
@@ -72,53 +77,50 @@ public:
 
 		return angleDeg;
 	}
-	Ogre::Real botTurnToPlayer() {
-		
 
-		//
-		BotModel * firstBot = mBots.front();
-		Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
-		Ogre::Vector3 botPos = firstBot->getBot()->getPosition();
+	void getBots() {
+		mBots = _mySql->getBots(_spawns);
+	}
+
+
+	void botMoveToPoint(BotModel * botModel, Ogre::Vector3 charPos) {
+		
+		Ogre::Vector3 botPos = botModel->getBot()->getPosition();
 		Ogre::Real distanceBetween = charPos.distance(botPos);
-		if (distanceBetween > 10) {
-			firstBot->getBotHelper().forward(100);
-			firstBot->getBot()->setInput(firstBot->getBotHelper());
+		if (distanceBetween > 5) {
+			botModel->getBotHelper().forward(100);
+			botModel->getBot()->setInput(botModel->getBotHelper());
 		}
 		else {
-			firstBot->getBotHelper().forward(0);
-			firstBot->getBot()->setInput(firstBot->getBotHelper());
+			botModel->getBotHelper().forward(0);
+			botModel->getBot()->setInput(botModel->getBotHelper());
 		}
 		//firstBot->getBotDesc().mShape.mRadius;
 		//
-		firstBot->getBotNode()->getOrientation().getYaw();
-		_spawns->getSinbadNode()->getOrientation().getYaw();
+		botModel->getBotNode()->getOrientation().getYaw();
+		//_spawns->getSinbadNode()->getOrientation().getYaw();
 		//Calcualte vectors
-		//Ogre::Vector3 vectorA = Ogre::Vector3(_spawns->getCharacter()->getPosition().x, _spawns->getCharacter()->getPosition().y, _spawns->getCharacter()->getPosition().z+1)-_spawns->getCharacter()->getPosition();
-		//Ogre::Vector3 vectorB = firstBot->getBot()->getPosition() - _spawns->getCharacter()->getPosition();
 		Ogre::Vector3 vectorA = Ogre::Vector3(
-			_spawns->getCharacter()->getPosition().x - _spawns->getCharacter()->getPosition().x,
-			_spawns->getCharacter()->getPosition().y - _spawns->getCharacter()->getPosition().y,
-			_spawns->getCharacter()->getPosition().z+1 - _spawns->getCharacter()->getPosition().z
+			charPos.x - charPos.x,
+			charPos.y - charPos.y,
+			charPos.z + 1 - charPos.z
 			);
 		Ogre::Vector3 vectorB = Ogre::Vector3(
-			firstBot->getBot()->getPosition().x - _spawns->getCharacter()->getPosition().x,
-			firstBot->getBot()->getPosition().y - _spawns->getCharacter()->getPosition().y,
-			firstBot->getBot()->getPosition().z - _spawns->getCharacter()->getPosition().z
+			botModel->getBot()->getPosition().x - charPos.x,
+			botModel->getBot()->getPosition().y - charPos.y,
+			botModel->getBot()->getPosition().z - charPos.z
 			);
-		
+
 		Ogre::Real vectorAngle = angleBetweenVectors(vectorA, vectorB);
-		//bots->corectAngle(Ogre::Degree(spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees())
-		Ogre::Real playerCurAngle = corectAngle(Ogre::Degree(_spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees());
-		Ogre::Real botAngle = corectAngle(Ogre::Degree(firstBot->getBotNode()->getOrientation().getYaw()).valueDegrees());
+
+		//Ogre::Real playerCurAngle = corectAngle(Ogre::Degree(_spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees());
+		Ogre::Real botAngle = corectAngle(Ogre::Degree(botModel->getBotNode()->getOrientation().getYaw()).valueDegrees());
 		//
-		//_userInterface->addLineToConsole("bot angle : " + Ogre::StringConverter::toString(botAngle)+" Vector angle: "+Ogre::StringConverter::toString(vectorAngle));
 		Ogre::Real angle = 180 - vectorAngle;
 		if (angle < 0) {
 			angle = 360 + angle;
-			
-		}
 
-		_userInterface->addLineToConsole("bot angle : " + Ogre::StringConverter::toString(angle));
+		}
 
 		Ogre::Real arkA;
 		Ogre::Real arkB;
@@ -127,22 +129,22 @@ public:
 			arkB = 360 - arkA;
 
 			if (arkA > -10 && arkA < 10) {
-				firstBot->getBotHelper().left(0);
-				firstBot->getBotHelper().right(0);
-				firstBot->getBot()->setInput(firstBot->getBotHelper());
+				botModel->getBotHelper().left(0);
+				botModel->getBotHelper().right(0);
+				botModel->getBot()->setInput(botModel->getBotHelper());
 			}
 			else {
 				if (arkA < arkB) {
-					firstBot->getBotHelper().right(0);
-					firstBot->getBotHelper().input.is_turning = true;
-					firstBot->getBotHelper().left(127);
-					firstBot->getBot()->setInput(firstBot->getBotHelper());
+					botModel->getBotHelper().right(0);
+					botModel->getBotHelper().input.is_turning = true;
+					botModel->getBotHelper().left(127);
+					botModel->getBot()->setInput(botModel->getBotHelper());
 				}
 				else {
-					firstBot->getBotHelper().left(0);
-					firstBot->getBotHelper().input.is_turning = true;
-					firstBot->getBotHelper().right(127);
-					firstBot->getBot()->setInput(firstBot->getBotHelper());
+					botModel->getBotHelper().left(0);
+					botModel->getBotHelper().input.is_turning = true;
+					botModel->getBotHelper().right(127);
+					botModel->getBot()->setInput(botModel->getBotHelper());
 				}
 			}
 
@@ -152,36 +154,64 @@ public:
 			arkB = 360 - arkA;
 
 			if (arkA > -10 && arkA < 10) {
-				firstBot->getBotHelper().left(0);
-				firstBot->getBotHelper().right(0);
-				firstBot->getBot()->setInput(firstBot->getBotHelper());
+				botModel->getBotHelper().left(0);
+				botModel->getBotHelper().right(0);
+				botModel->getBot()->setInput(botModel->getBotHelper());
 			}
 			else {
 				if (arkA < arkB) {
-					firstBot->getBotHelper().left(0);
-					firstBot->getBotHelper().input.is_turning = true;
-					firstBot->getBotHelper().right(127);
-					firstBot->getBot()->setInput(firstBot->getBotHelper());
+					botModel->getBotHelper().left(0);
+					botModel->getBotHelper().input.is_turning = true;
+					botModel->getBotHelper().right(127);
+					botModel->getBot()->setInput(botModel->getBotHelper());
 				}
 				else {
-					firstBot->getBotHelper().right(0);
-					firstBot->getBotHelper().input.is_turning = true;
-					firstBot->getBotHelper().left(127);
-					firstBot->getBot()->setInput(firstBot->getBotHelper());
+					botModel->getBotHelper().right(0);
+					botModel->getBotHelper().input.is_turning = true;
+					botModel->getBotHelper().left(127);
+					botModel->getBot()->setInput(botModel->getBotHelper());
 				}
 			}
 		}
+	}
+
+	void botControls() {
+		//
+		
+		for (std::vector<BotModel*>::iterator it = mBots.begin(); it != mBots.end(); ++it) {
+			
+			Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
+			Ogre::Real startPosChDist = charPos.distance((*it)->getStartPos());
+
+			if (startPosChDist <= 120) {
+				botMoveToPoint((*it), charPos);
+			}
+			else {
+				if((*it)->getStartPos().x!= (*it)->getBot()->getPosition().x && (*it)->getStartPos().z != (*it)->getBot()->getPosition().z){
+					
+					botMoveToPoint((*it), Ogre::Vector3((*it)->getStartPos().x, (*it)->getStartPos().y, (*it)->getStartPos().z));
+				}
+			}
+		}
+		
+		/*
+		BotModel * firstBot = mBots.front();
+		Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
+		
+		Ogre::Real startPosChDist = charPos.distance(firstBot->getStartPos());
+
+		if (startPosChDist<=120) {
+			botMoveToPoint(firstBot, charPos);
+		}
+		else {
+			
+			botMoveToPoint(firstBot, Ogre::Vector3(firstBot->getStartPos().x,0, firstBot->getStartPos().z));
+			
+		}
+		*/
+		
 
 		
-		
-
-
-
-		
-		
-
-		//return vectorAngle;
-		return angle;
 			
 	}
 	
@@ -190,6 +220,7 @@ private:
 	Spawns * _spawns;
 	UserInterface * _userInterface;
 	std::vector<BotModel*> mBots;
+	MySql * _mySql;
 
 };
 #endif

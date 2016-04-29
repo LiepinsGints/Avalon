@@ -19,6 +19,7 @@
 #include "Models.h"
 #include "SpawnWorld.h"
 #include "Bounds.h"
+#include "BotModel.h"
 
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -87,6 +88,7 @@ public:
 				model->setName(res->getString("Name").c_str());
 				model->setMeshName(res->getString("MeshName").c_str());
 				model->setDimensions(Ogre::Vector3(std::stod(res->getString("Width").c_str()), std::stod(res->getString("Height").c_str()), std::stod(res->getString("Depth").c_str())));
+				model->setType(std::stoi(res->getString("Type").c_str()));
 				//break;
 			}
 			return model;
@@ -100,7 +102,7 @@ public:
 		}
 	}
 	void getModelList(MyGUI::ListBox * meshList) {
-		std::string query = "select MeshName from models";
+		std::string query = "select MeshName from models where Type=0";
 
 		try {
 			sql::Statement * stmt = con->createStatement();
@@ -115,6 +117,44 @@ public:
 
 		}
 	}
+	//get bots
+	std::vector<BotModel*> getBots(Spawns* spawns) {
+		std::vector<BotModel*> mBots;
+		BotModel*  mBot;
+		std::string query = "select * from Bots";
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
+			while (res->next()) {
+				int id =std::stoi(res->getString("ID").c_str());
+				int meshID = std::stoi(res->getString("MeshID").c_str());
+				Ogre::String meshName = "";
+				
+				std::string query2 = "select MeshName from models where ID="+std::to_string(meshID);
+				sql::Statement * stmt2 = con->createStatement();
+				sql::ResultSet * res2 = stmt2->executeQuery(query2.c_str());
+				while (res2->next()) {
+					meshName=res2->getString("MeshName").c_str();
+				}
+
+				Ogre::Vector3 startPos = Ogre::Vector3(std::stod(res->getString("X").c_str()), std::stod(res->getString("Y").c_str()), std::stod(res->getString("Z").c_str()));
+				mBot = spawns->createBot(meshName,startPos);
+				mBot->setId(id);
+				mBot->setMeshName(meshName);
+				mBots.push_back(mBot);
+			}
+		}catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+			//model->setName("Error");
+
+		}
+		return mBots;
+	}
+
+
+	
 	//spawn all objects from world table
 	void getWorld(Spawns* spawns) {
 		SpawnWorld * spawnWorld = new SpawnWorld();

@@ -34,6 +34,9 @@ public:
 
 	}
 
+	int getId() {
+		return id;
+	}
 	AnimatedCharacter* getBot() {
 		return bot;
 	}
@@ -46,7 +49,17 @@ public:
 	Critter::Node* getBotNode() {
 		return botNode;
 	}
+	Ogre::Vector3  getStartPos() {
+		return startPos;
+	}
+	Ogre::String  getMeshName() {
+		return meshName;
+	}
 
+
+	void setId(int _id) {
+		id = _id;
+	}
 	void setBot(AnimatedCharacter* _bot) {
 		bot = _bot;
 	}
@@ -59,11 +72,21 @@ public:
 	void setBotNode(Critter::Node* _botNode) {
 		botNode = _botNode;
 	}
+	void setStartPos(Ogre::Vector3  _startPos) {
+		startPos= _startPos;
+	}
+	void setMeshName(Ogre::String _meshName) {
+		meshName = _meshName;
+	}
 
 private:	
+	int id;
 	AnimatedCharacter* bot;
 	CharacterInputHelper botHelper;
 	AnimatedCharacterDescription botDesc;
 	Critter::Node* botNode;
+	Ogre::Vector3  startPos;
+	Ogre::String meshName;
+	
 };
 #endif

@@ -100,8 +100,8 @@ bool Core::go()
 	//Populate world
 	mySql->getWorld(spawns);
 	//bots
-	bots = new Bots(spawns,userInterface);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 100, -41));
+	bots = new Bots(spawns,userInterface,mySql);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41));
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
 	//windowResized(mWindow);
@@ -117,14 +117,13 @@ bool Core::go()
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//test section
-	Ogre::Real tempAngle = bots->botTurnToPlayer();
+	 bots->botControls();
 	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
 							 "Y: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().y)+ "\n" +
 							 "Z: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().z)+"\n"+
-							 "yaw: " + Ogre::StringConverter::toString(bots->corectAngle(Ogre::Degree(spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees()))+"\n"+
-							 "Angle" + Ogre::StringConverter::toString(tempAngle)
+							 "yaw: " + Ogre::StringConverter::toString(bots->corectAngle(Ogre::Degree(spawns->getSinbadNode()->getOrientation().getYaw()).valueDegrees()))+"\n"
 								 ;
 	
 	userInterface->setLabelCaption(my_string,swap, "Hit mesh id: " + designer->getHitMeshName());

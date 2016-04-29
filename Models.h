@@ -50,11 +50,18 @@ public:
 	Ogre::Vector3 getDimensions() {
 		return dimensions;
 	}
+	void setType(int _type) {
+		type = _type;
+	}
+	int getType() {
+		return type;
+	}
 private:
 	int id;
 	std::string name;
 	std::string meshName;
 	Ogre::Vector3 dimensions;
+	int type;
 
 };
 #endif

@@ -388,12 +388,12 @@ public:
 		//Critter::AnimatedCharacter*     mBot;
 		//Critter::CharacterInputHelper   mBotHelper;
 		/**/
+		botModel->setStartPos(position);
 		//Critter::AnimatedCharacterDescription desc;
 		botModel->getBotDesc().mShape = NxOgre::SimpleCapsule(5.6, 2);
 		botModel->getBotDesc().mCollisionMask = (Walls << 1) | (Objects << 1);
 		botModel->getBotDesc().mMaxGroundSpeed = 17.0f;
 		botModel->getBotDesc().setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
-
 		//Create critter node for sinbad mesh
 		Critter::Node* node = _physicsManager->getMRenderSystem()->createNode();
 		node->createAndAttachEntity(meshName);
@@ -406,6 +406,7 @@ public:
 
 		return botModel;
 	}
+
 
 	/****************************************************************************************/
 	/************************END Aniamted character spawn*************************/
