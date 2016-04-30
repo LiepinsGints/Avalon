@@ -59,9 +59,9 @@ public:
 
 		importData.layerList.resize(3);
 		importData.layerList[0].worldSize = 40;
-		importData.layerList[0].textureNames.push_back("1-fine-sand-seamless-texture.dds");
+		importData.layerList[0].textureNames.push_back("grass_texture240.dds");
 		importData.layerList[1].worldSize = 40;
-		importData.layerList[1].textureNames.push_back("grass_texture240.dds");
+		importData.layerList[1].textureNames.push_back("1-fine-sand-seamless-texture.dds");
 		importData.layerList[2].worldSize = 40;
 		importData.layerList[2].textureNames.push_back("stone.dds");
 
@@ -101,8 +101,8 @@ public:
 	}
 	void initBlendMaps(Ogre::Terrain* terrain)
 	{
-		Ogre::Real minHeight0 = 70;
-		Ogre::Real fadeDist0 = 40;
+		Ogre::Real minHeight0 = 12;
+		Ogre::Real fadeDist0 = -20;
 		Ogre::Real minHeight1 = 70;
 		Ogre::Real fadeDist1 = 15;
 

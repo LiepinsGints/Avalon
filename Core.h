@@ -19,6 +19,8 @@
 #include "Models.h"
 #include "Designer.h"
 #include "Bots.h"
+#include "Sky.h"
+#include "Water.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -54,6 +56,8 @@ private:
 	Designer * designer;
 	Bots * bots;
 	MySql * mySql;
+	Sky * sky;
+	Water * water;
 	//Strings
 	Ogre::String swap;
 

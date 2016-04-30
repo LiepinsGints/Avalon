@@ -102,6 +102,10 @@ bool Core::go()
 	//bots
 	bots = new Bots(spawns,userInterface,mySql);
 	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41));
+	//Sky
+	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
+	//Water
+	//water = new Water(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
 	//windowResized(mWindow);

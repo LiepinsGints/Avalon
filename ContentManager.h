@@ -25,7 +25,7 @@ public:
 		createLights();
 		createCamera();
 		createSceneElements();
-		createSky();
+		//createSky();
 	}
 
 	Ogre::Camera* getmCamera() {
