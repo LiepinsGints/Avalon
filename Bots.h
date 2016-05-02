@@ -47,8 +47,8 @@ public:
 
 	}
 
-	void spawnBot(Ogre::String meshName, Ogre::Vector3 position) {
-		mBots.push_back(_spawns->createBot(meshName, position));
+	void spawnBot(Ogre::String meshName, Ogre::Vector3 position, Ogre::Real speed) {
+		mBots.push_back(_spawns->createBot(meshName, position, speed));
 	}
 
 	Ogre::Real angleBetweenVectors(Ogre::Vector3 a, Ogre::Vector3 b) {

@@ -101,7 +101,7 @@ bool Core::go()
 	mySql->getWorld(spawns);
 	//bots
 	bots = new Bots(spawns,userInterface,mySql);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41));
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41),17);
 	//Sky
 	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	//Water

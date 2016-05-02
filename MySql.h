@@ -139,7 +139,7 @@ public:
 				}
 
 				Ogre::Vector3 startPos = Ogre::Vector3(std::stod(res->getString("X").c_str()), std::stod(res->getString("Y").c_str()), std::stod(res->getString("Z").c_str()));
-				mBot = spawns->createBot(meshName,startPos);
+				mBot = spawns->createBot(meshName,startPos,17);
 				mBot->setId(id);
 				mBot->setMeshName(meshName);
 				mBots.push_back(mBot);

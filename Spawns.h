@@ -77,6 +77,9 @@ public:
 		case 1:
 			createObjectBody(id,meshName, position, scaleDimensions, boxDimensions, scale, rotation, mass);
 			break;
+		case 2:
+			createObjectKinematicBody(id, meshName, position, scaleDimensions, boxDimensions, scale, rotation, mass);
+			break;
 		}
 		
 	}
@@ -85,7 +88,7 @@ public:
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
-		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
+		bodyDescriptionTemp.mMass = mass; // Set the mass to 20kg.
 		bodyDescriptionTemp.mName = Ogre::StringConverter::toString(id);
 		Critter::Body* mBodyTemp;
 		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(
@@ -143,8 +146,9 @@ public:
 		//_physicsManager->getMRenderSystem()->createSceneNodeEntityPair(meshName, Vec3(globalPose), NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
 		createMeshOnly(id,meshName, position, scaleDimensions, rotation);
 	}
-	void createObjectKinematicBody(Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
+	void createObjectKinematicBody(int id,Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
 		Critter::BodyDescription bodyDescriptionTemp;
+		bodyDescriptionTemp.mName = Ogre::StringConverter::toString(id);
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
@@ -268,17 +272,17 @@ public:
 		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
 
 	}
-	void createAnimatedCharacter(Ogre::String meshName) {
+	void createAnimatedCharacter(Ogre::String meshName,Ogre::Vector3 position, Ogre::Real groundSpeed) {
 		Critter::AnimatedCharacterDescription desc;
 		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
 		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
-		desc.mMaxGroundSpeed = 17.0f;
+		desc.mMaxGroundSpeed = groundSpeed;
 		desc.setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
 		//Create critter node for sinbad mesh
 		sinbadNode = _physicsManager->getMRenderSystem()->createNode();
 		sinbadNode->createAndAttachEntity(meshName);
 		//Create animated character
-		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(Ogre::Vector3(-42, 125, -234), Ogre::Radian(0), sinbadNode, desc);
+		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(0), sinbadNode, desc);
 		//Create 
 		Ogre::SceneNode* camNode;
 		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -329,7 +333,7 @@ public:
 	/****************************************************************************************/
 	/**********************Animated Character bots**************************/
 	/****************************************************************************************/	
-	BotModel * createBot(Ogre::String meshName, Ogre::Vector3 position) {
+	BotModel * createBot(Ogre::String meshName, Ogre::Vector3 position, Ogre::Real groundSpeed) {
 		BotModel * botModel = new BotModel();
 
 		/**/
@@ -340,7 +344,7 @@ public:
 		//Critter::AnimatedCharacterDescription desc;
 		botModel->getBotDesc().mShape = NxOgre::SimpleCapsule(5.6, 2);
 		botModel->getBotDesc().mCollisionMask = (Walls << 1) | (Objects << 1);
-		botModel->getBotDesc().mMaxGroundSpeed = 17.0f;
+		botModel->getBotDesc().mMaxGroundSpeed = groundSpeed;
 		botModel->getBotDesc().setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
 		//Create critter node for sinbad mesh
 		Critter::Node* node = _physicsManager->getMRenderSystem()->createNode();
@@ -363,7 +367,7 @@ public:
 	/******************************Load predefined****************************************/
 	void loadPredefinedWorld() {
 		setupCharacterAnimations();
-		createAnimatedCharacter("sinbad.mesh");
+		createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234),17.0f);
 		//Test sector
 		
 
