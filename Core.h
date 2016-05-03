@@ -21,6 +21,7 @@
 #include "Bots.h"
 #include "Sky.h"
 #include "Water.h"
+#include "ParticleManager.h"
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -37,6 +38,8 @@ public:
 
 private:
 	virtual bool frameRenderingQueued(const Ogre::FrameEvent& fe);
+	virtual bool frameStarted(const Ogre::FrameEvent& fe);
+	virtual bool frameEnded(const Ogre::FrameEvent& fe);
 
 	//virtual void windowResized(Ogre::RenderWindow* rw);
 	virtual void windowClosed(Ogre::RenderWindow* rw);
@@ -58,6 +61,7 @@ private:
 	MySql * mySql;
 	Sky * sky;
 	Water * water;
+	ParticleManager * particleManager;
 	//Strings
 	Ogre::String swap;
 

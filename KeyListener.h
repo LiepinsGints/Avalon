@@ -29,6 +29,8 @@
 #include "MyGUI_OgrePlatform.h"
 #include "MySql.h"
 
+#include "ParticleManager.h"
+
 class KeyListener:
 	public OIS::MouseListener,
 	public OIS::KeyListener
@@ -40,7 +42,8 @@ public:
 		AppSettings* appSettings,
 		Spawns* spawns,
 		Designer* designer,
-		UserInterface* userinterface);
+		UserInterface* userinterface,
+		ParticleManager * particleManager);
 	~KeyListener();
 	//Listen for key or mouse input
 	bool listen(const Ogre::FrameEvent& fe) {
@@ -68,6 +71,7 @@ public:
 	{
 		MyGUI::InputManager::getInstance().injectMouseMove(arg.state.X.abs, arg.state.Y.abs, arg.state.Z.abs);
 		_designer->mousePos(arg);
+		_particleManager->mousePos(arg);
 		return true;
 	}
 
@@ -114,6 +118,8 @@ public:
 					_physicsManager->getCharacter()->getPosition().z,
 					56.7,50,67.7);
 					*/
+				//_particleManager->createSpell(_spawns->getCharacter()->getPosition(), _spawns->getCharacter()->getPosition(),100);
+				_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 100);
 				timer->reset();
 			}
 			break;
@@ -232,10 +238,11 @@ private:
 	Designer* _designer;
 	UserInterface * _userinterface;
 	MySql * mySql;
+	ParticleManager * _particleManager;
 	
 };
 
-KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns, Designer* designer, UserInterface * userinterface)
+KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentManager, PhysicsManager* physicsManager, AppSettings* appSettings, Spawns* spawns, Designer* designer, UserInterface * userinterface, ParticleManager * particleManager)
 {
 	//init scene variables
 	_mWindow = mWindow;
@@ -245,6 +252,7 @@ KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentMan
 	_spawns = spawns;
 	_designer = designer;
 	_userinterface = userinterface;
+	_particleManager = particleManager;
 	mySql = new MySql(_appSettings);
 	mySql->mySqlConnect();
 	//Init timer

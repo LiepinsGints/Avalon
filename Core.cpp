@@ -106,8 +106,12 @@ bool Core::go()
 	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	//Water
 	//water = new Water(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
+	//ParticleManager
+	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup());
 	// OIS
-	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface);
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface,particleManager);
+	
+
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
@@ -122,6 +126,7 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//test section
 	 bots->botControls();
+	
 	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
@@ -139,6 +144,18 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 	return appSettings->isRender();
 
 	//return true;
+}
+bool Core::frameStarted(const Ogre::FrameEvent& fe)
+{
+	particleManager->particleControls(fe);
+	return true;
+}
+
+bool Core::frameEnded(const Ogre::FrameEvent& fe)
+{
+	
+
+	return true;
 }
 /*
 void Core::windowResized(Ogre::RenderWindow* rw)
