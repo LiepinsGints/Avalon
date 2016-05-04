@@ -178,7 +178,7 @@ public:
 			if (timer->getMilliseconds()>2000) {
 				Ogre::Real mana = _spawns->getMana();
 				if(mana>=10){
-					_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000,20);
+					_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 2000,20,"fireCastPlayer",0);
 					_spawns->setMana(_spawns->getMana() - 10);
 					_userinterface->updateUserFrame();
 					timer->reset();

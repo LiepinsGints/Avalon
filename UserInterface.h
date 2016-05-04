@@ -344,7 +344,7 @@ private:
 			40, 26, MyGUI::Align::Default, "Main");
 		consoleSubmit->setCaption("GO...");
 		//Label 2
-		mLabel2 = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 150, 250, 100), MyGUI::Align::Default, "Overlapped");
+		mLabel2 = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 40, 250, 100), MyGUI::Align::Default, "Overlapped");
 		mLabel2->setCaption("some edit");
 		mLabel2->setTextAlign(MyGUI::Align::Center);
 		mLabel2->setEditMultiLine(true);
@@ -422,7 +422,7 @@ private:
 	}
 	/****Label block****/
 	void label() {
-		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 10, 250, 180), MyGUI::Align::Default, "Overlapped");
+		mLabel = MyGUI::Gui::getInstance().createWidget<MyGUI::EditBox>("EditBoxStretch", MyGUI::IntCoord(10, 250, 250, 180), MyGUI::Align::Default, "Overlapped");
 		mLabel->setCaption("some edit");
 		mLabel->setTextAlign(MyGUI::Align::Center);
 		mLabel->setEditMultiLine(true);

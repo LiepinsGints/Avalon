@@ -101,7 +101,7 @@ bool Core::go()
 	//Populate world
 	mySql->getWorld(spawns);
 	//bots
-	bots = new Bots(spawns,userInterface,mySql,physicsManager);
+	bots = new Bots(spawns,userInterface,mySql,physicsManager,appSettings);
 	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41),17);
 	//Sky
 	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
@@ -126,8 +126,10 @@ bool Core::go()
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//test section
-	 bots->botControls();
-	
+	 bots->botControls(particleManager);
+	 spawns->manaRegen();
+	 spawns->characterRespawn();
+	 userInterface->updateUserFrame();
 	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
@@ -148,7 +150,7 @@ bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 }
 bool Core::frameStarted(const Ogre::FrameEvent& fe)
 {
-	particleManager->particleControls(fe);
+	particleManager->particleControls(fe, spawns,userInterface);
 	return true;
 }
 

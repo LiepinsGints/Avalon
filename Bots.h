@@ -32,14 +32,17 @@
 #include "UserInterface.h"
 #include "MySql.h"
 #include "PhysicsManager.h"
+#include "ParticleManager.h"
+#include "AppSettings.h"
 using namespace Ogre;
 class Bots {
 public:
-	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql, PhysicsManager* physicsManager) {
+	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql, PhysicsManager* physicsManager, AppSettings* appSettings) {
 		_spawns = spawns;
 		_userInterface= userInterface;
 		_mySql = mySql;
 		_physicsManager = physicsManager;
+		_appSettings = appSettings;
 		getBots();
 
 	}
@@ -89,7 +92,7 @@ public:
 		Ogre::Vector3 botPos = botModel->getBot()->getPosition();
 		Ogre::Real distanceBetween = charPos.distance(botPos);
 		if (distanceBetween > 5) {
-			botModel->getBotHelper().forward(100);
+			botModel->getBotHelper().forward(_appSettings->getBotSpeed());
 			botModel->getBot()->setInput(botModel->getBotHelper());
 		}
 		else {
@@ -176,15 +179,22 @@ public:
 		}
 	}
 
-	void botControls() {
+	void botControls(ParticleManager * particlemanager) {
 		//	
 		for (std::vector<BotModel*>::iterator it = mBots.begin(); it != mBots.end(); ++it) {
 			if((*it)->getHealth() != 0){
 				Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
 				Ogre::Real startPosChDist = charPos.distance((*it)->getStartPos());
 
-				if (startPosChDist <= 120) {
+				if (startPosChDist <= _appSettings->getAgroRange()) {
 					botMoveToPoint((*it), charPos);
+					//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000, 20, "fireCastPlayer", 0);
+					if ((*it)->getCastTimer()->getMilliseconds() >= 3000){
+						particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition(), 3000, 20, "fireCast", 1);
+						(*it)->resetCastTimer();
+
+					}
+					
 				}
 				else {
 					if((*it)->getStartPos().x!= (*it)->getBot()->getPosition().x && (*it)->getStartPos().z != (*it)->getBot()->getPosition().z){
@@ -206,7 +216,7 @@ public:
 
 				}
 				else {
-					if((*it)->getTimer()->getMilliseconds()>10000){
+					if((*it)->getTimer()->getMilliseconds()>_appSettings->getRespawn()){
 						(*it)->respawn(_physicsManager);
 					}
 				}
@@ -225,7 +235,7 @@ private:
 	std::vector<BotModel*> mBots;
 	MySql * _mySql;
 	PhysicsManager* _physicsManager;
-
+	AppSettings* _appSettings;
 
 };
 #endif

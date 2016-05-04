@@ -36,6 +36,8 @@ public:
 		_physicsManager = physicsManager;
 		counter = 0;
 		botCounter = 0;
+		manaTimer = new Ogre::Timer();
+		mSinbadNodeName = "mainCharacter";
 		loadPredefinedWorld();
 	};
 	~Spawns() {
@@ -278,6 +280,7 @@ public:
 		//Base stats
 		setHealth(health);
 		setMana(mana);
+		alive = true;
 		//
 		Critter::AnimatedCharacterDescription desc;
 		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
@@ -286,11 +289,11 @@ public:
 		desc.setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
 		//Create critter node for sinbad mesh
 		sinbadNode = _physicsManager->getMRenderSystem()->createNode();
-		sinbadNode->createAndAttachEntity(meshName);
+		sinbadNode->createAndAttachEntity(mSinbadNodeName,meshName);
 		//Create animated character
 		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(0), sinbadNode, desc);
 		//Create 
-		Ogre::SceneNode* camNode;
+		//Ogre::SceneNode* camNode;
 		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
 		camNode->attachObject(_physicsManager->getContentManager()->getmCamera());
 		sinbadNode->addSceneNode(camNode);
@@ -344,21 +347,41 @@ public:
 		{
 			health = _health;
 		}
+		if (health == 0) {
+			alive = false;
+		}
 	}
 	void setMana(Ogre::Real _mana) {
 		if (_mana < 0) {
 			mana = 0;
+		}
+		else if (_mana > 100) {
+			mana = 100;
 		}
 		else
 		{
 			mana = _mana;
 		}
 	}
+	void setAlive(bool _alive) {
+		alive = _alive;
+	}
 	int getHealth() {
 		return health;
 	}
 	int getMana() {
 		return mana;
+	}
+	bool getAlive() {
+		return alive;
+	}
+	void manaRegen() {
+		if (mana < 100 && manaTimer->getMilliseconds()>1000) {
+			manaTimer->reset();
+			setMana(mana+2);
+			
+		}
+		
 	}
 	/****************************************************************************************/
 	/**********************Animated Character bots**************************/
@@ -396,7 +419,24 @@ public:
 	/****************************************************************************************/
 	/************************END Aniamted character spawn*************************/
 	/****************************************************************************************/
+	void characterRespawn() {
+		
+		if(alive ==false){
+			//camNode->removeAndDestroyAllChildren();
+			camNode->detachAllObjects();
+			sinbadNode->destroyEntity(mSinbadNodeName);
+			_physicsManager->getMRenderSystem()->destroyAnimatedCharacter(mSinbad);
 
+			//reset camera
+			Ogre::Camera* mCamera = _physicsManager->getContentManager()->getmCamera();
+			mCamera->setPosition(0, 10, -30);
+			mCamera->lookAt(0, 5, 0);
+		
+			createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234), 17.0f, 100, 100);
+			
+			//****
+		}
+	}
 	/******************************Load predefined****************************************/
 	void loadPredefinedWorld() {
 		setupCharacterAnimations();
@@ -433,6 +473,12 @@ private:
 	Critter::Node* sinbadNode;
 	Ogre::Real health;
 	Ogre::Real mana;
+	bool alive;
+	Ogre::String mSinbadNodeName;
+	Ogre::SceneNode* camNode;
+	//
+	Ogre::Timer* manaTimer;
+
 };
 
 

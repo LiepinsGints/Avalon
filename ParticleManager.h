@@ -17,6 +17,8 @@
 #include <OgreParticleSystem.h>
 #include "ParticleModel.h"
 #include "BotModel.h"
+#include "Spawns.h" 
+#include "UserInterface.h"
 using namespace Ogre;
 class ParticleManager {
 public:
@@ -58,9 +60,9 @@ public:
 		terrainRayCol = mouseResult.position;
 	}
 
-	void createSpellMouse(Ogre::Vector3 position, Ogre::Real timeToLive,Ogre::Real damage) {
+	void createSpellMouse(Ogre::Vector3 position, Ogre::Real timeToLive,Ogre::Real damage,Ogre::String spellName, int type) {
 		Ogre::Vector3 endPosition = Ogre::Vector3(terrainRayCol.x, position.y, terrainRayCol.z);
-		createSpell(position, endPosition, timeToLive,damage);
+		createSpell(position, endPosition, timeToLive,damage, spellName, type);
 	}
 	Ogre::Vector3 groundBellow(Ogre::Vector3 position) {
 
@@ -71,13 +73,13 @@ public:
 		return mouseResult.position;
 	}
 
-	void createSpell(Ogre::Vector3 position, Ogre::Vector3 target, Ogre::Real timeToLive, Ogre::Real damage) {
+	void createSpell(Ogre::Vector3 position, Ogre::Vector3 target, Ogre::Real timeToLive, Ogre::Real damage, Ogre::String spellName, int type) {
 		
 		ParticleModel * particleSpell =  new ParticleModel;
 		
-		Ogre::String particleName = "smoke" + std::to_string(counter)+"_";
+		Ogre::String particleName = "spell" + std::to_string(counter)+"_";
 		//ParticleSystem* sunParticle = _mSceneMgr->createParticleSystem(particleName, "Examples/smoke");
-		ParticleSystem* sunParticle = _mSceneMgr->createParticleSystem(particleName, "Examples/fireCast");
+		ParticleSystem* sunParticle = _mSceneMgr->createParticleSystem(particleName, "Examples/"+spellName);
 
 
 		SceneNode* particleNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode(particleName);
@@ -93,6 +95,7 @@ public:
 		particleSpell->setTimeToLive(timeToLive);
 		particleSpell->getTimer()->reset();
 		particleSpell->setDamage(damage);
+		particleSpell->setType(type);
 		particleSpells.push_back(particleSpell);
 		counter++;
 	}
@@ -107,7 +110,8 @@ public:
 		//currentParticle->getParticleNode()->setPosition(position);
 
 
-		Ogre::Vector3 current = currentParticle->getParticleNode()->getPosition();
+		Ogre::Vector3 current = currentParticle->getPosition();
+		//Ogre::Vector3 current = currentParticle->getPosition();
 		Ogre::Vector3 target = currentParticle->getEndPosition();
 		//test
 		Ogre::Vector3 terrainBellow = groundBellow(current);
@@ -115,9 +119,10 @@ public:
 		//
 		
 
-		Ogre::Vector3 direction = Ogre::Vector3(target.x- current.x,0, target.z- current.z)*100;
+		Ogre::Vector3 direction = Ogre::Vector3(target.x- current.x,0, target.z- current.z);
+
 		direction = direction.normalisedCopy();
-		Ogre::Vector3 position = current + (Ogre::Vector3(direction.x * delta, 0, direction.z * delta));
+		Ogre::Vector3 position = currentParticle->getParticleNode()->getPosition() + (Ogre::Vector3(direction.x * delta, 0, direction.z * delta));
 
 		terrainBellow = groundBellow(position);
 		Ogre::Real heightDifAfter = position.y - terrainBellow.y;
@@ -136,24 +141,34 @@ public:
 	}
 
 
-	void particleControls(Ogre::FrameEvent fe) {
+	void particleControls(Ogre::FrameEvent fe,Spawns * spawns,UserInterface * userInterface) {
 		
 		std::vector<ParticleModel*> particleSpellsTemp;
 		for (std::vector<ParticleModel*>::iterator it = particleSpells.begin(); it != particleSpells.end(); ++it) {
-			
+
 			//Ogre::Real distance = (*it)->getPosition().distance((*it)->getParticleNode()->getPosition());
 
 			bool botColides = false;
 			//Check if botCollides
-			for (std::vector<BotModel*>::iterator itBots = _mBots.begin(); itBots != _mBots.end(); ++itBots) {
-				if((*itBots)->getAlive()==true){
-					Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance((*itBots)->getBotNode()->getPosition());
-				
-					if (distance<5) {
-						(*itBots)->setHealth((*itBots)->getHealth()-(*it)->getDamage());
-						botColides = true;
-						break;
+			if ((*it)->getType() == 0) {
+				for (std::vector<BotModel*>::iterator itBots = _mBots.begin(); itBots != _mBots.end(); ++itBots) {
+					if ((*itBots)->getAlive() == true) {
+						Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance((*itBots)->getBotNode()->getPosition());
+
+						if (distance<5) {
+							(*itBots)->setHealth((*itBots)->getHealth() - (*it)->getDamage());
+							botColides = true;
+							break;
+						}
 					}
+				}
+			}
+			else {
+				Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance(spawns->getCharacter()->getPosition());
+				if (distance<5) {
+					spawns->setHealth(spawns->getHealth() - (*it)->getDamage());
+					botColides = true;
+					userInterface->updateUserFrame();
 				}
 			}
 			//Destroy particle

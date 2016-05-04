@@ -59,8 +59,16 @@ public:
 	Ogre::Real getDamage() {
 		return damage;
 	}
+	int getType() {
+		return type;
+	}
+
+
 	void setId(int _id) {
 		id = _id;
+	}
+	void setType(int _type) {
+		type = _type;
 	}
 	
 	void setParticleNode(Ogre::SceneNode* _particleNode) {
@@ -81,6 +89,7 @@ public:
 	void setDamage(Ogre::Real _damage) {
 		damage = _damage;
 	}
+	
 private:
 	int id;
 	Ogre::SceneNode* particleNode;
@@ -90,5 +99,6 @@ private:
 	Ogre::Real timeToLive;
 	Ogre::Timer* timer;
 	Ogre::Real damage;
+	int type;//0 - player 1-enemy
 };
 #endif

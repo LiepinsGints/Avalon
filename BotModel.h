@@ -32,6 +32,7 @@ public:
 		health = 100;
 		alive = true;
 		timer = new Ogre::Timer();
+		castTimer = new Ogre::Timer();
 	}
 	~BotModel() {
 
@@ -70,6 +71,9 @@ public:
 	}
 	Ogre::Timer * getTimer() {
 		return timer;
+	}
+	Ogre::Timer * getCastTimer() {
+		return castTimer;
 	}
 	bool getAlive() {
 		return alive;
@@ -116,6 +120,9 @@ public:
 	void startTimer() {
 		timer->reset();
 	}
+	void resetCastTimer() {
+		castTimer->reset();
+	}
 	void setAlive(bool _alive) {
 		alive = _alive;
 	}
@@ -150,6 +157,7 @@ private:
 	Ogre::Real health;
 	Ogre::Real mana;
 	Ogre::Timer* timer;
+	Ogre::Timer* castTimer;
 	Ogre::String nodeName;
 	bool alive;
 	
