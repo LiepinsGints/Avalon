@@ -35,6 +35,7 @@ public:
 		_mSceneMgr = mSceneMgr;
 		_physicsManager = physicsManager;
 		counter = 0;
+		botCounter = 0;
 		loadPredefinedWorld();
 	};
 	~Spawns() {
@@ -272,7 +273,12 @@ public:
 		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
 
 	}
-	void createAnimatedCharacter(Ogre::String meshName,Ogre::Vector3 position, Ogre::Real groundSpeed) {
+	void createAnimatedCharacter(Ogre::String meshName,Ogre::Vector3 position, Ogre::Real groundSpeed,Ogre::Real health, Ogre::Real mana) {
+
+		//Base stats
+		setHealth(health);
+		setMana(mana);
+		//
 		Critter::AnimatedCharacterDescription desc;
 		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
 		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
@@ -330,6 +336,30 @@ public:
 	void jump(int speed) {
 		mSinbadHelper.up(speed);
 	}
+	void setHealth(Ogre::Real _health) {
+		if (_health < 0) {
+			health = 0;
+		}
+		else
+		{
+			health = _health;
+		}
+	}
+	void setMana(Ogre::Real _mana) {
+		if (_mana < 0) {
+			mana = 0;
+		}
+		else
+		{
+			mana = _mana;
+		}
+	}
+	int getHealth() {
+		return health;
+	}
+	int getMana() {
+		return mana;
+	}
 	/****************************************************************************************/
 	/**********************Animated Character bots**************************/
 	/****************************************************************************************/	
@@ -348,14 +378,17 @@ public:
 		botModel->getBotDesc().setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
 		//Create critter node for sinbad mesh
 		Critter::Node* node = _physicsManager->getMRenderSystem()->createNode();
-		node->createAndAttachEntity(meshName);
+		Ogre::String nodeName = meshName + std::to_string(botCounter);
+		node->createAndAttachEntity(nodeName,meshName);
+		botModel->setNodeName(nodeName);
+		botModel->setMeshName(meshName);
 		botModel->setBotNode(node);
 		//Create animated character
 		
 		botModel->setBot(_physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(0), botModel->getBotNode(), botModel->getBotDesc()));
 		//Assign helper to sinbad
 		botModel->getBot()->setInput(botModel->getBotHelper());
-
+		botCounter++;
 		return botModel;
 	}
 
@@ -367,7 +400,7 @@ public:
 	/******************************Load predefined****************************************/
 	void loadPredefinedWorld() {
 		setupCharacterAnimations();
-		createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234),17.0f);
+		createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234),17.0f,100,100);
 		//Test sector
 		
 
@@ -379,6 +412,7 @@ private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
 	int counter;
+	int botCounter;
 
 	enum ControllerShapeGroups
 	{
@@ -397,6 +431,8 @@ private:
 	Critter::CharacterInputHelper   mSinbadHelper;
 	NxOgre::Actor*                  mTestActor;
 	Critter::Node* sinbadNode;
+	Ogre::Real health;
+	Ogre::Real mana;
 };
 
 

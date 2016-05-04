@@ -95,19 +95,20 @@ bool Core::go()
 	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup(),physicsManager);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns);
+	userInterface->disableTestInterface();
 	//float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	//swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world
 	mySql->getWorld(spawns);
 	//bots
-	bots = new Bots(spawns,userInterface,mySql);
+	bots = new Bots(spawns,userInterface,mySql,physicsManager);
 	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41),17);
 	//Sky
 	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	//Water
 	//water = new Water(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	//ParticleManager
-	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup());
+	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(),bots->getmBots());
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface,particleManager);
 	

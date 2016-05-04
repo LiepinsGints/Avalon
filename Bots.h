@@ -31,14 +31,15 @@
 #include <math.h>  
 #include "UserInterface.h"
 #include "MySql.h"
-
+#include "PhysicsManager.h"
 using namespace Ogre;
 class Bots {
 public:
-	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql) {
+	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql, PhysicsManager* physicsManager) {
 		_spawns = spawns;
 		_userInterface= userInterface;
 		_mySql = mySql;
+		_physicsManager = physicsManager;
 		getBots();
 
 	}
@@ -176,51 +177,55 @@ public:
 	}
 
 	void botControls() {
-		//
-		
+		//	
 		for (std::vector<BotModel*>::iterator it = mBots.begin(); it != mBots.end(); ++it) {
-			
-			Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
-			Ogre::Real startPosChDist = charPos.distance((*it)->getStartPos());
+			if((*it)->getHealth() != 0){
+				Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
+				Ogre::Real startPosChDist = charPos.distance((*it)->getStartPos());
 
-			if (startPosChDist <= 120) {
-				botMoveToPoint((*it), charPos);
-			}
-			else {
-				if((*it)->getStartPos().x!= (*it)->getBot()->getPosition().x && (*it)->getStartPos().z != (*it)->getBot()->getPosition().z){
+				if (startPosChDist <= 120) {
+					botMoveToPoint((*it), charPos);
+				}
+				else {
+					if((*it)->getStartPos().x!= (*it)->getBot()->getPosition().x && (*it)->getStartPos().z != (*it)->getBot()->getPosition().z){
 					
-					botMoveToPoint((*it), Ogre::Vector3((*it)->getStartPos().x, (*it)->getStartPos().y, (*it)->getStartPos().z));
+						botMoveToPoint((*it), Ogre::Vector3((*it)->getStartPos().x, (*it)->getStartPos().y, (*it)->getStartPos().z));
+					}
 				}
 			}
-		}
-		
-		/*
-		BotModel * firstBot = mBots.front();
-		Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
-		
-		Ogre::Real startPosChDist = charPos.distance(firstBot->getStartPos());
+			else {
+				if((*it)->getAlive()==true){
+					(*it)->getBotHelper().right(0);
+					(*it)->getBotHelper().left(0);
+					(*it)->getBotHelper().forward(0);
+					(*it)->getBotHelper().backward(0);
+					(*it)->getBot()->setInput((*it)->getBotHelper());
+					//
+					(*it)->setAlive(false);
+					(*it)->destroy(_physicsManager);
 
-		if (startPosChDist<=120) {
-			botMoveToPoint(firstBot, charPos);
-		}
-		else {
+				}
+				else {
+					if((*it)->getTimer()->getMilliseconds()>10000){
+						(*it)->respawn(_physicsManager);
+					}
+				}
+			}
 			
-			botMoveToPoint(firstBot, Ogre::Vector3(firstBot->getStartPos().x,0, firstBot->getStartPos().z));
-			
 		}
-		*/
-		
-
-		
 			
 	}
-	
+	std::vector<BotModel*> getmBots() {
+		return mBots;
+	}
 
 private:
 	Spawns * _spawns;
 	UserInterface * _userInterface;
 	std::vector<BotModel*> mBots;
 	MySql * _mySql;
+	PhysicsManager* _physicsManager;
+
 
 };
 #endif

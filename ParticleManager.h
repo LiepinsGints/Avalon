@@ -16,11 +16,11 @@
 
 #include <OgreParticleSystem.h>
 #include "ParticleModel.h"
-
+#include "BotModel.h"
 using namespace Ogre;
 class ParticleManager {
 public:
-	ParticleManager(Ogre::SceneManager* mSceneMgr, Ogre::Camera* mCamera, Ogre::Root* mRoot, Ogre::RenderWindow* mWindow, Ogre::TerrainGroup* mTerrainGroup) {
+	ParticleManager(Ogre::SceneManager* mSceneMgr, Ogre::Camera* mCamera, Ogre::Root* mRoot, Ogre::RenderWindow* mWindow, Ogre::TerrainGroup* mTerrainGroup, std::vector<BotModel*> mBots) {
 		_mSceneMgr = mSceneMgr;
 		_mCamera = mCamera;
 		_mRoot = mRoot;
@@ -28,6 +28,7 @@ public:
 		_mTerrainGroup = mTerrainGroup;
 		counter = 0;
 		terrainRayCol = Ogre::Vector3(0, 0, 0);
+		_mBots = mBots;
 		//simple particle
 		/*
 		ParticleSystem* sunParticle = mSceneMgr->createParticleSystem("fireBall", "Examples/fireBall");
@@ -57,9 +58,9 @@ public:
 		terrainRayCol = mouseResult.position;
 	}
 
-	void createSpellMouse(Ogre::Vector3 position, Ogre::Real livingDistance) {
+	void createSpellMouse(Ogre::Vector3 position, Ogre::Real timeToLive,Ogre::Real damage) {
 		Ogre::Vector3 endPosition = Ogre::Vector3(terrainRayCol.x, position.y, terrainRayCol.z);
-		createSpell(position, endPosition, livingDistance);
+		createSpell(position, endPosition, timeToLive,damage);
 	}
 	Ogre::Vector3 groundBellow(Ogre::Vector3 position) {
 
@@ -70,7 +71,7 @@ public:
 		return mouseResult.position;
 	}
 
-	void createSpell(Ogre::Vector3 position, Ogre::Vector3 target, Ogre::Real livingDistance) {
+	void createSpell(Ogre::Vector3 position, Ogre::Vector3 target, Ogre::Real timeToLive, Ogre::Real damage) {
 		
 		ParticleModel * particleSpell =  new ParticleModel;
 		
@@ -89,7 +90,9 @@ public:
 		particleSpell->setPosition(position);
 		//Ogre::Vector3 temp = target.normalisedCopy()*100;
 		particleSpell->setEndPosition(target);
-		particleSpell->setLivingDistance(livingDistance);
+		particleSpell->setTimeToLive(timeToLive);
+		particleSpell->getTimer()->reset();
+		particleSpell->setDamage(damage);
 		particleSpells.push_back(particleSpell);
 		counter++;
 	}
@@ -138,15 +141,32 @@ public:
 		std::vector<ParticleModel*> particleSpellsTemp;
 		for (std::vector<ParticleModel*>::iterator it = particleSpells.begin(); it != particleSpells.end(); ++it) {
 			
-			Ogre::Real distance = (*it)->getPosition().distance((*it)->getParticleNode()->getPosition());
-			
-			if(distance>= (*it)->getLivingDistance()-5 || ((*it)->getParticleNode()->getPosition().x == (*it)->getEndPosition().x && (*it)->getParticleNode()->getPosition().z == (*it)->getEndPosition().z)){
+			//Ogre::Real distance = (*it)->getPosition().distance((*it)->getParticleNode()->getPosition());
+
+			bool botColides = false;
+			//Check if botCollides
+			for (std::vector<BotModel*>::iterator itBots = _mBots.begin(); itBots != _mBots.end(); ++itBots) {
+				if((*itBots)->getAlive()==true){
+					Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance((*itBots)->getBotNode()->getPosition());
+				
+					if (distance<5) {
+						(*itBots)->setHealth((*itBots)->getHealth()-(*it)->getDamage());
+						botColides = true;
+						break;
+					}
+				}
+			}
+			//Destroy particle
+			if((*it)->getTimer()->getMilliseconds()>(*it)->getTimeToLive() || botColides==true){
 				(*it)->getParticleNode()->removeAndDestroyAllChildren();
 				_mSceneMgr->destroySceneNode((*it)->getParticleNode());
 				//it = particleSpells.erase(it);
 				//delete * it;
 			}else{
 				moveAllongVector((*it), fe);
+				
+
+				//If particle unused keep
 				particleSpellsTemp.push_back((*it));
 			}
 
@@ -168,6 +188,8 @@ private:
 	Ogre::TerrainGroup* _mTerrainGroup;
 	//Ray result
 	Ogre::Vector3 terrainRayCol;
+
+	std::vector<BotModel*> _mBots;
 
 };
 #endif

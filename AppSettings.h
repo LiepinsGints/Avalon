@@ -28,6 +28,12 @@ public:
 		userName = "root";
 		password = "ascent";
 		dbName = "Avalon";
+
+		playerHealth = 100;
+		playerMana = 100;
+
+		enemyHealth = 100;
+		enemyMana = 100;
 	}
 	~AppSettings() {
 
@@ -77,6 +83,19 @@ public:
 	sql::SQLString getDbName() {
 		return dbName;
 	}
+	//Player bot settings
+	Ogre::Real getPlayerHealth() {
+		return playerHealth;
+	}
+	Ogre::Real getPlayerMana() {
+		return playerMana;
+	}
+	Ogre::Real getEnemyHealth() {
+		return enemyHealth;
+	}
+	Ogre::Real getEnemyMana() {
+		return enemyMana;
+	}
 private:
 	Ogre::String appName;
 	bool render;
@@ -91,6 +110,11 @@ private:
 	sql::SQLString password;
 	sql::SQLString dbName;
 	
+	Ogre::Real playerHealth;
+	Ogre::Real playerMana;
+
+	Ogre::Real enemyHealth;
+	Ogre::Real enemyMana;
 	//OIS::KeyCode up;
 	//OIS::KeyCode down;
 

@@ -5,7 +5,7 @@
 #include <OgreWindowEventUtilities.h>
 #include <Terrain/OgreTerrain.h>
 #include <Terrain/OgreTerrainGroup.h>
-
+#include <OgreTimer.h>
 #include <iostream>
 #include <string>
 
@@ -27,7 +27,11 @@ using namespace Ogre;
 class BotModel {
 public:
 	BotModel() {
-
+		//defaults
+		mana = 100;
+		health = 100;
+		alive = true;
+		timer = new Ogre::Timer();
 	}
 	~BotModel() {
 
@@ -55,8 +59,22 @@ public:
 	Ogre::String  getMeshName() {
 		return meshName;
 	}
-
-
+	Ogre::String  getNodeName() {
+		return nodeName;
+	}
+	int getHealth() {
+		return health;
+	}
+	int getMana() {
+		return mana;
+	}
+	Ogre::Timer * getTimer() {
+		return timer;
+	}
+	bool getAlive() {
+		return alive;
+	}
+	
 	void setId(int _id) {
 		id = _id;
 	}
@@ -78,7 +96,49 @@ public:
 	void setMeshName(Ogre::String _meshName) {
 		meshName = _meshName;
 	}
+	void setNodeName(Ogre::String _nodeName) {
+		nodeName = _nodeName;
+	}
+	void setHealth(Ogre::Real _health) {
+		if (_health < 0) {
+			health = 0;
+			timer->reset();
+		}
+		else
+		{
+			health = _health;
+		}
+		
+	}
+	void setMana(Ogre::Real _mana) {
+		mana = _mana;
+	}
+	void startTimer() {
+		timer->reset();
+	}
+	void setAlive(bool _alive) {
+		alive = _alive;
+	}
 
+	//destroy
+	void destroy(PhysicsManager* physicsManager) {
+		botNode->destroyEntity(nodeName);
+		//physicsManager->getMRenderSystem()->destroyNode(botNode);
+		physicsManager->getMRenderSystem()->destroyAnimatedCharacter(bot);
+		timer->reset();
+		//physicsManager->getMRenderSystem()->destroyNode(botNode);
+		//botNode->destroyEntity(nodeName);
+		//botNode->getEntityAt(0)->addVisibilityFlags(0);
+
+	}
+	void respawn(PhysicsManager* physicsManager) {
+		botNode = physicsManager->getMRenderSystem()->createNode();
+		botNode->createAndAttachEntity(nodeName, meshName);
+		setBot(physicsManager->getMRenderSystem()->createAnimatedCharacter(startPos, Ogre::Radian(0), getBotNode(), getBotDesc()));
+		alive = true;
+		health = 100;
+		mana = 100;
+	}
 private:	
 	int id;
 	AnimatedCharacter* bot;
@@ -87,6 +147,11 @@ private:
 	Critter::Node* botNode;
 	Ogre::Vector3  startPos;
 	Ogre::String meshName;
+	Ogre::Real health;
+	Ogre::Real mana;
+	Ogre::Timer* timer;
+	Ogre::String nodeName;
+	bool alive;
 	
 };
 #endif

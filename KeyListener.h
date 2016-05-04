@@ -110,19 +110,7 @@ public:
 				timer->reset();
 			}
 			break;
-		case OIS::KC_M:
-			if (timer->getMilliseconds()>2000) {
-				/*
-				_spawns->createBoundingBox(_physicsManager->getCharacter()->getPosition().x,
-					_physicsManager->getCharacter()->getPosition().y,
-					_physicsManager->getCharacter()->getPosition().z,
-					56.7,50,67.7);
-					*/
-				//_particleManager->createSpell(_spawns->getCharacter()->getPosition(), _spawns->getCharacter()->getPosition(),100);
-				_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 100);
-				timer->reset();
-			}
-			break;
+	
 			//Character controls
 		case OIS::KC_UP:
 			_spawns->forward(127);
@@ -170,6 +158,33 @@ public:
 				timer->reset();
 			}
 			break;
+		//Alternative controls
+		case OIS::KC_W:
+			_spawns->forward(127);
+			break;
+		case OIS::KC_A:
+			_spawns->left(127);
+			break;
+		case OIS::KC_D:
+			_spawns->right(127);
+			break;
+		case OIS::KC_S:
+			_spawns->backward(127);
+			break;
+		case OIS::KC_SPACE:
+			_spawns->jump(127);
+			break;
+		case OIS::KC_E:
+			if (timer->getMilliseconds()>2000) {
+				Ogre::Real mana = _spawns->getMana();
+				if(mana>=10){
+					_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000,20);
+					_spawns->setMana(_spawns->getMana() - 10);
+					_userinterface->updateUserFrame();
+					timer->reset();
+				}
+			}
+			break;
 		default:
 			break;
 		}
@@ -212,6 +227,23 @@ public:
 		case OIS::KC_NUMPAD0:
 			_spawns->jump(0);
 			break;
+			//Alternative controls
+		case OIS::KC_W:
+			_spawns->forward(0);
+			break;
+		case OIS::KC_A:
+			_spawns->left(0);
+			break;
+		case OIS::KC_D:
+			_spawns->right(0);
+			break;
+		case OIS::KC_S:
+			_spawns->backward(0);
+			break;
+		case OIS::KC_SPACE:
+			_spawns->jump(0);
+			break;
+
 		default:
 			break;
 		}

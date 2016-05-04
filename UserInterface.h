@@ -73,6 +73,11 @@ public:
 			consoleEnable = false;
 		}
 	}
+	void disableTestInterface() {
+		//Disable test interface
+		mLabel->setVisible(false);
+		mLabel2->setVisible(false);
+	}
 	//Change and update label text
 	void setLabelCaption(Ogre::String labelText, Ogre::String labelText2, Ogre::String labelText3) {
 		const MyGUI::IntPoint mousePos = MyGUI::InputManager::getInstance().getMousePosition();
@@ -230,6 +235,22 @@ public:
 		}
 	
 	}
+	//update user frame
+	void updateUserFrame() {
+		Ogre::Real userWindowWidth = _appSettings->getWidth() / 4;
+		Ogre::Real userWindowHeight = _appSettings->getHeight() / 6;
+
+		Ogre::Real manaHpWidth = userWindowWidth / 2;
+		Ogre::Real manaHpHeight = userWindowHeight / 8;
+
+		Ogre::Real currentHp = (manaHpWidth / _appSettings->getPlayerHealth()) * _spawns->getHealth();
+		Ogre::Real currentMana = (manaHpWidth / _appSettings->getPlayerMana()) * _spawns->getMana();
+
+		userHealth->setSize(currentHp, userHealth->getHeight());
+		//mana
+
+		userMana->setSize(currentMana, userMana->getHeight());
+	}
 private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
@@ -248,13 +269,23 @@ private:
 	//UI elements	
 	MyGUI::EditBox* mLabel;
 	MyGUI::EditBox* mLabel2;
-	
+	//User frame
+	//PlayerImage.png
+	MyGUI::ScrollView* userWindow;
+	MyGUI::ImageBox * playerImage;
+	MyGUI::TextBox * textBoxHealth;
+	MyGUI::ScrollView* userHealth;
+	MyGUI::ScrollView* userHealthSub;
+	MyGUI::TextBox * textBoxMana;
+	MyGUI::ScrollView* userMana;
+	MyGUI::ScrollView* userManaSub;
 	//Console
 	MyGUI::Edit * consoleInput;
 	MyGUI::ComboBox* consoleOutput;
 	MyGUI::Button* consoleSubmit;
 	int lineNumber;
 	bool consoleEnable;
+
 	//Main menu elements
 	MyGUI::Button* designerButton;
 	MyGUI::Button* settingsButton;
@@ -289,7 +320,10 @@ private:
 
 
 	/**Close structure***/
-	void loadUi() {		
+	void loadUi() {	
+		
+		//
+		createUserFrame();
 		createMainMenu();
 		createDesignerMenu();
 		//test
@@ -399,6 +433,53 @@ private:
 			_designer->setShapeOffsetY(Ogre::StringConverter::parseReal(objectShapeOffsetY->getCaption()));
 		}
 	}
+	/**********User frame*************/
+	void createUserFrame() {
+		Ogre::Real userWindowWidth = _appSettings->getWidth() / 4;
+		Ogre::Real userWindowHeight = _appSettings->getHeight()/6;
+	
+
+		//userWindow = mGUI->createWidget<MyGUI::ScrollView>("ScrollView", 0, 0, userWindowWidth, userWindowHeight, MyGUI::Align::Default, "Main");
+		//userWindow->setCanvasSize(userWindowWidth-10, userWindowHeight-10);
+
+
+		//user image
+		Ogre::Real imagePosX = userWindowWidth / 10;
+		Ogre::Real imagePosY = userWindowHeight / 4;
+		playerImage = mGUI->createWidget<MyGUI::ImageBox>("ImageBox", imagePosX, imagePosY, 40, 40, MyGUI::Align::Default, "Main");
+		playerImage->setImageTexture("PlayerImage.png");
+
+		//health
+		Ogre::Real manaHpWidth = userWindowWidth / 2;
+		Ogre::Real manaHpHeight = userWindowHeight / 8;
+		Ogre::Real hpX = imagePosX + playerImage->getWidth()+ userWindowWidth/20;
+		Ogre::Real hpY = imagePosY ;
+
+		//sub
+		userHealthSub = mGUI->createWidget<MyGUI::ScrollView>("ScrollView", hpX, hpY, manaHpWidth, manaHpHeight, MyGUI::Align::Default, "Main");
+		userHealthSub->setColour(MyGUI::Colour(1, 1, 1, 1));
+		//Front
+		userHealth = mGUI->createWidget<MyGUI::ScrollView>("ScrollView", hpX, hpY, manaHpWidth, manaHpHeight, MyGUI::Align::Default, "Main");
+		userHealth->setColour(MyGUI::Colour(1, 0, 0, 1));
+
+		//textBoxHealth = userHealth->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(0, 0, manaHpWidth, manaHpHeight), MyGUI::Align::Default, "Overlapped");
+		//textBoxHealth->setCaption("100");
+		//mana
+		Ogre::Real manaX = hpX;
+		Ogre::Real manaY = imagePosY + playerImage->getHeight() - manaHpHeight;
+
+		userManaSub = mGUI->createWidget<MyGUI::ScrollView>("ScrollView", manaX, manaY, manaHpWidth, manaHpHeight, MyGUI::Align::Default, "Main");
+		userManaSub->setColour(MyGUI::Colour(1, 1, 1, 1));
+		//front
+		userMana = mGUI->createWidget<MyGUI::ScrollView>("ScrollView", manaX, manaY, manaHpWidth, manaHpHeight, MyGUI::Align::Default, "Main");
+		userMana->setColour(MyGUI::Colour(0, 0, 1, 1));
+
+
+		//textBoxRotZ = designerWindow->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 20, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
+		//textBoxRotZ->setCaption("rotation Z");
+	}
+
+	
 	/**********MAIN MENU***********/
 	void createMainMenu() {
 		//settingsButton;

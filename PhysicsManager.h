@@ -64,7 +64,6 @@ public:
 	void createBoundingCylinder(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		NxOgre::BoxDescription boundingBox(w, h, d);
 	}
-	
 private:
 	NxOgre::World*          mWorld;
 	NxOgre::Scene*          mScene;

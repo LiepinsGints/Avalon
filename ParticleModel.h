@@ -27,7 +27,7 @@ using namespace Ogre;
 class ParticleModel {
 public:
 	ParticleModel() {
-
+		timer = new Ogre::Timer();
 	}
 	~ParticleModel() {
 
@@ -49,10 +49,16 @@ public:
 	Ogre::String  getParticleName() {
 		return particleName;
 	}
-	Ogre::Real getLivingDistance() {
-		return livingDistance;
+	Ogre::Real getTimeToLive() {
+		return timeToLive;
 	}
+	Ogre::Timer * getTimer() {
+		return timer;
 
+	}
+	Ogre::Real getDamage() {
+		return damage;
+	}
 	void setId(int _id) {
 		id = _id;
 	}
@@ -69,8 +75,11 @@ public:
 	void setParticleName(Ogre::String _particleName) {
 		particleName = _particleName;
 	}
-	void setLivingDistance(Ogre::Real _livingDistance) {
-		livingDistance = _livingDistance;
+	void setTimeToLive(Ogre::Real _timeToLive) {
+		timeToLive = _timeToLive;
+	}
+	void setDamage(Ogre::Real _damage) {
+		damage = _damage;
 	}
 private:
 	int id;
@@ -78,6 +87,8 @@ private:
 	Ogre::Vector3  position;
 	Ogre::Vector3  endPosition;
 	Ogre::String particleName;
-	Ogre::Real livingDistance;
+	Ogre::Real timeToLive;
+	Ogre::Timer* timer;
+	Ogre::Real damage;
 };
 #endif
