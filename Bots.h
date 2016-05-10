@@ -29,7 +29,6 @@
 #include "Spawns.h" 
 #include "BotModel.h"
 #include <math.h>  
-#include "UserInterface.h"
 #include "MySql.h"
 #include "PhysicsManager.h"
 #include "ParticleManager.h"
@@ -37,9 +36,8 @@
 using namespace Ogre;
 class Bots {
 public:
-	Bots(Spawns * spawns, UserInterface * userInterface, MySql * mySql, PhysicsManager* physicsManager, AppSettings* appSettings) {
+	Bots(Spawns * spawns,  MySql * mySql, PhysicsManager* physicsManager, AppSettings* appSettings) {
 		_spawns = spawns;
-		_userInterface= userInterface;
 		_mySql = mySql;
 		_physicsManager = physicsManager;
 		_appSettings = appSettings;
@@ -190,7 +188,7 @@ public:
 					botMoveToPoint((*it), charPos);
 					//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000, 20, "fireCastPlayer", 0);
 					if ((*it)->getCastTimer()->getMilliseconds() >= 3000){
-						particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition(), 3000, 20, "fireCast", 1);
+						particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition()- (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
 						(*it)->resetCastTimer();
 
 					}
@@ -212,6 +210,7 @@ public:
 					(*it)->getBot()->setInput((*it)->getBotHelper());
 					//
 					(*it)->setAlive(false);
+					_spawns->setScore(_spawns->getScore()+100);
 					(*it)->destroy(_physicsManager);
 
 				}
@@ -231,7 +230,6 @@ public:
 
 private:
 	Spawns * _spawns;
-	UserInterface * _userInterface;
 	std::vector<BotModel*> mBots;
 	MySql * _mySql;
 	PhysicsManager* _physicsManager;

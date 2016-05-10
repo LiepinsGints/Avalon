@@ -175,13 +175,13 @@ public:
 			_spawns->jump(127);
 			break;
 		case OIS::KC_E:
-			if (timer->getMilliseconds()>2000) {
+			if (_spawns->getCastTimer()->getMilliseconds()>2000) {
 				Ogre::Real mana = _spawns->getMana();
 				if(mana>=10){
 					_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 2000,20,"fireCastPlayer",0);
 					_spawns->setMana(_spawns->getMana() - 10);
 					_userinterface->updateUserFrame();
-					timer->reset();
+					_spawns->resetCastTimer();
 				}
 			}
 			break;

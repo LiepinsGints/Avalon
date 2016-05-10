@@ -43,8 +43,8 @@ public:
 	Ogre::Vector3  getPosition() {
 		return position;
 	}
-	Ogre::Vector3  getEndPosition() {
-		return endPosition;
+	Ogre::Vector3  getDirectionVector() {
+		return directionVector;
 	}
 	Ogre::String  getParticleName() {
 		return particleName;
@@ -77,8 +77,8 @@ public:
 	void setPosition(Ogre::Vector3  _position) {
 		position = _position;
 	}
-	void setEndPosition(Ogre::Vector3  _endPosition) {
-		endPosition = _endPosition;
+	void setDirectionVector(Ogre::Vector3  _directionVector) {
+		directionVector = _directionVector;
 	}
 	void setParticleName(Ogre::String _particleName) {
 		particleName = _particleName;
@@ -94,7 +94,7 @@ private:
 	int id;
 	Ogre::SceneNode* particleNode;
 	Ogre::Vector3  position;
-	Ogre::Vector3  endPosition;
+	Ogre::Vector3  directionVector;
 	Ogre::String particleName;
 	Ogre::Real timeToLive;
 	Ogre::Timer* timer;

@@ -20,15 +20,17 @@
 #include "AppSettings.h"
 #include "Designer.h"
 #include "MySql.h"
+#include "ParticleManager.h"
 class UserInterface {
 public:
-	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns) {
+	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns, ParticleManager * particleManager) {
 		_mWindow = mWindow;
 		_mSceneMgr = mSceneMgr;
 		_appSettings = appSettings;
 		_designer = designer;
 		_mySql = mySql;
 		_spawns = spawns;
+		_particleManager = particleManager;
 		mPlatform = new MyGUI::OgrePlatform();
 		mPlatform->initialise(_mWindow, _mSceneMgr);
 		mGUI = new MyGUI::Gui();
@@ -77,6 +79,9 @@ public:
 		//Disable test interface
 		mLabel->setVisible(false);
 		mLabel2->setVisible(false);
+		consoleInput->setVisible(false);
+		consoleOutput->setVisible(false);
+		consoleSubmit->setVisible(false);
 	}
 	//Change and update label text
 	void setLabelCaption(Ogre::String labelText, Ogre::String labelText2, Ogre::String labelText3) {
@@ -251,6 +256,10 @@ public:
 
 		userMana->setSize(currentMana, userMana->getHeight());
 	}
+	//Score update
+	void updateScore() {
+		playerScore->setCaption("Score: " + Ogre::StringConverter::toString(_spawns->getScore()));
+	}
 private:
 	Ogre::RenderWindow* _mWindow;
 	Ogre::SceneManager* _mSceneMgr;
@@ -266,6 +275,7 @@ private:
 	Ogre::Real rotZ;
 
 	AppSettings* _appSettings;
+	ParticleManager * _particleManager;
 	//UI elements	
 	MyGUI::EditBox* mLabel;
 	MyGUI::EditBox* mLabel2;
@@ -279,6 +289,11 @@ private:
 	MyGUI::TextBox * textBoxMana;
 	MyGUI::ScrollView* userMana;
 	MyGUI::ScrollView* userManaSub;
+	//Score
+	MyGUI::TextBox * playerScore;
+	//Cast Bar
+	MyGUI::Window* castBar;
+	MyGUI::ImageBox * fireBallImage;
 	//Console
 	MyGUI::Edit * consoleInput;
 	MyGUI::ComboBox* consoleOutput;
@@ -326,6 +341,8 @@ private:
 		createUserFrame();
 		createMainMenu();
 		createDesignerMenu();
+		createPlayerScore();
+		createCastBar();
 		//test
 		//Console input
 		consoleInput = mGUI->createWidget<MyGUI::EditBox>("EditBoxStretch",
@@ -433,6 +450,64 @@ private:
 			_designer->setShapeOffsetY(Ogre::StringConverter::parseReal(objectShapeOffsetY->getCaption()));
 		}
 	}
+	/**********Player score*************/
+	void createPlayerScore() {
+		Ogre::Real userWindowWidth = _appSettings->getWidth()- _appSettings->getWidth() / 10;
+		Ogre::Real userWindowHeight = _appSettings->getHeight() / 6;
+
+		Ogre::Real scoreX = userWindowWidth - userWindowWidth/10;
+		Ogre::Real scoreY = userWindowHeight/5;
+
+		Ogre::Real scoreW = userWindowWidth / 5;
+		Ogre::Real scoreH = userWindowHeight / 6;
+
+
+		playerScore = mGUI->createWidget<MyGUI::TextBox>("TextBox", MyGUI::IntCoord(scoreX, scoreY, scoreW, scoreH), MyGUI::Align::Default, "Overlapped");
+		playerScore->setCaption("Score: 0");
+		playerScore->setFontHeight(20);
+
+	}
+	/*Cast bar*/
+	void castFireballFront(MyGUI::Widget* _widget) {
+		if (_spawns->getCastTimer()->getMilliseconds()>2000) {
+			Ogre::Real mana = _spawns->getMana();
+			if (mana >= 10) {
+				//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 2000, 20, "fireCastPlayer", 0);
+				_particleManager->createSpell(_spawns->getCharacter()->getPosition(), _spawns->getmCamera()->getDerivedDirection(), 2000, 20, "fireCastPlayer", 0);
+
+				_spawns->setMana(_spawns->getMana() - 10);
+				updateUserFrame();
+				_spawns->resetCastTimer();
+			}
+		}
+	}
+	void createCastBar() {
+		/*
+		Ogre::Real castBarWidth = _appSettings->getWidth() - _appSettings->getWidth() / 5;
+		Ogre::Real castBarHeight = _appSettings->getHeight() / 8;
+
+		Ogre::Real castBarX = _appSettings->getWidth() / 10;
+		Ogre::Real castBarY = _appSettings->getHeight() - castBarHeight;
+
+		castBar = mGUI->createWidget<MyGUI::Window>("Window", castBarX, castBarY, castBarWidth, castBarHeight, MyGUI::Align::Default, "Main");
+		castBar->setCaption("Cast Bar");
+		*/
+		//fireball
+		//fireBallImage
+		Ogre::Real castBarWidth = _appSettings->getWidth() - _appSettings->getWidth() / 5;
+		Ogre::Real castBarHeight = _appSettings->getHeight() / 10;
+
+		Ogre::Real spellHeight = castBarHeight;
+		Ogre::Real spellWidth = castBarHeight;
+
+		Ogre::Real castBarX = _appSettings->getWidth() / 10;
+		Ogre::Real castBarY = _appSettings->getHeight() - castBarHeight;
+
+		fireBallImage = mGUI->createWidget<MyGUI::ImageBox>("ImageBox", castBarX, castBarY, spellWidth, spellHeight, MyGUI::Align::Default, "Main");
+		fireBallImage->setImageTexture("Fireball1_GD_BlueKPL.png");
+		fireBallImage->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::castFireballFront);
+	}
+
 	/**********User frame*************/
 	void createUserFrame() {
 		Ogre::Real userWindowWidth = _appSettings->getWidth() / 4;

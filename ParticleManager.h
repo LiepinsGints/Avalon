@@ -62,7 +62,7 @@ public:
 
 	void createSpellMouse(Ogre::Vector3 position, Ogre::Real timeToLive,Ogre::Real damage,Ogre::String spellName, int type) {
 		Ogre::Vector3 endPosition = Ogre::Vector3(terrainRayCol.x, position.y, terrainRayCol.z);
-		createSpell(position, endPosition, timeToLive,damage, spellName, type);
+		createSpell(position, endPosition- position, timeToLive,damage, spellName, type);
 	}
 	Ogre::Vector3 groundBellow(Ogre::Vector3 position) {
 
@@ -91,7 +91,7 @@ public:
 		particleSpell->setParticleNode(particleNode);
 		particleSpell->setPosition(position);
 		//Ogre::Vector3 temp = target.normalisedCopy()*100;
-		particleSpell->setEndPosition(target);
+		particleSpell->setDirectionVector(target);
 		particleSpell->setTimeToLive(timeToLive);
 		particleSpell->getTimer()->reset();
 		particleSpell->setDamage(damage);
@@ -112,14 +112,14 @@ public:
 
 		Ogre::Vector3 current = currentParticle->getPosition();
 		//Ogre::Vector3 current = currentParticle->getPosition();
-		Ogre::Vector3 target = currentParticle->getEndPosition();
+		//Ogre::Vector3 target = currentParticle->getEndPosition();
 		//test
 		Ogre::Vector3 terrainBellow = groundBellow(current);
 		Ogre::Real heightDif = current.y - terrainBellow.y;
 		//
 		
 
-		Ogre::Vector3 direction = Ogre::Vector3(target.x- current.x,0, target.z- current.z);
+		Ogre::Vector3 direction = Ogre::Vector3(currentParticle->getDirectionVector().x,0, currentParticle->getDirectionVector().z);
 
 		direction = direction.normalisedCopy();
 		Ogre::Vector3 position = currentParticle->getParticleNode()->getPosition() + (Ogre::Vector3(direction.x * delta, 0, direction.z * delta));
@@ -141,7 +141,7 @@ public:
 	}
 
 
-	void particleControls(Ogre::FrameEvent fe,Spawns * spawns,UserInterface * userInterface) {
+	void particleControls(Ogre::FrameEvent fe,Spawns * spawns) {
 		
 		std::vector<ParticleModel*> particleSpellsTemp;
 		for (std::vector<ParticleModel*>::iterator it = particleSpells.begin(); it != particleSpells.end(); ++it) {
@@ -168,7 +168,7 @@ public:
 				if (distance<5) {
 					spawns->setHealth(spawns->getHealth() - (*it)->getDamage());
 					botColides = true;
-					userInterface->updateUserFrame();
+					//userInterface->updateUserFrame();
 				}
 			}
 			//Destroy particle

@@ -37,8 +37,10 @@ public:
 		counter = 0;
 		botCounter = 0;
 		manaTimer = new Ogre::Timer();
+		castTimer = new Ogre::Timer();
 		mSinbadNodeName = "mainCharacter";
 		loadPredefinedWorld();
+		score = 0;
 	};
 	~Spawns() {
 	};
@@ -274,6 +276,10 @@ public:
 		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Land, "JumpEnd", 5.0, false);
 		_physicsManager->getMRenderSystem()->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
 
+		//Robot
+		//_physicsManager->getMRenderSystem()->addAnimation("robot.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "Idle");
+		//_physicsManager->getMRenderSystem()->addAnimation("robot.mesh", SinbadLower, Critter::Enums::StockAnimationID_Forward, "Walk");
+
 	}
 	void createAnimatedCharacter(Ogre::String meshName,Ogre::Vector3 position, Ogre::Real groundSpeed,Ogre::Real health, Ogre::Real mana) {
 
@@ -375,6 +381,10 @@ public:
 	bool getAlive() {
 		return alive;
 	}
+	Ogre::Camera* getmCamera() {
+		return _physicsManager->getContentManager()->getmCamera();
+	}
+
 	void manaRegen() {
 		if (mana < 100 && manaTimer->getMilliseconds()>1000) {
 			manaTimer->reset();
@@ -382,6 +392,23 @@ public:
 			
 		}
 		
+	}
+	void resetCastTimer() {
+		castTimer->reset();
+	}
+	Ogre::Timer* getCastTimer() {
+		return castTimer;
+	}
+	void setScore(Ogre::Real _score) {
+		if (_score < 0) {
+			score = 0;
+		}
+		else {
+			score = _score;
+		}
+	}
+	Ogre::Real getScore() {
+		return score;
 	}
 	/****************************************************************************************/
 	/**********************Animated Character bots**************************/
@@ -478,6 +505,8 @@ private:
 	Ogre::SceneNode* camNode;
 	//
 	Ogre::Timer* manaTimer;
+	Ogre::Timer* castTimer;
+	Ogre::Real score;
 
 };
 

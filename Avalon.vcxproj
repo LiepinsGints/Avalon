@@ -89,13 +89,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>G:\Hex\NxOgre\critter\build\source;$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;$(OGRE_HOME)/boost/boost;G:\Source\CaelumGithub\main\include;G:\Hex\CommunityHydrax-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\Hex\NxOgre\critter\build\source;$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;$(OGRE_HOME)/boost/boost;G:\Source\CaelumGithub\main\include;G:\Hex\CommunityHydrax-master\include;G:\Hex\OgreOggSound\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(NXOGRE_DIR)\SDK;$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;$(critter)\sdk;$(PHYSX_DIR)\SDKs\lib\Win32;$(MYGUI_HOME)\lib\Debug;$(MY_SQL)\lib;$(MY_SQL)\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>NxOgreDebug.lib;OgreMain_d.lib;OIS_d.lib;OgreOverlay_d.lib;CritterDebugStatic.lib;NxCharacter.lib;PhysXCooking.lib;PhysXCore.lib;PhysXLoader.lib;MyGUIEngine_d.lib;MyGUI.OgrePlatform_d.lib;mysqlcppconn.lib;Caelum.lib;Hydrax.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NxOgreDebug.lib;OgreMain_d.lib;OIS_d.lib;OgreOverlay_d.lib;CritterDebugStatic.lib;NxCharacter.lib;PhysXCooking.lib;PhysXCore.lib;PhysXLoader.lib;MyGUIEngine_d.lib;MyGUI.OgrePlatform_d.lib;mysqlcppconn.lib;Caelum.lib;Hydrax.lib;OgreOggSound_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(OutDir)\$(TargetFileName)" "$(OGRE_HOME)\Bin\$(Configuration)"</Command>
