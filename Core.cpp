@@ -93,14 +93,21 @@ bool Core::go()
 	
 	//Designer
 	designer = new Designer(mSceneMgr,contentManager->getmCamera(), contentManager->getTerrainGen()->getmTerrainGroup(),physicsManager);
-
+	//Sound
+	sound = new Sound(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
+	//sound->playerMovement("FT_GRASS.wav");
+	//sound->playCastAudio("FT_GRASS.wav", false);
 	//bots
-	bots = new Bots(spawns, mySql, physicsManager, appSettings);
+	bots = new Bots(spawns, mySql, physicsManager, appSettings,sound);
 	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41), 17);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(-82, 26, -217), 17);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(-60, 26, -219), 17);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(97, 26, -232), 17);
+	bots->spawnBot("sinbad.mesh", Ogre::Vector3(188, 26, -249), 17);
 	//ParticleManager
 	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots());
 	//userInterface
-	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns, particleManager);
+	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns, particleManager,sound);
 	userInterface->disableTestInterface();
 	//float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	//swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
@@ -109,11 +116,13 @@ bool Core::go()
 	
 	//Sky
 	sky = new Sky(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
+
+	//sound->playAudio("AMB_1N.wav",false);
 	//Water
 	//water = new Water(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow);
 	
 	// OIS
-	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface,particleManager);
+	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface,particleManager, sound);
 	
 
 	//windowResized(mWindow);

@@ -22,6 +22,8 @@
 #include "Sky.h"
 #include "Water.h"
 #include "ParticleManager.h"
+#include "Sound.h"
+
 //MyGui
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -62,8 +64,11 @@ private:
 	Sky * sky;
 	Water * water;
 	ParticleManager * particleManager;
+	Sound * sound;
 	//Strings
 	Ogre::String swap;
+	//openAL
+	
 
 
 };

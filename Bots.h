@@ -36,11 +36,12 @@
 using namespace Ogre;
 class Bots {
 public:
-	Bots(Spawns * spawns,  MySql * mySql, PhysicsManager* physicsManager, AppSettings* appSettings) {
+	Bots(Spawns * spawns,  MySql * mySql, PhysicsManager* physicsManager, AppSettings* appSettings, Sound * sound) {
 		_spawns = spawns;
 		_mySql = mySql;
 		_physicsManager = physicsManager;
 		_appSettings = appSettings;
+		_sound = sound;
 		getBots();
 
 	}
@@ -190,6 +191,7 @@ public:
 					if ((*it)->getCastTimer()->getMilliseconds() >= 3000){
 						particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition()- (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
 						(*it)->resetCastTimer();
+						_sound->playEnemyAudio("L_BAZOO.wav", false);
 
 					}
 					
@@ -234,6 +236,7 @@ private:
 	MySql * _mySql;
 	PhysicsManager* _physicsManager;
 	AppSettings* _appSettings;
+	Sound * _sound;
 
 };
 #endif

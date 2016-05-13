@@ -21,9 +21,10 @@
 #include "Designer.h"
 #include "MySql.h"
 #include "ParticleManager.h"
+#include "Sound.h"
 class UserInterface {
 public:
-	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns, ParticleManager * particleManager) {
+	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns, ParticleManager * particleManager, Sound * sound) {
 		_mWindow = mWindow;
 		_mSceneMgr = mSceneMgr;
 		_appSettings = appSettings;
@@ -31,6 +32,7 @@ public:
 		_mySql = mySql;
 		_spawns = spawns;
 		_particleManager = particleManager;
+		_sound = sound;
 		mPlatform = new MyGUI::OgrePlatform();
 		mPlatform->initialise(_mWindow, _mSceneMgr);
 		mGUI = new MyGUI::Gui();
@@ -255,6 +257,11 @@ public:
 		//mana
 
 		userMana->setSize(currentMana, userMana->getHeight());
+
+		//
+		if(_spawns->getScore()>=200){
+			greenBallImage->setVisible(true);
+		}
 	}
 	//Score update
 	void updateScore() {
@@ -276,6 +283,8 @@ private:
 
 	AppSettings* _appSettings;
 	ParticleManager * _particleManager;
+	//Sound
+	Sound * _sound;
 	//UI elements	
 	MyGUI::EditBox* mLabel;
 	MyGUI::EditBox* mLabel2;
@@ -294,6 +303,7 @@ private:
 	//Cast Bar
 	MyGUI::Window* castBar;
 	MyGUI::ImageBox * fireBallImage;
+	MyGUI::ImageBox * greenBallImage;
 	//Console
 	MyGUI::Edit * consoleInput;
 	MyGUI::ComboBox* consoleOutput;
@@ -474,10 +484,24 @@ private:
 			if (mana >= 10) {
 				//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 2000, 20, "fireCastPlayer", 0);
 				_particleManager->createSpell(_spawns->getCharacter()->getPosition(), _spawns->getmCamera()->getDerivedDirection(), 2000, 20, "fireCastPlayer", 0);
-
+				_sound->playCastAudio("L_BAZOO.wav", false);
 				_spawns->setMana(_spawns->getMana() - 10);
 				updateUserFrame();
 				_spawns->resetCastTimer();
+			}
+		}
+	}
+	void castGreenBallFront(MyGUI::Widget* _widget) {
+		if (_spawns->getCastTimer()->getMilliseconds()>2000) {
+			Ogre::Real mana = _spawns->getMana();
+			if (mana >= 30) {
+				//
+				_particleManager->createSpell(_spawns->getCharacter()->getPosition(), _spawns->getmCamera()->getDerivedDirection(), 2000, 30, "greenBolt", 0);
+				_spawns->setMana(_spawns->getMana() - 30);
+				updateUserFrame();
+				_spawns->resetCastTimer();
+				_sound->playCastAudio("L_FLAME.wav", false);
+
 			}
 		}
 	}
@@ -506,6 +530,12 @@ private:
 		fireBallImage = mGUI->createWidget<MyGUI::ImageBox>("ImageBox", castBarX, castBarY, spellWidth, spellHeight, MyGUI::Align::Default, "Main");
 		fireBallImage->setImageTexture("Fireball1_GD_BlueKPL.png");
 		fireBallImage->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::castFireballFront);
+
+		greenBallImage = mGUI->createWidget<MyGUI::ImageBox>("ImageBox", castBarX + spellWidth, castBarY, spellWidth, spellHeight, MyGUI::Align::Default, "Main");
+		greenBallImage->setImageTexture("Fireball1_GD_GreenKPL.png");
+		greenBallImage->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::castGreenBallFront);
+		greenBallImage->setVisible(false);
+		
 	}
 
 	/**********User frame*************/
