@@ -285,7 +285,9 @@ public:
 				Ogre::Vector3 position(std::stod(res->getString("x").c_str()), std::stod(res->getString("y").c_str()), std::stod(res->getString("z").c_str()));
 				Ogre::Vector3 boxDimensions(std::stod(res->getString("Width").c_str()), std::stod(res->getString("Height").c_str()), std::stod(res->getString("Deep").c_str()));
 				Ogre::Vector3 rotation(std::stod(res->getString("RotX").c_str()), std::stod(res->getString("RotY").c_str()), std::stod(res->getString("RotZ").c_str()));
+				int id = std::stoi(res->getString("ID").c_str());
 				spawns->createBoundingBox(
+					id,
 					position,
 					boxDimensions,
 					rotation

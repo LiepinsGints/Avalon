@@ -19,10 +19,12 @@
 #include "BotModel.h"
 #include "Spawns.h" 
 #include "UserInterface.h"
+#include "PhysicsManager.h"
+#include "Sound.h"
 using namespace Ogre;
 class ParticleManager {
 public:
-	ParticleManager(Ogre::SceneManager* mSceneMgr, Ogre::Camera* mCamera, Ogre::Root* mRoot, Ogre::RenderWindow* mWindow, Ogre::TerrainGroup* mTerrainGroup, std::vector<BotModel*> mBots) {
+	ParticleManager(Ogre::SceneManager* mSceneMgr, Ogre::Camera* mCamera, Ogre::Root* mRoot, Ogre::RenderWindow* mWindow, Ogre::TerrainGroup* mTerrainGroup, std::vector<BotModel*> mBots, PhysicsManager* physicsManager, Sound * sound) {
 		_mSceneMgr = mSceneMgr;
 		_mCamera = mCamera;
 		_mRoot = mRoot;
@@ -31,6 +33,8 @@ public:
 		counter = 0;
 		terrainRayCol = Ogre::Vector3(0, 0, 0);
 		_mBots = mBots;
+		_physicsManager = physicsManager;
+		_sound = sound;
 		//simple particle
 		/*
 		ParticleSystem* sunParticle = mSceneMgr->createParticleSystem("fireBall", "Examples/fireBall");
@@ -145,34 +149,39 @@ public:
 		
 		std::vector<ParticleModel*> particleSpellsTemp;
 		for (std::vector<ParticleModel*>::iterator it = particleSpells.begin(); it != particleSpells.end(); ++it) {
-
+			//Check if particle collides with bound
+			bool collisionResult = checkCollision(Ogre::Vector3((*it)->getParticleNode()->getPosition()),
+				Ogre::Vector3((*it)->getDirectionVector().x, (*it)->getDirectionVector().y + 10, (*it)->getDirectionVector().z));
+			//checkCollision(Ogre::Vector3 startPosition, Ogre::Vector3 targetPosition)
 			//Ogre::Real distance = (*it)->getPosition().distance((*it)->getParticleNode()->getPosition());
 
 			bool botColides = false;
-			//Check if botCollides
-			if ((*it)->getType() == 0) {
-				for (std::vector<BotModel*>::iterator itBots = _mBots.begin(); itBots != _mBots.end(); ++itBots) {
-					if ((*itBots)->getAlive() == true) {
-						Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance((*itBots)->getBotNode()->getPosition());
+			if (collisionResult == false) {				
+				//Check if botCollides
+				if ((*it)->getType() == 0) {
+					for (std::vector<BotModel*>::iterator itBots = _mBots.begin(); itBots != _mBots.end(); ++itBots) {
+						if ((*itBots)->getAlive() == true) {
+							Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance((*itBots)->getBotNode()->getPosition());
 
-						if (distance<5) {
-							(*itBots)->setHealth((*itBots)->getHealth() - (*it)->getDamage());
-							botColides = true;
-							break;
+							if (distance < 5) {
+								(*itBots)->setHealth((*itBots)->getHealth() - (*it)->getDamage());
+								botColides = true;
+								break;
+							}
 						}
 					}
 				}
-			}
-			else {
-				Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance(spawns->getCharacter()->getPosition());
-				if (distance<5) {
-					spawns->setHealth(spawns->getHealth() - (*it)->getDamage());
-					botColides = true;
-					//userInterface->updateUserFrame();
+				else {
+					Ogre::Real distance = (*it)->getParticleNode()->getPosition().distance(spawns->getCharacter()->getPosition());
+					if (distance<5) {
+						spawns->setHealth(spawns->getHealth() - (*it)->getDamage());
+						botColides = true;
+						//userInterface->updateUserFrame();
+					}
 				}
 			}
 			//Destroy particle
-			if((*it)->getTimer()->getMilliseconds()>(*it)->getTimeToLive() || botColides==true){
+			if((*it)->getTimer()->getMilliseconds()>(*it)->getTimeToLive() || botColides==true || collisionResult == true){
 				(*it)->getParticleNode()->removeAndDestroyAllChildren();
 				_mSceneMgr->destroySceneNode((*it)->getParticleNode());
 				//it = particleSpells.erase(it);
@@ -192,6 +201,43 @@ public:
 		particleSpells = particleSpellsTemp;
 	}
 
+	bool checkCollision(Ogre::Vector3 startPosition, Ogre::Vector3 direction) {
+
+		//Ogre::Vector3 direction = Ogre::Vector3(targetPosition.x - startPosition.x, (targetPosition.y - startPosition.y) + 10, targetPosition.z - startPosition.z);
+
+		direction = direction.normalisedCopy();
+		//
+		NxOgre::Ray ray;
+		ray.mDirection.from(direction);
+		ray.mOrigin.from(Ogre::Vector3(startPosition.x, startPosition.y + 10, startPosition.z));
+
+		RaycastHit hit = _physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
+		if (hit.mRigidBody)
+		{
+			//
+			Ogre::String hitMeshName = hit.mRigidBody->getName();
+
+			if (hitMeshName == "") {
+				return false;
+			}
+			else {
+				//_sound->playEnvironmentAudio("I_METAL.wav", false);
+				if(hit.mDistance <= 5) {
+					_sound->playEnvironmentAudio("I_METAL.wav",false);
+					return true;
+				}
+				else {
+					return false;
+				}
+				
+			}
+		}
+		else
+		{
+			return false;
+
+		}
+	}
 private:
 
 	Ogre::SceneManager* _mSceneMgr;
@@ -201,10 +247,11 @@ private:
 	int counter;
 	std::vector<ParticleModel*> particleSpells;
 	Ogre::TerrainGroup* _mTerrainGroup;
+	PhysicsManager* _physicsManager;
 	//Ray result
 	Ogre::Vector3 terrainRayCol;
 
 	std::vector<BotModel*> _mBots;
-
+	Sound * _sound;
 };
 #endif

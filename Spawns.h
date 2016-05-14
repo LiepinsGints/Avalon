@@ -212,13 +212,13 @@ public:
 	
 	}
 	/*********temp****************************/
-	void createBoundingBox(Ogre::Vector3 position, Ogre::Vector3 boxDimensions,  Ogre::Vector3 rotation) {
+	void createBoundingBox(int id,Ogre::Vector3 position, Ogre::Vector3 boxDimensions,  Ogre::Vector3 rotation) {
 		//_physicsManager->createBoundingBox(x, y, z, w, h, d);
-
+		Critter::BodyDescription bodyDescriptionTemp;
+		bodyDescriptionTemp.mName = "Bound" + Ogre::StringConverter::toString(id);
 		NxOgre::BoxDescription boundingBox(boxDimensions.x, boxDimensions.y, boxDimensions.z);
 		boundingBox.mFlags += NxOgre::ShapeFlags::Visualisation;
 		boundingBox.mGroup = Objects;//Objects Walls
-
 		Matrix44 globalPose = NxOgre::Vec3(position.x, position.y, position.z);
 
 		if (rotation.x != 0) {
@@ -234,7 +234,7 @@ public:
 			boundingBox.mLocalPose.set(NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
 		}
 
-		SceneGeometry* scene_geom = _physicsManager->getMScene()->createSceneGeometry(boundingBox, NxOgre::Vec3(position.x, position.y, position.z));
+		SceneGeometry* scene_geom = _physicsManager->getMScene()->createSceneGeometry(boundingBox, NxOgre::Vec3(position.x, position.y, position.z), bodyDescriptionTemp);
 		_designerObject->setScene_geom(scene_geom);
 	}
 	//create cube

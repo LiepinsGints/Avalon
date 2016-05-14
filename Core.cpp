@@ -105,7 +105,7 @@ bool Core::go()
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(97, 26, -232), 17);
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(188, 26, -249), 17);
 	//ParticleManager
-	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots());
+	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots(), physicsManager,sound);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns, particleManager,sound);
 	//userInterface->disableTestInterface();

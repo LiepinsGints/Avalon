@@ -185,15 +185,23 @@ public:
 				Ogre::Vector3 charPos = _spawns->getCharacter()->getPosition();
 				Ogre::Real startPosChDist = charPos.distance((*it)->getStartPos());
 
-				if (startPosChDist <= _appSettings->getAgroRange()) {
-					botMoveToPoint((*it), charPos);
-					//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000, 20, "fireCastPlayer", 0);
-					if ((*it)->getCastTimer()->getMilliseconds() >= 3000){
-						particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition()- (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
-						(*it)->resetCastTimer();
-						_sound->playEnemyAudio("L_BAZOO.wav", false);
+				bool collide = checkCollision((*it)->getBotNode()->getPosition(), charPos);
 
-					}
+				if (startPosChDist <= _appSettings->getAgroRange() && collide == false) {
+					
+						//
+						botMoveToPoint((*it), charPos);
+						//
+
+						//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000, 20, "fireCastPlayer", 0);
+						if ((*it)->getCastTimer()->getMilliseconds() >= 3000) {
+							particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
+							(*it)->resetCastTimer();
+							_sound->playEnemyAudio("L_BAZOO.wav", false);
+
+						}
+					
+				
 					
 				}
 				else {
@@ -230,6 +238,36 @@ public:
 		return mBots;
 	}
 
+	//Check if textures preventing cast or movement
+	bool checkCollision(Ogre::Vector3 enemyPosition,Ogre::Vector3 targetPosition) {
+		
+		Ogre::Vector3 direction = Ogre::Vector3(targetPosition.x-enemyPosition.x  , (targetPosition.y - enemyPosition.y)+10, targetPosition.z-enemyPosition.z);
+
+		direction = direction.normalisedCopy();
+		//
+		NxOgre::Ray ray;
+		ray.mDirection.from(direction);
+		ray.mOrigin.from(Ogre::Vector3(enemyPosition.x, enemyPosition.y+10, enemyPosition.z));
+
+		RaycastHit hit = _physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
+		if (hit.mRigidBody)
+		{		
+			//
+			Ogre::String hitMeshName = hit.mRigidBody->getName();
+
+			if (hitMeshName =="") {
+				return false;
+			}
+			else {
+				return true;
+			}			
+		}
+		else
+		{
+			return false;
+
+		}
+	}
 private:
 	Spawns * _spawns;
 	std::vector<BotModel*> mBots;

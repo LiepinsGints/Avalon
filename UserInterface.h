@@ -241,7 +241,9 @@ public:
 				);
 		}
 		else if(typePhys == 3){
+			id = _mySql->getLastInsertID();
 			_spawns->createBoundingBox(
+				id,
 				pos,
 				dimensions,
 				shapeRot
