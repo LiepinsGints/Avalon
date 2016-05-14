@@ -100,15 +100,15 @@ bool Core::go()
 	//bots
 	bots = new Bots(spawns, mySql, physicsManager, appSettings,sound);
 	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41), 17);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(-82, 26, -217), 17);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(-60, 26, -219), 17);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(97, 26, -232), 17);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(188, 26, -249), 17);
+	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(-82, 26, -217), 17);
+	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(-60, 26, -219), 17);
+	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(97, 26, -232), 17);
+	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(188, 26, -249), 17);
 	//ParticleManager
 	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots());
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns, particleManager,sound);
-	userInterface->disableTestInterface();
+	//userInterface->disableTestInterface();
 	//float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	//swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world
@@ -123,7 +123,6 @@ bool Core::go()
 	
 	// OIS
 	keyListener = new KeyListener(mWindow, contentManager, physicsManager, appSettings, spawns, designer, userInterface,particleManager, sound);
-	
 
 	//windowResized(mWindow);
 	Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);

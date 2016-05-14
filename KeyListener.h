@@ -149,7 +149,8 @@ public:
 			break;
 
 		case OIS::KC_NUMPAD6:
-			
+			_spawns->remoweMesh(2);
+			_spawns->remoweNxObject(0);
 			break;
 
 		case OIS::KC_NUMPAD2:

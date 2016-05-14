@@ -22,6 +22,7 @@
 #include "MySql.h"
 #include "ParticleManager.h"
 #include "Sound.h"
+#include "DesignerObjects.h"
 class UserInterface {
 public:
 	UserInterface(Ogre::RenderWindow* mWindow, Ogre::SceneManager* mSceneMgr, AppSettings* appSettings, Designer *designer, MySql * mySql, Spawns* spawns, ParticleManager * particleManager, Sound * sound) {
@@ -140,6 +141,10 @@ public:
 	}
 	//Create world item
 	void createWorldObject() {
+		//
+		DesignerObjects * designerObject = new DesignerObjects();
+		_spawns->settCurrentDesignerObject(designerObject);
+		//
 		Ogre::Vector3 pos = _designer->getCubePos();
 		Ogre::Vector3 scale = _designer->getShapeScale();
 		Ogre::Vector3 shapeRot = _designer->getShapeRotation();
@@ -171,7 +176,7 @@ public:
 			{
 				typePhys = 3;
 			}
-			
+			designerObject->setType(typePhys);
 		}
 		if(typePhys==0 || typePhys == 1 || typePhys == 2){
 		//Spawn before bound so we can use id
@@ -189,6 +194,7 @@ public:
 				0//type
 				);
 			id = _mySql->getLastInsertID();
+			designerObject->setWorldId(id);
 
 		}
 		if(typePhys==0 || typePhys == 1 || typePhys == 3){
@@ -208,6 +214,7 @@ public:
 				typePhys,
 				lastInsert
 				);
+			designerObject->setBoundId(_mySql->getLastInsertID());
 		}
 		//_designer->addShapeToScene();
 		//
@@ -241,6 +248,7 @@ public:
 				);
 		}
 	
+		designerObjects.push_back(designerObject);
 	}
 	//update user frame
 	void updateUserFrame() {
@@ -341,9 +349,12 @@ private:
 	MyGUI::Edit * objectShapeOffsetY;
 	MyGUI::Button* setShapeOffsetY;
 
+	MyGUI::Button* undo;
+
 	MyGUI::ListBox * meshTypes;
 
-
+	//
+	std::vector<DesignerObjects*> designerObjects;
 	/**Close structure***/
 	void loadUi() {	
 		
@@ -389,6 +400,35 @@ private:
 	}
 	void showShape(MyGUI::Widget* _widget) {
 			createShape(getSelectedShapeName());		
+	}
+	//
+	void undoAddition(MyGUI::Widget* _widget) {
+		if (designerObjects.size() > 0) {
+			_spawns->undoDesignerObject(designerObjects.back());
+			switch (designerObjects.back()->getType())
+			{
+			case 0:
+				_mySql->deleteById(designerObjects.back()->getWorldId(), "world");
+				_mySql->deleteById(designerObjects.back()->getBoundId(), "bounds");
+				break;
+			case 1:
+				_mySql->deleteById(designerObjects.back()->getWorldId(), "world");
+				_mySql->deleteById(designerObjects.back()->getBoundId(), "bounds");
+
+				break;
+			case 2:
+				_mySql->deleteById(designerObjects.back()->getWorldId(), "world");
+				break;
+			case 3:
+				_mySql->deleteById(designerObjects.back()->getBoundId(), "bounds");
+				break;
+			default:
+				break;
+			}
+			//remowe last element
+			designerObjects.pop_back();
+		}
+		
 	}
 	//<--test end
 	void closeApp(MyGUI::Widget* _widget)
@@ -726,12 +766,15 @@ private:
 
 		objectShapeOffsetY = designerWindow->createWidget<MyGUI::EditBox>("EditBox", MyGUI::IntCoord(initPositionX, initPositionY + buttonDistance * 24, buttonWidth, buttonHeight), MyGUI::Align::Default, "Overlapped");
 		objectShapeOffsetY->insertText(Ogre::StringConverter::toString(_designer->getOffset()));
-		//Change box dimensions
+		//
 		setShapeOffsetY = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 25, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		setShapeOffsetY->setCaption("Apply");
 		setShapeOffsetY->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::setShapeOffset);
 
-
+		//Undo
+		undo = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 26, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		undo->setCaption("Undo");
+		undo->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::undoAddition);
 	}
 
 };

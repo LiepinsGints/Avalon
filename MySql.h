@@ -388,6 +388,22 @@ public:
 		}
 
 	}
+
+	//Delete by id in table
+	void deleteById(int id,std::string table) {
+
+		std::string query = "DELETE FROM "+table+" where id="+ Ogre::StringConverter::toString(id);
+
+		try {
+			sql::Statement * stmt = con->createStatement();
+			sql::ResultSet * res = stmt->executeQuery(query.c_str());
+		}
+		catch (sql::SQLException &e) {
+
+			Ogre::String error = "Error";
+		}
+	}
+	//DELETE FROM world where id = 1
 private:
 	sql::Driver *driver;
 	sql::Connection *con;

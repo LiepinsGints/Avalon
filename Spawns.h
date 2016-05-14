@@ -25,6 +25,7 @@
 #include "BotModel.h"
 //
 #include "Models.h"
+#include "DesignerObjects.h"
 
 class Spawns 
 {
@@ -34,6 +35,7 @@ public:
 		_mWindow = mWindow;
 		_mSceneMgr = mSceneMgr;
 		_physicsManager = physicsManager;
+		_designerObject = new DesignerObjects();
 		counter = 0;
 		botCounter = 0;
 		manaTimer = new Ogre::Timer();
@@ -118,6 +120,7 @@ public:
 			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
 		}
 		_physicsManager->addMBodies(mBodyTemp);
+		_designerObject->setmBody(mBodyTemp);
 	}
 	void createObjectBodyStatic(int id, Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 boxDimensions, float scale, Ogre::Vector3 rotation, Ogre::Real mass) {
 		Critter::BodyDescription bodyDescriptionTemp;
@@ -148,6 +151,7 @@ public:
 
 		SceneGeometry* scene_geom = _physicsManager->getMScene()->createSceneGeometry(boundingBox, globalPose, bodyDescriptionTemp);
 		
+		_designerObject->setScene_geom(scene_geom);
 		//_physicsManager->getMRenderSystem()->createSceneNodeEntityPair(meshName, Vec3(globalPose), NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
 		createMeshOnly(id,meshName, position, scaleDimensions, rotation);
 	}
@@ -177,11 +181,14 @@ public:
 			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1));
 			kinematiBodyTemp->setGlobalOrientationQuat(NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
 		}
+		//_physicsManager->addMBodies(kinematiBodyTemp);
+		_designerObject->setmKinematicBody(kinematiBodyTemp);
+
 	}
 
 	//Create mesh
 	void createMeshOnly(int id, Ogre::String meshName, Ogre::Vector3 position, Ogre::Vector3 scaleDimensions, Ogre::Vector3 rotation) {
-		SceneNode* modelNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode(position);
+		SceneNode* modelNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode(Ogre::StringConverter::toString(id),position);
 		modelNode->attachObject(_mSceneMgr->createEntity(Ogre::StringConverter::toString(id), meshName));
 		modelNode->setScale(scaleDimensions.x, scaleDimensions.y, scaleDimensions.z);
 		//Rotate node
@@ -198,6 +205,7 @@ public:
 
 		}
 
+		_designerObject->setModelNode(modelNode);
 		//modelNode->rotate()
 	}
 	void spawnWorld() {
@@ -226,7 +234,8 @@ public:
 			boundingBox.mLocalPose.set(NxOgre::Quat(rot->w, rot->x, rot->y, rot->z));
 		}
 
-		_physicsManager->getMScene()->createSceneGeometry(boundingBox, NxOgre::Vec3(position.x, position.y, position.z));
+		SceneGeometry* scene_geom = _physicsManager->getMScene()->createSceneGeometry(boundingBox, NxOgre::Vec3(position.x, position.y, position.z));
+		_designerObject->setScene_geom(scene_geom);
 	}
 	//create cube
 	void createCube(Ogre::Real rotX, Ogre::Real rotY, Ogre::Real rotZ) {
@@ -258,9 +267,51 @@ public:
 		_physicsManager->addMBodies(mBodyTemp);
 
 	}
-	
-	
+	/*****************************Remowe objects****************************************/
+	void remoweNxObject(int id) {
+		//_physicsManager->getMRenderSystem()->
+		//_physicsManager->getMRenderSystem()->destroyBody(_physicsManager->getmBodies().back());
+		//_physicsManager->getMRenderSystem()->
+	}
+	void remoweBound(int id) {
+		//_physicsManager->addMBodies(mBodyTemp)
+		//mydeque.back()
+		
+		
+	}
+	void remoweMesh(int id) {
+		//Ogre::StringConverter::toString(id),
+		_mSceneMgr->getRootSceneNode()->removeAndDestroyChild(Ogre::StringConverter::toString(id));
+	}
+	void settCurrentDesignerObject(DesignerObjects * designerObject) {
+		_designerObject = designerObject;
+	}
+	void undoDesignerObject(DesignerObjects * designerObject) {
+		
+		switch (designerObject->getType())
+		{
+		case 0:
+			_mSceneMgr->getRootSceneNode()->removeAndDestroyChild(Ogre::StringConverter::toString(designerObject->getWorldId()));
+			_physicsManager->getMScene()->forceDestroySceneGeometry(designerObject->getScene_geom());
+			break;
+		case 1:
+			//designerObject->getmBody()->
+			_physicsManager->getMRenderSystem()->destroyBody(designerObject->getmBody());
+			//_physicsManager->getMRenderSystem()->
+			break;
+		case 2:
+			_mSceneMgr->getRootSceneNode()->removeAndDestroyChild(Ogre::StringConverter::toString(designerObject->getWorldId()));
+			break;
+		case 3:
+			//_physicsManager->getMRenderSystem()->
+			_physicsManager->getMScene()->forceDestroySceneGeometry(designerObject->getScene_geom());
+			break;
+		default:
+			break;
+		}
 
+	}
+	//Sinbad node
 	Critter::Node* getSinbadNode() {
 		return sinbadNode;
 	}
@@ -507,7 +558,8 @@ private:
 	Ogre::Timer* manaTimer;
 	Ogre::Timer* castTimer;
 	Ogre::Real score;
-
+	//
+	DesignerObjects * _designerObject;
 };
 
 

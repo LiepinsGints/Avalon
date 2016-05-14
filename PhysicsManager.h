@@ -40,6 +40,9 @@ public:
 	void addMBodies(Critter::Body* mBody) {
 		mBodies.push_back(mBody);
 	}
+	std::deque<Critter::Body*> getmBodies() {
+		return mBodies;
+	}
 	/**********************render system***************************/
 	Critter::RenderSystem*  getMRenderSystem(){
 		return mRenderSystem;
