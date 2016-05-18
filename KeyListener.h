@@ -124,12 +124,12 @@ public:
 			backward = true;
 			break;
 
-		case OIS::KC_LEFT:
+		case OIS::KC_RIGHT:
 			_spawns->left(127);
 			left = true;
 			break;
 
-		case OIS::KC_RIGHT:
+		case OIS::KC_LEFT:
 			_spawns->right(127);
 			right = true;
 			break;
@@ -170,11 +170,11 @@ public:
 			_spawns->forward(127);
 			forward = true;
 			break;
-		case OIS::KC_A:
+		case OIS::KC_D:
 			_spawns->left(127);
 			left = true;
 			break;
-		case OIS::KC_D:
+		case OIS::KC_A:
 			_spawns->right(127);
 			right = true;
 			break;
@@ -244,12 +244,12 @@ public:
 			backward = false;
 			break;
 
-		case OIS::KC_LEFT:
+		case OIS::KC_RIGHT:
 			_spawns->left(0);
 			left = false;
 			break;
 
-		case OIS::KC_RIGHT:
+		case OIS::KC_LEFT:
 			_spawns->right(0);
 			right = false;
 			break;
@@ -261,11 +261,11 @@ public:
 			_spawns->forward(0);
 			forward = false;
 			break;
-		case OIS::KC_A:
+		case OIS::KC_D:
 			_spawns->left(0);
 			right = false;
 			break;
-		case OIS::KC_D:
+		case OIS::KC_A:
 			_spawns->right(0);
 			left = false;
 			break;

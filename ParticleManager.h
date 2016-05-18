@@ -152,9 +152,7 @@ public:
 			//Check if particle collides with bound
 			bool collisionResult = checkCollision(Ogre::Vector3((*it)->getParticleNode()->getPosition()),
 				Ogre::Vector3((*it)->getDirectionVector().x, (*it)->getDirectionVector().y + 10, (*it)->getDirectionVector().z));
-			//checkCollision(Ogre::Vector3 startPosition, Ogre::Vector3 targetPosition)
-			//Ogre::Real distance = (*it)->getPosition().distance((*it)->getParticleNode()->getPosition());
-
+		
 			bool botColides = false;
 			if (collisionResult == false) {				
 				//Check if botCollides

@@ -131,7 +131,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>G:\Hex\NxOgre\critter\build\source;$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;$(OGRE_HOME)/boost/boost;G:\Source\CaelumGithub\main\include;G:\Hex\CommunityHydrax-master\include;G:\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(NXOGRE_DIR)\critter\build\source;$(NXOGRE_DIR)\SDK\;$(OGRE_HOME)\include;$(OGRE_HOME)\include\OIS;$(OGRE_HOME)\include\OGRE;$(OGRE_HOME)\Samples\Common\include;$(OGRE_HOME)\boost;$(OGRE_HOME)\include\OGRE\Overlay;$(OGRE_HOME)\boost\;$(critter)\sdk\;$(PHYSX_DIR)\SDKs\Cooking\include;$(PHYSX_DIR)\SDKs\NxCharacter\include;$(PHYSX_DIR)\SDKs\Foundation\include;$(PHYSX_DIR)\SDKs\Physics\include;$(PHYSX_DIR)\SDKs\PhysXLoader\include;$(MY_GUI_SOURCE)\MyGUIEngine\include;$(MY_GUI_SOURCE)\Platforms\Ogre\OgrePlatform\include;$(MY_SQL)\include;$(NXOGRE_DIR)\build\source;$(critter)\critter\build\source;$(OGRE_HOME)/boost/boost;$(CAELUM)\include;G:\Hex\CommunityHydrax-master\include;$(OPENAL_SDK)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -139,7 +139,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(NXOGRE_DIR)\SDK;$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;$(critter)\sdk;$(PHYSX_DIR)\SDKs\lib\Win32;$(MYGUI_HOME)\lib\Release;$(MY_SQL)\lib;$(MY_SQL)\lib\opt;G:\OpenAL 1.1 SDK\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(NXOGRE_DIR)\SDK;$(OGRE_HOME)\lib\$(Configuration);$(OGRE_HOME)\boost\lib;$(critter)\sdk;$(PHYSX_DIR)\SDKs\lib\Win32;$(MYGUI_HOME)\lib\Release;$(MY_SQL)\lib;$(MY_SQL)\lib\opt;$(OPENAL_SDK)\libs\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>NxOgre.lib;OgreMain.lib;OIS.lib;OgreOverlay.lib;CritterStatic.lib;NxCharacter.lib;PhysXCooking.lib;PhysXCore.lib;PhysXLoader.lib;MyGUIEngine.lib;MyGUI.OgrePlatform.lib;mysqlcppconn.lib;Caelum.lib;Hydrax.lib;OpenAL32.lib;alut.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>

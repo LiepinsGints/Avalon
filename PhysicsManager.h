@@ -67,6 +67,16 @@ public:
 	void createBoundingCylinder(Ogre::Real x, Ogre::Real y, Ogre::Real z, Ogre::Real w, Ogre::Real h, Ogre::Real d) {
 		NxOgre::BoxDescription boundingBox(w, h, d);
 	}
+	//Turn on collision shape display
+	
+	void turnOnOFFCollisonShapeDebug() {
+		if (vd_desc.mCollision.shapes == false) {
+			vd_desc.mCollision.shapes = true;
+		}
+		else {
+			vd_desc.mCollision.shapes = false;
+		}
+	}
 private:
 	NxOgre::World*          mWorld;
 	NxOgre::Scene*          mScene;
@@ -78,6 +88,7 @@ private:
 	Ogre::SceneManager*		_mSceneMgr;
 
 	ContentManager* _contentManager;
+	VisualDebuggerDescription vd_desc;
 	//character
 	Ogre::Real                      mCameraYaw, mCameraPitch;
 	Ogre::Vector3                   mCameraOffset;
@@ -119,14 +130,13 @@ private:
 		// Plane creation
 		mScene->createSceneGeometry(NxOgre::PlaneGeometryDescription());
 
-		// Create the rendersystem.
-		VisualDebuggerDescription vd_desc;
-		vd_desc.mCollision.shapes = true;
+		// Create the rendersystem. Debug shapes turned off
+		vd_desc.mCollision.shapes = false;
 		//vd_desc.mCollision.AABB = true;
 		
 		mRenderSystem = new Critter::RenderSystem(mScene, _mSceneMgr);
 		//mRenderSystem->createVisualDebugger();
-		mRenderSystem->createVisualDebugger(vd_desc);
+		//mRenderSystem->createVisualDebugger(vd_desc);
 
 		//create character
 		

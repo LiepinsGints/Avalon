@@ -58,13 +58,9 @@ public:
 
 	//Player cast 
 	void playCastAudio(Ogre::String trackName, bool repeat) {
-
 		soundMgr->releaseAudio(playerSpell);
-		// Just for testing
 		soundMgr->loadAudio(trackName, &playerSpell, repeat);
 		soundMgr->playAudio(playerSpell, false);
-		//soundMgr->releaseAudio(audioId);
-		//soundMgr->getIsSoundOn
 	}
 	//Player sound
 	void playerAudio(Ogre::String trackName, bool repeat) {

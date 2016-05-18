@@ -104,9 +104,9 @@ public:
 		//_spawns->getSinbadNode()->getOrientation().getYaw();
 		//Calcualte vectors
 		Ogre::Vector3 vectorA = Ogre::Vector3(
-			charPos.x - charPos.x,
-			charPos.y - charPos.y,
-			charPos.z + 1 - charPos.z
+			0,
+			0,
+			1
 			);
 		Ogre::Vector3 vectorB = Ogre::Vector3(
 			botModel->getBot()->getPosition().x - charPos.x,
@@ -195,9 +195,20 @@ public:
 
 						//_particleManager->createSpellMouse(_spawns->getCharacter()->getPosition(), 5000, 20, "fireCastPlayer", 0);
 						if ((*it)->getCastTimer()->getMilliseconds() >= 3000) {
-							particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
-							(*it)->resetCastTimer();
-							_sound->playEnemyAudio("L_BAZOO.wav", false);
+							//smoke
+							
+							//
+							if (_spawns->getScore() < 200) {
+								particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
+								(*it)->resetCastTimer();
+								_sound->playEnemyAudio("L_BAZOO.wav", false);
+							}
+							else {
+								particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 40, "shadowBolt", 1);
+								(*it)->resetCastTimer();
+								_sound->playEnemyAudio("E_1.wav", false);
+							}
+							
 
 						}
 					
@@ -247,7 +258,7 @@ public:
 		//
 		NxOgre::Ray ray;
 		ray.mDirection.from(direction);
-		ray.mOrigin.from(Ogre::Vector3(enemyPosition.x, enemyPosition.y+10, enemyPosition.z));
+		ray.mOrigin.from(Ogre::Vector3(enemyPosition.x, enemyPosition.y+5, enemyPosition.z));
 
 		RaycastHit hit = _physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
 		if (hit.mRigidBody)

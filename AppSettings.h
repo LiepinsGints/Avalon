@@ -27,9 +27,9 @@ public:
 		mouseSensitivity = 1;
 
 		//Db settings
-		adress = "tcp://127.0.0.1:3306";
+		adress = "tcp://127.0.0.1:3311";
 		userName = "root";
-		password = "ascent";
+		password = "root";
 		dbName = "Avalon";
 
 		//Player settings
@@ -39,8 +39,8 @@ public:
 		//Npc settings
 		enemyHealth = 100;
 		enemyMana = 100;
-		agroRange = 200;
-		respawn = 60000;//1 min
+		agroRange = 150;
+		respawn = 360000;//5 min
 		botSpeed = 80;
 	}
 	~AppSettings() {
@@ -114,7 +114,7 @@ public:
 		return enemyMana;
 	}
 	Ogre::Real getAgroRange() {
-		return enemyMana;
+		return agroRange;
 	}
 	Ogre::Real getRespawn() {
 		return respawn;

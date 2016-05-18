@@ -108,7 +108,7 @@ bool Core::go()
 	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots(), physicsManager,sound);
 	//userInterface
 	userInterface = new UserInterface(mWindow, mSceneMgr, appSettings, designer, mySql,spawns, particleManager,sound);
-	//userInterface->disableTestInterface();
+	userInterface->disableTestInterface();
 	//float heightS = spawns->getSinbadHeight(Ogre::Vector3(-42, 25-4.5, -191), 1.0f);
 	//swap ="Sinabd height"+ Ogre::StringConverter::toString(heightS);
 	//Populate world

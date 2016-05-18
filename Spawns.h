@@ -41,11 +41,17 @@ public:
 		manaTimer = new Ogre::Timer();
 		castTimer = new Ogre::Timer();
 		mSinbadNodeName = "mainCharacter";
+		initialPosition = Ogre::Vector3(-736, 36, 833);
 		loadPredefinedWorld();
 		score = 0;
 	};
 	~Spawns() {
 	};
+
+	//For suer interface
+	void showHideCollisionBoxes() {
+		_physicsManager->turnOnOFFCollisonShapeDebug();
+	}
 	//Create object with simple bounding box
 	//Type NonCollidable = 0,    Walls = 1,  Objects = 2   
 	void createObject(Models * model,Ogre::Vector3 position, float scaleX, float scaleY, float scaleZ,float scale, Ogre::Real mass, int type ) {
@@ -348,7 +354,7 @@ public:
 		sinbadNode = _physicsManager->getMRenderSystem()->createNode();
 		sinbadNode->createAndAttachEntity(mSinbadNodeName,meshName);
 		//Create animated character
-		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(0), sinbadNode, desc);
+		mSinbad = _physicsManager->getMRenderSystem()->createAnimatedCharacter(position, Ogre::Radian(180), sinbadNode, desc);
 		//Create 
 		//Ogre::SceneNode* camNode;
 		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
@@ -510,7 +516,7 @@ public:
 			mCamera->setPosition(0, 10, -30);
 			mCamera->lookAt(0, 5, 0);
 		
-			createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234), 17.0f, 100, 100);
+			createAnimatedCharacter("sinbad.mesh", initialPosition, 17.0f, 100, 100);
 			
 			//****
 		}
@@ -518,7 +524,7 @@ public:
 	/******************************Load predefined****************************************/
 	void loadPredefinedWorld() {
 		setupCharacterAnimations();
-		createAnimatedCharacter("sinbad.mesh", Ogre::Vector3(-42, 125, -234),17.0f,100,100);
+		createAnimatedCharacter("sinbad.mesh", initialPosition,17.0f,100,100);
 		//Test sector
 		
 
@@ -554,6 +560,7 @@ private:
 	bool alive;
 	Ogre::String mSinbadNodeName;
 	Ogre::SceneNode* camNode;
+	Ogre::Vector3 initialPosition;
 	//
 	Ogre::Timer* manaTimer;
 	Ogre::Timer* castTimer;

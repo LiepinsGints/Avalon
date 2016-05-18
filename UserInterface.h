@@ -118,6 +118,7 @@ public:
 			graphicsButton->setVisible(true);
 			exitButton->setVisible(true);
 			closeMenuButton->setVisible(true);
+			helpWindow->setVisible(false);
 		}
 
 	}
@@ -128,6 +129,16 @@ public:
 		}
 		else {
 			designerWindow->setVisible(true);
+		}
+	}
+	//
+	void showHideHelpMenu() {
+		if (helpWindow->getVisible()) {
+			helpWindow->setVisible(false);
+		}
+		else {
+			helpWindow->setVisible(true);
+			showHideMainMenu();
 		}
 	}
 	//Set box size
@@ -352,9 +363,16 @@ private:
 	MyGUI::Button* setShapeOffsetY;
 
 	MyGUI::Button* undo;
+	MyGUI::Button* showHideDebug;
 
 	MyGUI::ListBox * meshTypes;
-
+	//Help
+	MyGUI::Window* helpWindow;
+	MyGUI::Button* closeHelp;
+	MyGUI::Button* controllsInfo;
+	MyGUI::Button* interfaceInfo;
+	MyGUI::Button* designerInfo;
+	MyGUI::ImageBox * helpImage;
 	//
 	std::vector<DesignerObjects*> designerObjects;
 	/**Close structure***/
@@ -366,6 +384,7 @@ private:
 		createDesignerMenu();
 		createPlayerScore();
 		createCastBar();
+		createHelpMenu();
 		//test
 		//Console input
 		consoleInput = mGUI->createWidget<MyGUI::EditBox>("EditBoxStretch",
@@ -432,6 +451,10 @@ private:
 		}
 		
 	}
+	//show hide collision boxes
+	void showHideCollisionBoxes(MyGUI::Widget* _widget) {
+		_spawns->showHideCollisionBoxes();
+	}
 	//<--test end
 	void closeApp(MyGUI::Widget* _widget)
 	{
@@ -440,6 +463,23 @@ private:
 	void closeMainMenu(MyGUI::Widget* _widget) {
 		showHideMainMenu();
 	}
+	void insideShowHideHelp(MyGUI::Widget* _widget) {
+		showHideHelpMenu();
+	}
+	
+	//Help Loaders
+	void loadInterfaceHelp(MyGUI::Widget* _widget) {
+		helpImage->setImageTexture("InterfaceHelpImage.png");
+	}
+	//Key image loader
+	void loadKeyHelp(MyGUI::Widget* _widget) {
+		helpImage->setImageTexture("KeyHelpImage.png");
+	}
+	//designer help
+	void loadDesignerHelp(MyGUI::Widget* _widget) {
+		helpImage->setImageTexture("DesignerHelpImage.png");
+	}
+
 	void closeDesignerMenu(MyGUI::Widget* _widget) {
 		showHideDesignerMenu();
 	}
@@ -487,7 +527,7 @@ private:
 		rotY = Ogre::StringConverter::parseReal(objectRotY->getCaption());
 		rotZ = Ogre::StringConverter::parseReal(objectRotZ->getCaption());
 
-		_designer->rotateShape(Ogre::Vector3(rotX, rotY,rotX));
+		_designer->rotateShape(Ogre::Vector3(rotX, rotY,rotZ));
 	}
 	/****Label block****/
 	void label() {
@@ -654,10 +694,10 @@ private:
 		settingsButton->setCaption("Settings");
 		settingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
 		settingsButton->setVisible(false);
-		//create graphics button
+		//create help or graphics button
 		graphicsButton = mGUI->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY+buttonDistance*2, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
-		graphicsButton->setCaption("Graphics");
-		graphicsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
+		graphicsButton->setCaption("Help");
+		graphicsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::insideShowHideHelp);
 		graphicsButton->setVisible(false);
 		//create exit button
 		exitButton = mGUI->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY+buttonDistance*3, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
@@ -669,6 +709,59 @@ private:
 		closeMenuButton->setCaption("Close main menu");
 		closeMenuButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeMainMenu);
 		closeMenuButton->setVisible(false);
+	}
+
+	void createHelpMenu() {
+		Ogre::Real helpWidth = _appSettings->getWidth() * 0.8;
+		Ogre::Real helpHeight = _appSettings->getHeight() *0.8;
+		Ogre::Real helpPosX = _appSettings->getWidth() * 0.1;
+		Ogre::Real helpPosY = _appSettings->getHeight() * 0.1;
+
+		helpWindow = mGUI->createWidget<MyGUI::Window>("Window", helpPosX, helpPosY, helpWidth, helpHeight, MyGUI::Align::Default, "Main");
+		helpWindow->setVisible(false);
+		
+		// navigation buttons
+		Ogre::Real helpButtonXPos = helpWidth * 0.01;
+		Ogre::Real helpButtonYPos = helpHeight * 0.01;
+
+
+		Ogre::Real helpButtonWidth = helpWidth * 0.15;
+		Ogre::Real helpButtonHeight = helpHeight *0.04;
+		Ogre::Real helpButtonXSeperator = helpWidth * 0.001;
+		Ogre::Real helpButtonYSeperator = helpHeight * 0.002;
+
+
+		//Interface info
+		interfaceInfo = helpWindow->createWidget<MyGUI::Button>("Button", helpButtonXPos, helpButtonYPos, helpButtonWidth, helpButtonHeight, MyGUI::Align::Default, "Main");
+		interfaceInfo->setCaption("Interface info");
+		interfaceInfo->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::loadInterfaceHelp);
+		//Controls info
+		controllsInfo = helpWindow->createWidget<MyGUI::Button>("Button", helpButtonXPos, helpButtonYPos+ helpButtonYSeperator+ helpButtonHeight, helpButtonWidth, helpButtonHeight, MyGUI::Align::Default, "Main");
+		controllsInfo->setCaption("Controls info");
+		controllsInfo->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::loadKeyHelp);
+
+
+		//designer info 
+		designerInfo = helpWindow->createWidget<MyGUI::Button>("Button", helpButtonXPos, helpButtonYPos + helpButtonYSeperator + helpButtonHeight * 2, helpButtonWidth, helpButtonHeight, MyGUI::Align::Default, "Main");
+		designerInfo->setCaption("Designer info");
+		designerInfo->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::loadDesignerHelp);
+		//designer info
+		closeHelp = helpWindow->createWidget<MyGUI::Button>("Button", helpButtonXPos, helpButtonYPos + helpButtonYSeperator + helpButtonHeight * 3, helpButtonWidth, helpButtonHeight, MyGUI::Align::Default, "Main");
+		closeHelp->setCaption("Close Help");
+		closeHelp->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::insideShowHideHelp);
+
+		//Load initail healp image
+		//InterfaceHelpImage.png
+		Ogre::Real imageXPos = helpButtonXPos + helpButtonXSeperator + helpButtonWidth;
+		Ogre::Real imageWidth = helpWidth - imageXPos;
+		helpImage = helpWindow->createWidget<MyGUI::ImageBox>("ImageBox", imageXPos, 0, imageWidth, helpHeight- helpHeight*0.1, MyGUI::Align::Default, "Main");
+		helpImage->setImageTexture("InterfaceHelpImage.png");
+
+		//MyGUI::Button* closeHelp;
+		//MyGUI::Button* controllsInfo;
+		//MyGUI::Button* designerInfo;
+		//MyGUI::ImageBox * helpImage;
+		//	MyGUI::Button* interfaceInfo;
 	}
 	/**********Designer MENU***********/
 	void createDesignerMenu() {
@@ -777,6 +870,12 @@ private:
 		undo = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 26, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
 		undo->setCaption("Undo");
 		undo->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::undoAddition);
+		//Show hide debug
+		/*
+		showHideDebug = designerWindow->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance * 27, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
+		showHideDebug->setCaption("ShowHideCollisionBoxes");
+		showHideDebug->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::showHideCollisionBoxes);
+		*/
 	}
 
 };
