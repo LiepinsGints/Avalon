@@ -207,7 +207,7 @@ public:
 		//
 		NxOgre::Ray ray;
 		ray.mDirection.from(direction);
-		ray.mOrigin.from(Ogre::Vector3(startPosition.x, startPosition.y + 10, startPosition.z));
+		ray.mOrigin.from(Ogre::Vector3(startPosition.x, startPosition.y + 6, startPosition.z));
 
 		RaycastHit hit = _physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
 		if (hit.mRigidBody)

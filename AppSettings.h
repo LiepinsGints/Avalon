@@ -40,7 +40,7 @@ public:
 		enemyHealth = 100;
 		enemyMana = 100;
 		agroRange = 150;
-		respawn = 360000;//5 min
+		respawn = 300000;//5 min
 		botSpeed = 80;
 	}
 	~AppSettings() {

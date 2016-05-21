@@ -33,6 +33,7 @@
 #include "PhysicsManager.h"
 #include "ParticleManager.h"
 #include "AppSettings.h"
+#include "LootItems.h"
 using namespace Ogre;
 class Bots {
 public:
@@ -178,7 +179,7 @@ public:
 		}
 	}
 
-	void botControls(ParticleManager * particlemanager) {
+	void botControls(ParticleManager * particlemanager, LootItems * lootItems) {
 		//	
 		for (std::vector<BotModel*>::iterator it = mBots.begin(); it != mBots.end(); ++it) {
 			if((*it)->getHealth() != 0){
@@ -198,7 +199,7 @@ public:
 							//smoke
 							
 							//
-							if (_spawns->getScore() < 200) {
+							if (_spawns->getScore() < 1000) {
 								particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
 								(*it)->resetCastTimer();
 								_sound->playEnemyAudio("L_BAZOO.wav", false);
@@ -229,9 +230,22 @@ public:
 					(*it)->getBotHelper().forward(0);
 					(*it)->getBotHelper().backward(0);
 					(*it)->getBot()->setInput((*it)->getBotHelper());
-					//
+					
+					//Spawn box as reward
+					int randomType = Ogre::Math::RangeRandom(0, 3);
+					int randomValue = 0;
+					if (randomType < 2) {
+						randomValue = Ogre::Math::RangeRandom(0, 50);
+					}
+					else {
+						randomValue = Ogre::Math::RangeRandom(-50, 50);
+					}
+					
+					lootItems->spawnLoot((*it)->getBotNode()->getPosition(), Ogre::Vector3 (0,0,0), randomType, randomValue, false);
+
+					//destroy bot
 					(*it)->setAlive(false);
-					_spawns->setScore(_spawns->getScore()+100);
+					_spawns->setScore(_spawns->getScore() + 100);
 					(*it)->destroy(_physicsManager);
 
 				}

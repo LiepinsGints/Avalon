@@ -179,6 +179,8 @@
     <ClInclude Include="Designer.h" />
     <ClInclude Include="BotModel.h" />
     <ClInclude Include="DesignerObjects.h" />
+    <ClInclude Include="LootItems.h" />
+    <ClInclude Include="LootModel.h" />
     <ClInclude Include="Models.h" />
     <ClInclude Include="MySql.h" />
     <ClInclude Include="ParticleManager.h" />

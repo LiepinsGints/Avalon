@@ -23,6 +23,7 @@
 
 #include "PhysicsManager.h"
 #include "BotModel.h"
+#include "LootModel.h"
 //
 #include "Models.h"
 #include "DesignerObjects.h"
@@ -40,10 +41,12 @@ public:
 		botCounter = 0;
 		manaTimer = new Ogre::Timer();
 		castTimer = new Ogre::Timer();
+		positionTimer =  new Ogre::Timer();
 		mSinbadNodeName = "mainCharacter";
 		initialPosition = Ogre::Vector3(-736, 36, 833);
 		loadPredefinedWorld();
 		score = 0;
+		mSinbadMove = false;
 	};
 	~Spawns() {
 	};
@@ -273,6 +276,65 @@ public:
 		_physicsManager->addMBodies(mBodyTemp);
 
 	}
+	/****************************Create crate**************************/
+	LootModel * createCrate(Ogre::Vector3 position, Ogre::Vector3 rotation, int type, int value, bool respawnable) {
+		//
+		LootModel * lootModel = new LootModel();
+		lootModel->setType(type);
+		lootModel->setRespawnable(respawnable);
+		lootModel->setValue(value);
+
+		Ogre::String crateMesh = "cube.1m.mesh";
+		lootModel->setInitialPosition(position);
+		lootModel->setInitialRotation(rotation);
+
+		switch (type)
+		{
+		case 0:
+			crateMesh = "HealthCrate.mesh";
+			break;
+		case 1:
+			crateMesh = "ManaCrate.mesh";
+			break;
+		case 2:
+			crateMesh = "RandomCrate.mesh";
+			break;
+		default:
+			break;
+		}
+
+		//
+		Critter::BodyDescription bodyDescriptionTemp;
+		bodyDescriptionTemp.mMass = 20.0f; // Set the mass to 20kg.
+		Critter::Body* mBodyTemp;
+		
+
+		mBodyTemp = _physicsManager->getMRenderSystem()->createBody(NxOgre::BoxDescription(3, 3, 3),
+			NxOgre::Vec3(position.x, position.y, position.z), crateMesh, bodyDescriptionTemp);
+
+		mBodyTemp->getNode()->setScale(1.5);
+		//mBodyTemp->getNode()->setScale(4.0);
+		//rotate
+		if (rotation.x != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotation.y != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		if (rotation.z != 0) {
+			Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1));
+			mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+		}
+		//Ogre::Quaternion * rot = new Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3(0, 1, 0));
+		//mBodyTemp->setGlobalOrientationQuat(rot.w, rot.x, rot.y, rot.z);
+		//mBodyTemp->setGlobalOrientationQuat(rot->w, rot->x, rot->y, rot->z);
+
+		lootModel->setBoxBody(mBodyTemp);
+		return lootModel;
+	}
+
 	/*****************************Remowe objects****************************************/
 	void remoweNxObject(int id) {
 		//_physicsManager->getMRenderSystem()->
@@ -302,6 +364,7 @@ public:
 			break;
 		case 1:
 			//designerObject->getmBody()->
+			designerObject->getmBody()->getNode()->destroyEntity(designerObject->getmBody()->getNode()->getEntityAt(0)->getName());
 			_physicsManager->getMRenderSystem()->destroyBody(designerObject->getmBody());
 			//_physicsManager->getMRenderSystem()->
 			break;
@@ -346,10 +409,16 @@ public:
 		alive = true;
 		//
 		Critter::AnimatedCharacterDescription desc;
-		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
+		//
+		NxOgre::SimpleCapsule capsule = NxOgre::SimpleCapsule(5.6, 2);
+
+		//
+		desc.mShape = capsule;
 		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
 		desc.mMaxGroundSpeed = groundSpeed;
 		desc.setJumpVelocityFromMaxHeight(_physicsManager->getMScene()->getGravity().y, 3.50f);
+
+		//desc.mShape.mP0
 		//Create critter node for sinbad mesh
 		sinbadNode = _physicsManager->getMRenderSystem()->createNode();
 		sinbadNode->createAndAttachEntity(mSinbadNodeName,meshName);
@@ -385,7 +454,6 @@ public:
 
 	void left(int speed) {
 		mSinbadHelper.input.is_turning = true;
-		//mSinbadHelper.leftFractional(122);
 		mSinbadHelper.left(speed);
 		
 	}
@@ -399,12 +467,22 @@ public:
 	void backward(int speed) {
 		mSinbadHelper.backward(speed);
 	}
+
+	//Sinabd move core
+
+
+
+
+
 	void jump(int speed) {
 		mSinbadHelper.up(speed);
 	}
 	void setHealth(Ogre::Real _health) {
 		if (_health < 0) {
 			health = 0;
+		}
+		else if (_health>100) {
+			health = 100;
 		}
 		else
 		{
@@ -450,6 +528,16 @@ public:
 		}
 		
 	}
+	//Save character current postion every 2 min
+	void positionUpdate() {
+		if (positionTimer->getMilliseconds() >= 120000) {
+			positionTimer->reset();
+			initialPosition = Ogre::Vector3(getCharacter()->getPosition().x, getCharacter()->getPosition().y +1, getCharacter()->getPosition().z);
+		}
+	}
+	void resetPositionTimer() {
+		positionTimer->reset();
+	}
 	void resetCastTimer() {
 		castTimer->reset();
 	}
@@ -466,6 +554,9 @@ public:
 	}
 	Ogre::Real getScore() {
 		return score;
+	}
+	bool playerMoving() {
+		
 	}
 	/****************************************************************************************/
 	/**********************Animated Character bots**************************/
@@ -565,8 +656,10 @@ private:
 	Ogre::Timer* manaTimer;
 	Ogre::Timer* castTimer;
 	Ogre::Real score;
+	Ogre::Timer* positionTimer;
 	//
 	DesignerObjects * _designerObject;
+	bool mSinbadMove;
 };
 
 

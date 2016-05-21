@@ -77,6 +77,10 @@ public:
 			vd_desc.mCollision.shapes = false;
 		}
 	}
+
+	Ogre::SceneManager*		getmSceneMgr() {
+		return _mSceneMgr;
+	}
 private:
 	NxOgre::World*          mWorld;
 	NxOgre::Scene*          mScene;
@@ -131,12 +135,12 @@ private:
 		mScene->createSceneGeometry(NxOgre::PlaneGeometryDescription());
 
 		// Create the rendersystem. Debug shapes turned off
-		vd_desc.mCollision.shapes = false;
+		vd_desc.mCollision.shapes = true;
 		//vd_desc.mCollision.AABB = true;
 		
 		mRenderSystem = new Critter::RenderSystem(mScene, _mSceneMgr);
-		//mRenderSystem->createVisualDebugger();
-		//mRenderSystem->createVisualDebugger(vd_desc);
+		mRenderSystem->createVisualDebugger();
+		mRenderSystem->createVisualDebugger(vd_desc);
 
 		//create character
 		

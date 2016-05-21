@@ -19,7 +19,6 @@
 #include <NxOgreMatrix.h>
 #include <NxCharacter.h>
 #include <vector>
-
 #include "PhysicsManager.h"
 #include "Spawns.h" 
 

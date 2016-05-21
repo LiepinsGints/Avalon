@@ -94,6 +94,7 @@ public:
 
 	bool keyPressed(const OIS::KeyEvent &arg)
 	{
+		
 		switch (arg.key)
 		{
 		case OIS::KC_ESCAPE:
@@ -116,22 +117,22 @@ public:
 			//Character controls
 		case OIS::KC_UP:
 			_spawns->forward(127);
-			forward = true;
+			//forward = true;
 			break;
 
 		case OIS::KC_DOWN:
 			_spawns->backward(127);
-			backward = true;
+			//backward = true;
 			break;
 
 		case OIS::KC_RIGHT:
 			_spawns->left(127);
-			left = true;
+			//left = true;
 			break;
 
 		case OIS::KC_LEFT:
 			_spawns->right(127);
-			right = true;
+			//right = true;
 			break;
 		case OIS::KC_NUMPAD0:
 			_spawns->jump(127);
@@ -149,8 +150,8 @@ public:
 			break;
 
 		case OIS::KC_NUMPAD6:
-			_spawns->remoweMesh(2);
-			_spawns->remoweNxObject(0);
+			//_spawns->remoweMesh(2);
+			//_spawns->remoweNxObject(0);
 			break;
 
 		case OIS::KC_NUMPAD2:
@@ -172,15 +173,15 @@ public:
 			break;
 		case OIS::KC_D:
 			_spawns->left(127);
-			left = true;
+			//left = true;
 			break;
 		case OIS::KC_A:
 			_spawns->right(127);
-			right = true;
+			//right = true;
 			break;
 		case OIS::KC_S:
 			_spawns->backward(127);
-			backward = true;
+			//backward = true;
 			break;
 		case OIS::KC_SPACE:
 			_spawns->jump(127);
@@ -219,7 +220,6 @@ public:
 
 	bool keyReleased(const OIS::KeyEvent &arg)
 	{
-		soundStopMovement();
 		switch (arg.key)
 		{
 		case OIS::KC_ESCAPE:
@@ -236,22 +236,23 @@ public:
 			//Character controls
 		case OIS::KC_UP:
 			_spawns->forward(0);
-			forward = false;
+			//forward = false;
 			break;
 
 		case OIS::KC_DOWN:
 			_spawns->backward(0);
-			backward = false;
+			//backward = false;
 			break;
 
 		case OIS::KC_RIGHT:
 			_spawns->left(0);
-			left = false;
+			//left = false;
 			break;
 
 		case OIS::KC_LEFT:
 			_spawns->right(0);
-			right = false;
+			//right = false;
+			soundStopMovement();
 			break;
 		case OIS::KC_NUMPAD0:
 			_spawns->jump(0);
@@ -260,18 +261,22 @@ public:
 		case OIS::KC_W:
 			_spawns->forward(0);
 			forward = false;
+			soundStopMovement();
 			break;
 		case OIS::KC_D:
 			_spawns->left(0);
-			right = false;
+			//right = false;
+			soundStopMovement();
 			break;
 		case OIS::KC_A:
 			_spawns->right(0);
-			left = false;
+			//left = false;
+			soundStopMovement();
 			break;
 		case OIS::KC_S:
 			_spawns->backward(0);
-			backward = false;
+			//backward = false;
+			soundStopMovement();
 			break;
 		case OIS::KC_SPACE:
 			_spawns->jump(0);
@@ -288,7 +293,9 @@ public:
 	}
 
 	void soundStopMovement() {
-		if (forward == false && left == false && right == false && backward == false) {
+		if (moving == false ) {
+//&& left == false && right == false && backward == false
+
 			_sound->disableMovement();
 		}
 		else {
@@ -319,6 +326,8 @@ private:
 	bool right;
 	bool backward;
 
+	bool moving;
+
 	
 };
 
@@ -344,6 +353,7 @@ KeyListener::KeyListener(Ogre::RenderWindow* mWindow, ContentManager* contentMan
 	left = false;
 	right = false;
 	backward = false;
+	moving = false;
 	//Init OIS
 	Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 	OIS::ParamList pl;

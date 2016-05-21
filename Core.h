@@ -23,6 +23,7 @@
 #include "Water.h"
 #include "ParticleManager.h"
 #include "Sound.h"
+#include "LootItems.h"
 
 //MyGui
 #include "MyGUI.h"
@@ -65,6 +66,7 @@ private:
 	Water * water;
 	ParticleManager * particleManager;
 	Sound * sound;
+	LootItems * lootItems;
 	//Strings
 	Ogre::String swap;
 	//openAL

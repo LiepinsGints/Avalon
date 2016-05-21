@@ -265,6 +265,42 @@ public:
 
 		}
 	}
+	//get loot
+	std::vector<LootModel*> getLoot(Spawns* spawns) {
+	std::vector<LootModel*> mLoots;
+	LootModel*  mLoot;
+	std::string query = "select * from loot";
+
+	try {
+	sql::Statement * stmt = con->createStatement();
+	sql::ResultSet * res = stmt->executeQuery(query.c_str());
+	while (res->next()) {
+	//int id = std::stoi(res->getString("ID").c_str());
+	Ogre::Real x = std::stod(res->getString("X").c_str());
+	Ogre::Real y = std::stod(res->getString("Y").c_str());
+	Ogre::Real z = std::stod(res->getString("Z").c_str());
+
+	Ogre::Real rotX = std::stod(res->getString("RotX").c_str());
+	Ogre::Real rotY = std::stod(res->getString("RotY").c_str());
+	Ogre::Real rotZ = std::stod(res->getString("RotZ").c_str());
+
+	int type = std::stoi(res->getString("Type").c_str());
+	Ogre::Real value = std::stoi(res->getString("Value").c_str());
+
+	mLoot = spawns->createCrate(Ogre::Vector3(x,y,z), Ogre::Vector3(rotX, rotY, rotZ), type, value, true);
+	mLoots.push_back(mLoot);
+
+
+	}
+	}
+	catch (sql::SQLException &e) {
+
+	Ogre::String error = "Error";
+	//model->setName("Error");
+
+	}
+	return mLoots;
+	}
 	/************************Spawn world with bounding boxes******************************/
 	void getWorldExtended() {
 

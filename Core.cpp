@@ -99,11 +99,19 @@ bool Core::go()
 	//sound->playCastAudio("FT_GRASS.wav", false);
 	//bots
 	bots = new Bots(spawns, mySql, physicsManager, appSettings,sound);
-	bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41), 17);
+	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(10, 5.5, -41), 17);
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(-82, 26, -217), 17);
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(-60, 26, -219), 17);
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(97, 26, -232), 17);
 	//bots->spawnBot("sinbad.mesh", Ogre::Vector3(188, 26, -249), 17);
+	
+	//LootItems
+	lootItems = new LootItems(spawns, mySql, physicsManager, appSettings, sound);
+	//lootItems->spawnLoot(Ogre::Vector3(-681, 26, 860), Ogre::Vector3(0, 0, 0), 0, 25, true);
+	//lootItems->spawnLoot(Ogre::Vector3(-709, 26, 863), Ogre::Vector3(0, 0, 0), 1, 25, true);
+	//lootItems->spawnLoot(Ogre::Vector3(-744, 26, 866), Ogre::Vector3(0, 0, 0), 0, 25, true);
+	//lootItems->spawnLoot(Ogre::Vector3(-771, 26, 869), Ogre::Vector3(0, 0, 0), 1, 25, true);
+	//lootItems->spawnLoot(Ogre::Vector3(-159, 26, 731), Ogre::Vector3(0, 0, 0), 0, 75, true);
 	//ParticleManager
 	particleManager = new ParticleManager(mSceneMgr, contentManager->getmCamera(), mRoot, mWindow, contentManager->getTerrainGen()->getmTerrainGroup(), bots->getmBots(), physicsManager,sound);
 	//userInterface
@@ -137,10 +145,12 @@ bool Core::go()
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//test section
-	 bots->botControls(particleManager);
+	 bots->botControls(particleManager, lootItems);
 	 spawns->manaRegen();
 	 spawns->characterRespawn();
+	 spawns->positionUpdate();
 	 userInterface->updateUserFrame();
+	 lootItems->updateLootItems();
 	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +
