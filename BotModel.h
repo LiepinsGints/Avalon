@@ -75,6 +75,10 @@ public:
 	Ogre::Timer * getCastTimer() {
 		return castTimer;
 	}
+	Ogre::Timer * getSinceLastAgroTimer() {
+		return sinceLastAgroTimer;
+	}
+	
 	bool getAlive() {
 		return alive;
 	}
@@ -122,6 +126,9 @@ public:
 	}
 	void resetCastTimer() {
 		castTimer->reset();
+	}
+	void resetSinceLastAgroTimer() {
+		sinceLastAgroTimer->reset();
 	}
 	void setAlive(bool _alive) {
 		alive = _alive;

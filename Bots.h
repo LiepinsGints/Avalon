@@ -189,7 +189,7 @@ public:
 				bool collide = checkCollision((*it)->getBotNode()->getPosition(), charPos);
 
 				if (startPosChDist <= _appSettings->getAgroRange() && collide == false) {
-					
+					(*it)->resetSinceLastAgroTimer();
 						//
 						botMoveToPoint((*it), charPos);
 						//
@@ -228,7 +228,14 @@ public:
 				else {
 					if((*it)->getStartPos().x!= (*it)->getBot()->getPosition().x && (*it)->getStartPos().z != (*it)->getBot()->getPosition().z){
 					
-						botMoveToPoint((*it), Ogre::Vector3((*it)->getStartPos().x, (*it)->getStartPos().y, (*it)->getStartPos().z));
+						if ((*it)->getSinceLastAgroTimer()->getMilliseconds() >= 20000) {
+							(*it)->destroy(_physicsManager);
+							(*it)->respawn(_physicsManager);
+						}
+						else {
+							botMoveToPoint((*it), Ogre::Vector3((*it)->getStartPos().x, (*it)->getStartPos().y, (*it)->getStartPos().z));
+						}
+						
 					}
 				}
 			}
