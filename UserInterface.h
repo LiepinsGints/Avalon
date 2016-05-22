@@ -58,6 +58,11 @@ public:
 
 
 	}
+	//Sedigner active
+	bool designerActive() {
+		return designerWindow->getVisible();
+	}
+
 	//Console
 	void addLineToConsole(Ogre::String line) {
 		if(consoleEnable==true){
@@ -451,6 +456,25 @@ private:
 		}
 		
 	}
+	//Diable enable test interface
+	void disableEnableTestInterface(MyGUI::Widget* _widget) {
+		//Disable test interface
+		
+		if (mLabel2->getVisible()) {
+			mLabel->setVisible(false);
+			mLabel2->setVisible(false);
+			consoleInput->setVisible(false);
+			consoleOutput->setVisible(false);
+			consoleSubmit->setVisible(false);
+		}
+		else {
+			mLabel->setVisible(true);
+			mLabel2->setVisible(true);
+			consoleInput->setVisible(true);
+			consoleOutput->setVisible(true);
+			consoleSubmit->setVisible(true);
+		}
+	}
 	//show hide collision boxes
 	void showHideCollisionBoxes(MyGUI::Widget* _widget) {
 		_spawns->showHideCollisionBoxes();
@@ -571,6 +595,9 @@ private:
 				updateUserFrame();
 				_spawns->resetCastTimer();
 			}
+			else {
+				//_sound->playerAudio("Low_Mana_Diablo.wav", false);
+			}
 		}
 	}
 	void castGreenBallFront(MyGUI::Widget* _widget) {
@@ -584,6 +611,9 @@ private:
 				_spawns->resetCastTimer();
 				_sound->playCastAudio("L_FLAME.wav", false);
 
+			}
+			else {
+				//_sound->playerAudio("Low_Mana_Diablo.wav", false);
 			}
 		}
 	}
@@ -691,8 +721,8 @@ private:
 		designerButton->setVisible(false);
 		//create settings button
 		settingsButton = mGUI->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY + buttonDistance, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");
-		settingsButton->setCaption("Settings");
-		settingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::closeApp);
+		settingsButton->setCaption("Enable/Disable test interface");
+		settingsButton->eventMouseButtonClick += MyGUI::newDelegate(this, &UserInterface::disableEnableTestInterface);
 		settingsButton->setVisible(false);
 		//create help or graphics button
 		graphicsButton = mGUI->createWidget<MyGUI::Button>("Button", initPositionX, initPositionY+buttonDistance*2, buttonWidth, buttonHeight, MyGUI::Align::Default, "Main");

@@ -32,6 +32,7 @@ public:
 		alive = true;
 		timer = new Ogre::Timer();
 		castTimer = new Ogre::Timer();
+		sinceLastAgroTimer = new Ogre::Timer();
 	}
 	~BotModel() {
 
@@ -157,6 +158,7 @@ private:
 	Ogre::Real mana;
 	Ogre::Timer* timer;
 	Ogre::Timer* castTimer;
+	Ogre::Timer* sinceLastAgroTimer;
 	Ogre::String nodeName;
 	bool alive;
 	

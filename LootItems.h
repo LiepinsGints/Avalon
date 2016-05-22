@@ -76,6 +76,7 @@ public:
 					case 0:
 						if (_spawns->getHealth() < 100) {
 							_spawns->setHealth(_spawns->getHealth() + (*it)->getValue());
+							_sound->playerAudio("P_WHOOPE.wav", false);
 							(*it)->destroy(_physicsManager);
 						}
 
@@ -83,6 +84,7 @@ public:
 					case 1:
 						if (_spawns->getMana() < 100) {
 							_spawns->setMana(_spawns->getMana() + (*it)->getValue());
+							_sound->playerAudio("P_HEAL.wav", false);
 							(*it)->destroy(_physicsManager);
 						}
 
@@ -93,15 +95,28 @@ public:
 						{
 						case 0:				
 							_spawns->setHealth(_spawns->getHealth() + (*it)->getValue());
+							if ((*it)->getValue() > 0) {
+								_sound->playerAudio("P_WHOOPE.wav", false);
+							}
+							else {
+								_sound->playerAudio("P_SICK.wav", false);
+							}
 							(*it)->destroy(_physicsManager);
 							
 							break;
 						case 1:
 							_spawns->setMana(_spawns->getMana() + (*it)->getValue());
+							if ((*it)->getValue() > 0) {
+								_sound->playerAudio("P_HEAL.wav", false);
+							}
+							else {
+								_sound->playerAudio("P_SNEEZE.wav", false);
+							}
 							(*it)->destroy(_physicsManager);
 							break;
 						case 2:
 							_spawns->setScore(_spawns->getScore()+(*it)->getValue());
+							_sound->playerAudio("P_LAUGH3.wav", false);
 							(*it)->destroy(_physicsManager);
 							break;
 						default:
@@ -136,6 +151,7 @@ public:
 				case 0:
 					if (_spawns->getHealth() < 100) {
 						_spawns->setHealth(_spawns->getHealth() + (*it)->getValue());
+						_sound->playerAudio("P_WHOOPE.wav", false);
 						(*it)->destroy(_physicsManager);
 					}
 					else {
@@ -146,6 +162,7 @@ public:
 				case 1:
 					if (_spawns->getMana() < 100) {
 						_spawns->setMana(_spawns->getMana() + (*it)->getValue());
+						_sound->playerAudio("P_HEAL.wav", false);
 						(*it)->destroy(_physicsManager);
 					}
 					else {
@@ -159,15 +176,23 @@ public:
 					{
 					case 0:
 						_spawns->setHealth(_spawns->getHealth() + (*it)->getValue());
+						if ((*it)->getValue() > 0) {
+							_sound->playerAudio("P_WHOOPE.wav", false);
+						}
+						else {
+							_sound->playerAudio("P_SICK.wav", false);
+						}
 						(*it)->destroy(_physicsManager);
 
 						break;
 					case 1:
 						_spawns->setMana(_spawns->getMana() + (*it)->getValue());
+						_sound->playerAudio("P_HEAL.wav", false);
 						(*it)->destroy(_physicsManager);
 						break;
 					case 2:
 						_spawns->setScore(_spawns->getScore() + (*it)->getValue());
+						_sound->playerAudio("P_LAUGH3.wav", false);
 						(*it)->destroy(_physicsManager);
 						break;
 					default:

@@ -53,6 +53,7 @@ private:
 		mCamera->setPosition(0, 10, -30);
 		mCamera->lookAt(0, 5, 0);
 		mCamera->setNearClipDistance(5);
+		mCamera->setFarClipDistance(1000);
 
 		Ogre::Viewport* vp = _mWindow->addViewport(mCamera);
 		vp->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
@@ -83,6 +84,7 @@ private:
 	
 		Ogre::ColourValue background = Ogre::ColourValue(16.f / 255.f, 16.f / 255.f, 16.f / 255.f);
 		_mSceneMgr->setFog(Ogre::FOG_EXP, background, 0.001, 800, 1000);
+
 
 		// set shadow properties
 		_mSceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_TEXTURE_MODULATIVE);

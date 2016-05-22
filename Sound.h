@@ -30,6 +30,15 @@ public:
 		soundMgr->init();
 		soundMgr->setAudioPath((char*) ".\\Sound\\");
 
+		soundMgrEnvironment = SoundManager::createManager();
+		soundMgrEnvironment->init();
+		soundMgrEnvironment->setAudioPath((char*) ".\\Sound\\");
+
+		
+		soundMgrPlayer = SoundManager::createManager();
+		soundMgrPlayer->init();
+		soundMgrPlayer->setAudioPath((char*) ".\\Sound\\");
+
 		isMoving = false;
 		//setupSound();
 
@@ -65,10 +74,10 @@ public:
 	//Player sound
 	void playerAudio(Ogre::String trackName, bool repeat) {
 
-		soundMgr->releaseAudio(playerAud);
+		soundMgrPlayer->releaseAudio(playerAud);
 		// Just for testing
-		soundMgr->loadAudio(trackName, &playerAud, repeat);
-		soundMgr->playAudio(playerAud, false);
+		soundMgrPlayer->loadAudio(trackName, &playerAud, repeat);
+		soundMgrPlayer->playAudio(playerAud, false);
 		//soundMgr->releaseAudio(audioId);
 	}
 	//Player movement
@@ -91,10 +100,10 @@ public:
 	//Environment sound 
 	void playEnvironmentAudio(Ogre::String trackName, bool repeat) {
 
-		soundMgr->releaseAudio(environment);
+		soundMgrEnvironment->releaseAudio(environment);
 		// Just for testing
-		soundMgr->loadAudio(trackName, &environment, repeat);
-		soundMgr->playAudio(environment, false);
+		soundMgrEnvironment->loadAudio(trackName, &environment, repeat);
+		soundMgrEnvironment->playAudio(environment, false);
 		//soundMgr->releaseAudio(audioId);
 	}
 	//Enemy sound 
@@ -116,6 +125,8 @@ private:
 	Ogre::Root* _mRoot;
 	Ogre::RenderWindow* _mWindow;
 	SoundManager * soundMgr;
+	SoundManager * soundMgrEnvironment;
+	SoundManager * soundMgrPlayer;
 	//
 	//std::vector<int*> sounds;
 	//

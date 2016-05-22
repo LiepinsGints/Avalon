@@ -27,7 +27,8 @@ public:
 		_mWindow = mWindow;
 		
 	    mCaelumSystem = new Caelum::CaelumSystem(_mRoot, _mSceneMgr, Caelum::CaelumSystem::CAELUM_COMPONENTS_DEFAULT);
-		mCaelumSystem->setSceneFogDensityMultiplier(0.00008f); // or some other small value.
+		mCaelumSystem->setSceneFogDensityMultiplier(0.004f); 
+		mCaelumSystem->setJulianDay(10);
 	//	mCaelumSystem->setManageSceneFog(true);
 		_mRoot->addFrameListener(mCaelumSystem);
 		_mWindow->addListener(mCaelumSystem);

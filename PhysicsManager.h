@@ -139,82 +139,17 @@ private:
 		//vd_desc.mCollision.AABB = true;
 		
 		mRenderSystem = new Critter::RenderSystem(mScene, _mSceneMgr);
-		mRenderSystem->createVisualDebugger();
-		mRenderSystem->createVisualDebugger(vd_desc);
+		//mRenderSystem->createVisualDebugger();
+		//mRenderSystem->createVisualDebugger(vd_desc);
 
 		//create character
 		
-		// Setup Animations. 
-		/*
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Idle, "IdleBase");
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Idle, "IdleTop");
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Forward, "RunBase");
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadUpper, Critter::Enums::StockAnimationID_Forward, "RunTop");
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Jump, "JumpStart", 5.0, false);
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Fall, "JumpLoop");
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, Critter::Enums::StockAnimationID_Land, "JumpEnd", 5.0, false);
-		mRenderSystem->addAnimation("sinbad.mesh", SinbadLower, 100, "Dance", 5.0, false);
-		
-		Critter::AnimatedCharacterDescription desc;
-		desc.mShape = NxOgre::SimpleCapsule(5.6, 2);
-		desc.mCollisionMask = (Walls << 1) | (Objects << 1);
-		desc.mMaxGroundSpeed = 17.0f;
-		desc.setJumpVelocityFromMaxHeight(mScene->getGravity().y, 3.50f);
-		//Create critter node for sinbad mesh
-		Critter::Node* sinbadNode = mRenderSystem->createNode();
-		sinbadNode->createAndAttachEntity("sinbad.mesh");
-		//Create animated character
-		mSinbad = mRenderSystem->createAnimatedCharacter(Ogre::Vector3(-42, 125, -234), Ogre::Radian(0), sinbadNode, desc);
-		//Create 
-		Ogre::SceneNode* camNode;
-		camNode = _mSceneMgr->getRootSceneNode()->createChildSceneNode();
-		camNode->attachObject(_contentManager->getmCamera());
-		sinbadNode->addSceneNode(camNode);
-		//Assign helper to sinbad
-		mSinbad->setInput(mSinbadHelper);
-		*/
-		//Create terrain
-		/*NxOgre::HeightField* heightField = NxOgre::HeightFieldManager::getSingleton()->load(NxOgre::Path("ogre://hf.xhf"));
-		NxOgre::HeightFieldGeometryDescription heightFieldDescr;
-		heightFieldDescr.mHeightField = heightField;
-		mScene->createSceneGeometry(heightFieldDescr);*/
-		// Fake Floor
-		/*NxOgre::BoxDescription fake_floor_desc(1000, 1, 1000);
-		fake_floor_desc.mGroup = Walls;
-		mScene->createSceneGeometry(fake_floor_desc, NxOgre::Vec3(0, -0.5, 0));
-		*/
-		/*test*/
-		/*
-		VisualDebuggerDescription vd_desc;
-		vd_desc.mCollision.shapes = true;
-
-		mRenderSystem->createVisualDebugger(vd_desc);
-
-		NxOgre::ManualHeightField mh;
-		mh.begin(100, 100);
-		for (size_t x = 0; x < 100; x++)
-		{
-			for (size_t y = 0; y < 100; y++)
-			{
-				mh.sample(x + (y * 100));
-			}
-		}
-
-		NxOgre::HeightField* hf = mh.end();
-
-		NxOgre::HeightFieldGeometryDescription hfg_desc(hf);
-		hfg_desc.mDimensions.set(1000, 1000, 1000);
-		hfg_desc.mFlags += NxOgre::ShapeFlags::Visualisation;
-		hfg_desc.mGroup = Walls;
-		mScene->createSceneGeometry(hfg_desc);
-		*/
+	
 		//_mTerrainGroup->getTerrain(2046,2046)->getMaterial();
 		Ogre::Terrain* terrain = _mTerrainGroup->getTerrain(0, 0);
 		loadTerrainGeometry();
 		
-		//for (int i = 0; i<this->getNxActor()->getNbShapes(); i++)
-		//this->getNxActor()->getShapes()[i]->setFlag(NxShapeFlag::NX_SF_VISUALIZATION, false)
-		/*test end*/ 
+	
 		/*************Test nxs start*************/
 		/*
 		NxOgre::ResourceSystem::getSingleton()->openProtocol(new Critter::OgreResourceProtocol());

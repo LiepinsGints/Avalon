@@ -196,6 +196,9 @@ public:
 					_spawns->resetCastTimer();
 					_sound->playCastAudio("L_BAZOO.wav", false);
 				}
+				else {
+					//_sound->playerAudio("Low_Mana_Diablo.wav", false);
+				}
 			}
 			break;
 		case OIS::KC_R:
@@ -207,6 +210,10 @@ public:
 					_userinterface->updateUserFrame();
 					_spawns->resetCastTimer();
 					_sound->playCastAudio("L_FLAME.wav", false);
+				}
+				else {
+					//_sound->playerAudio("Low_Mana_Diablo.wav", false);
+					//Low_Mana_Diablo.wav
 				}
 			}
 			break;

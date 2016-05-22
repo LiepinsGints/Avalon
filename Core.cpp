@@ -145,12 +145,14 @@ bool Core::go()
 bool Core::frameRenderingQueued(const Ogre::FrameEvent& fe)
 {
 	//test section
+	if(userInterface->designerActive()==false){
 	 bots->botControls(particleManager, lootItems);
 	 spawns->manaRegen();
 	 spawns->characterRespawn();
 	 spawns->positionUpdate();
 	 userInterface->updateUserFrame();
 	 lootItems->updateLootItems();
+	}
 	//getOrientation().getYaw();
 	//Update character position
 	Ogre::String my_string = "X: " + Ogre::StringConverter::toString(spawns->getCharacter()->getPosition().x)+"\n" +

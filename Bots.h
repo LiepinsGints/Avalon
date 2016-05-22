@@ -205,9 +205,18 @@ public:
 								_sound->playEnemyAudio("L_BAZOO.wav", false);
 							}
 							else {
-								particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 40, "shadowBolt", 1);
-								(*it)->resetCastTimer();
-								_sound->playEnemyAudio("E_1.wav", false);
+								int randomNum = Ogre::Math::RangeRandom(0, 2);
+								if (randomNum == 0) {
+									particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 40, "shadowBolt", 1);
+									(*it)->resetCastTimer();
+									_sound->playEnemyAudio("E_1.wav", false);
+								}
+								else {
+									particlemanager->createSpell((*it)->getBotNode()->getPosition(), _spawns->getCharacter()->getPosition() - (*it)->getBotNode()->getPosition(), 3000, 20, "fireCast", 1);
+									(*it)->resetCastTimer();
+									_sound->playEnemyAudio("L_BAZOO.wav", false);
+								}
+								
 							}
 							
 
@@ -272,7 +281,7 @@ public:
 		//
 		NxOgre::Ray ray;
 		ray.mDirection.from(direction);
-		ray.mOrigin.from(Ogre::Vector3(enemyPosition.x, enemyPosition.y+5, enemyPosition.z));
+		ray.mOrigin.from(Ogre::Vector3(enemyPosition.x, enemyPosition.y+4, enemyPosition.z));
 
 		RaycastHit hit = _physicsManager->getMScene()->raycastClosestShape(ray, NxOgre::Enums::ShapesType_All);
 		if (hit.mRigidBody)
@@ -284,7 +293,15 @@ public:
 				return false;
 			}
 			else {
-				return true;
+				Ogre::Real distanceEnemyPlayer = enemyPosition.distance(targetPosition);
+				if (hit.mDistance > distanceEnemyPlayer) {
+					return false;
+				}
+				else {
+					return true;
+				}
+				//Ogre::Real collisionDistance = enemyPosition.distance(hit.mRigidBody->getShape)
+				
 			}			
 		}
 		else
